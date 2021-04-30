@@ -6,4 +6,4 @@ compile:
 
 .PHONY: clean
 clean:
-	-rm ./*.{aux,bbl,blg,dvi,log,out,toc} 2>/dev/null 1>&2 || true
+	-rm -rf _minted-seminar ./*.{aux,bbl,blg,dvi,log,out,toc} 2>/dev/null 1>&2 || true
