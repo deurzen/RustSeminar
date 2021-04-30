@@ -10,11 +10,11 @@ Semester: SoSe 2021
 - **Revision of Abstract**
 - **Introduction**
 - **External Dependency Management**
-	- Xlib (C++ impl.) and XCB (Rust impl.) dependencies
-	- Wrapper {class,struct} (resp.) and decoupling from external dependencies
-	- {lack of,} (resp.) ease of using external libraries
+	- ~~Xlib (C++ impl.) and XCB (Rust impl.) dependencies~~
+	- ~~Wrapper {class,struct} (resp.) and decoupling from external dependencies~~
+	- ~~{lack of,} (resp.) ease of using external libraries~~
 	- **_Portability_**
-		- Package manager(s), manully by developer (C++) vs Cargo (Rust)
+		- ~~Package manager(s), manully by developer (C++) vs Cargo (Rust)~~
 		- Discrepancies between operating systems, platforms
 	- **_Versioning_**
 		- Manual (C++) vs automatic (Rust) versioning
