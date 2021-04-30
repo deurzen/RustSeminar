@@ -1,9 +1,5 @@
 %&latex
 \section{External Dependency Management}
-% TODO: - Xlib (C++ impl.) and XCB (Rust impl.) dependencies
-%       - wrapper {class,struct} (resp.) and decoupling from external
-%         dependencies
-%       - {lack of,} (resp.) ease of using external libraries
 
 As a programming  language's ability to aid the programmer  in managing external
 dependencies---by,  for instance,  providing various  tools that  come installed
@@ -34,7 +30,249 @@ code.
 \subsection{Portability}
 % TODO: - package manager(s), manully by developer (C++) vs Cargo (Rust)
 %       - discrepancies between operating systems, platforms
-{ \textcolor{gray}\blindtext }
+
+C\texttt{++} does not come with an  external dependency manager. That is to say,
+the  official  ISO  standard C\texttt{++}  specification\cite{cppstd}  does  not
+outline the  functionality or otherwise existence  of any package manager.  As a
+result, developers have  no other choice than to resort  to third-party tools to
+manage  dependencies,  to  reinvent  the  wheel  themselves  and  hack  together
+configure and build scripts that take  external dependencies into account, or to
+disregard package management  altogether and let other developers  and end users
+resolve  dependencies  on  their  own.  In  any  case,  C\texttt{++}  dependency
+management is complex, and the lack of a standardized tool inhibits the adoption
+of C\texttt{++}  projects, as well as  their portability to other  platforms and
+development environments.
+
+Since   the  only   external  dependency   \textsc{wmCPP}  is   reliant  on   is
+\texttt{libX11},  which  is  fairly  ubiquitous and  readily  available  through
+distributions'   own  package   managers,   it  merely   links   with  the   X11
+development  libraries   without  the  use   of  any  form  of   own  dependency
+management.  Specifically, building  the  project is  done  using the  following
+\textbf{\texttt{Make}} script (large parts altered or redacted for clarity).
+
+\begin{minted}{make}
+  CC = g++
+  CXXFLAGS = -std=c++17 -march=native -O3
+  LDFLAGS = `pkg-config --libs x11` -flto
+
+  obj/%.o: src/%.cc
+    ${CC} ${CXXFLAGS} -MMD -c $< -o $@
+  release: obj/%.o
+    ${CC} $< ${LDFLAGS} -o bin/wmCPP
+\end{minted}
+
+Assuring the availability of an external body  of code is not the only aspect of
+external  dependecy  management that  affects  the  pragmatics of  C\texttt{++}.
+Writing a library that is to be imported as an external dependency and including
+code from an external  dependency both require special care to  be taken to make
+sure no symbol collisions occur. In header files, this is usually done by making
+use of so-called  \textit{header guards}, a set of  preprocessor directives that
+render including a  header an idempotent operation,  preventing double inclusion
+errors. If incorrect double inclusion  does unexpectedly occur, for instance due
+to  collisions in  the header  guards themselves,  vague---as header  guards are
+handled  by  the preprocessor,  not  the  compiler---and hard-to-trace  compiler
+errors  arise,  subjecting the  programmer  to  unnecessary mental  strain,  and
+wasting  time. Although  not part  of the  official standard,  many C\texttt{++}
+compilers  support the  \mintinline{cpp}{#pragma once}  preprocessor  directive,
+providing the same functionality as header guards, but preventing the occurrence
+of double inclusion errors.
+
+Another source of issues is the order of include directives in C\texttt{++}. The
+ordering of included  files relative to one another  can significantly influence
+the outcome of the compilation step, possibly causing errors, one of which being
+the introduction of circular dependencies  while there actually aren't any there
+(e.g. a forward declaration that was included only after the circular dependency
+was already introduced).\\
+
+The Rust programming  language has its own package manager,  called Cargo. Cargo
+can automatically download a project's external dependencies (and, transatively,
+\textit{their} dependencies), compile them, and  install them locally, such that
+they can be used  during the linking stage of the build  process. To make proper
+use of Cargo within a Rust project, that project must be turned into a so-called
+\textit{package}.  Rust  packages  are  simply  a  collection  of  source  files
+along with  a manifest  file (named \texttt{Cargo.toml})  in the  project's root
+directory. This manifest file describes  the package's meta-information (such as
+its name  and version),  and a  set of  \textit{target crates}.  A crate  is the
+source code or  compiled artifact of either a library  or executable program, or
+possibly a  compressed package that is  grabbed from a registry  (a service that
+provides  a  collection  of  downloadable crates).  A  package's  manifest  file
+describes each of its target crates  by specifying their type (binary executable
+or library), their metadata, and how to build them.
+
+The  following manifest  file describes  the  package that  represents our  Rust
+window manager, \textsc{wmRS} (parts redacted for clarity).\\
+
+\begin{minted}{shell}
+  [package]
+  name = "wmRS"
+  version = "0.1.0"
+  authors = ["deurzen <m.deurzen@tum.de>"]
+  edition = "2018"
+  license = "BSD3"
+  documentation = "https://docs.rs/wmRS"
+  readme = "README.md"
+  default-run = "wmRS"
+  description = """
+  An ICCCM & EWMH compliant X11 reparenting,
+  tiling window manager, written in Rust
+  """
+  
+  [profile.release]
+  lto = true
+  
+  [lib]
+  name = "winsys"
+  path = "src/winsys/mod.rs"
+  
+  [[bin]]
+  name = "wmRS"
+  path = "src/core/main.rs"
+  
+  [[bin]]
+  name = "wmRSbar"
+  path = "src/bar/main.rs"
+  required-features = ["bar"]
+  
+  [[bin]]
+  name = "wzrdclient"
+  path = "src/client/main.rs"
+  required-features = ["client"]
+  
+  [features]
+  bar = []
+  client = []
+  
+  [dependencies]
+  x11rb = {
+    version = "0.8.0",
+    features = [
+      "cursor",
+      "xinerama",
+      "randr",
+      "res"
+    ]
+  }
+  strum = {
+    version = "0.19",
+    features = ["derive"]
+  }
+  strum_macros = "0.19"
+  anyhow = "1.0.33"
+  log = "0.4"
+  simplelog = "0.8.0"
+  nix = "0.19.0"
+\end{minted}
+
+Our package consists  of a single library, along with  three binary executables.
+The library  is an abstraction above  and wrapper around the  interface with the
+underlying windowing system. It defines a  single Rust trait that represents the
+connection between the  window manager and the windowing  system. This decouples
+the implementation  of the window  manager from that  of the interface  with the
+windowing system, and  additionally allows for the seamless  transition from one
+windowing system  to another, as multiple  windowing systems can be  targeted by
+implementing the  trait, effectively creating  a new wrapper around  an external
+library  that directly  interfaces that  windowing system.  Currently, only  the
+interface with  the X  Window System  is implemented,  but interfacing  with the
+newer and more modern Wayland is as easy as implementing a new connection to it.
+A  small portion  of \textsc{wmRS}'s  winsys library  connection trait  looks as
+follows.
+
+\begin{minted}{rust}
+  pub trait Connection {
+    fn flush(&self) -> bool;
+    fn step(&self) -> Option<Event>;
+    fn connected_outputs(&self) -> Vec<Screen>;
+    fn top_level_windows(&self) -> Vec<Window>;
+    fn get_pointer_position(&self) -> Pos;
+    fn warp_pointer(
+      &self,
+      pos: Pos,
+    );
+  
+    fn init_window(
+      &self,
+      window: Window,
+      focus_follows_mouse: bool,
+    );
+    fn init_frame(
+      &self,
+      window: Window,
+      focus_follows_mouse: bool,
+    );
+    fn init_unmanaged(
+      &self,
+      window: Window,
+    );
+    fn cleanup_window(
+      &self,
+      window: Window,
+    );
+    fn map_window(
+      &self,
+      window: Window,
+    );
+    fn unmap_window(
+      &self,
+      window: Window,
+    );
+    fn reparent_window(
+      &self,
+      window: Window,
+      parent: Window,
+      pos: Pos,
+    );
+    fn unparent_window(
+      &self,
+      window: Window,
+      pos: Pos,
+    );
+    fn destroy_window(
+      &self,
+      window: Window,
+    );
+    fn close_window(
+      &self,
+      window: Window,
+    ) -> bool;
+    fn kill_window(
+      &self,
+      window: Window,
+    ) -> bool;
+    fn place_window(
+      &self,
+      window: Window,
+      region: &Region,
+    );
+    fn move_window(
+      &self,
+      window: Window,
+      pos: Pos,
+    );
+    fn resize_window(
+      &self,
+      window: Window,
+      dim: Dim,
+    );
+    fn focus_window(
+      &self,
+      window: Window,
+    );
+    fn stack_window_above(
+      &self,
+      window: Window,
+      sibling: Option<Window>,
+    );
+
+    // ...
+  }
+\end{minted}
+
+
+The  three binary  executable  crates  represent the  window  manager, a  client
+program  to communicate  with  the  window manager  (to  control various  window
+management  activities,  such as  closing  the  currently focused  window,  from
+scripts or the  command line), and a status bar  that displays information about
+the state of the window manager, such as the currently activated workspace.
 
 \subsection{Versioning}
 % TODO: - manual (C++) vs automatic (Rust) versioning

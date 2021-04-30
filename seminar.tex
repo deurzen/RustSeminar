@@ -8,9 +8,12 @@
 \usepackage{textcomp}
 \usepackage{xcolor}
 \usepackage{blindtext}
+\usepackage{minted}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
+
+\usemintedstyle{vs}
 
 \title{Pragmatics of Rust and C\texttt{++}:\\The implementation of a window manager\\
 }
@@ -33,6 +36,7 @@ Munich, Germany \\[0.08cm]
 \input{introduction}
 
 \input{external_dependency_management}
+\input{build_system}
 \input{main_event_loop}
 \input{communication_environment}
 \input{key_bindings}
