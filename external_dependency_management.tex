@@ -1,0 +1,41 @@
+%&latex
+\section{External Dependency Management}
+% TODO: - Xlib (C++ impl.) and XCB (Rust impl.) dependencies
+%       - wrapper {class,struct} (resp.) and decoupling from external
+%         dependencies
+%       - {lack of,} (resp.) ease of using external libraries
+
+As a programming  language's ability to aid the programmer  in managing external
+dependencies---by,  for instance,  providing various  tools that  come installed
+with  its compiler  or development  environment---is generally  not incorporated
+into that language's syntax or, by extension, its semantics, it is traditionally
+not considered an aspect of that language's feature set per se. Notwithstanding,
+it is more  and more becoming an appreciated addition  to the \textit{ecosystem}
+around a  language, especially so  for compiled  languages. In fact,  many would
+consider automated  external dependency management to  be a must for  any modern
+programming language.  As it directly affects  both the portability of  code, as
+well as the (ease of) managing  different versions of a dependency, a language's
+ability  to unburden  the  programmer  from the  manual  management of  external
+dependencies  can greatly  improve the  maintainability  of a  project, and  can
+therefore  indeed be  viewed  as a  feature  of  the language  in  light of  its
+\textit{pragmatics}. In this  section, we will be  discussing the practicalities
+of working with external code in both  Rust and C\texttt{++}. We will do this by
+means of a comparison between two window manager implementations, one written in
+Rust,  and the  other  written  in C\texttt{++},  which  we  will henceforth  be
+referring to as \textsc{wmRS} and \textsc{wmCPP}, respectively.
+
+Both  window managers  are built  on top  of the  X Window  System, which  means
+they  rely on  an external  library  to interface  with the  X server.  Although
+\textsc{wmRS} and  \textsc{wmCPP} each use  a different library to  achieve this
+(XCB  over \texttt{libxcb}  and  Xlib over  \texttt{libX11}, respectively),  the
+concept is the same,  as they both require the importing of  an external body of
+code.
+
+\subsection{Portability}
+% TODO: - package manager(s), manully by developer (C++) vs Cargo (Rust)
+%       - discrepancies between operating systems, platforms
+{ \textcolor{gray}\blindtext }
+
+\subsection{Versioning}
+% TODO: - manual (C++) vs automatic (Rust) versioning
+{ \textcolor{gray}\blindtext }

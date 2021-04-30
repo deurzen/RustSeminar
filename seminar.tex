@@ -24,100 +24,23 @@ Munich, Germany \\[0.08cm]
 
 \maketitle
 
-\begin{abstract}
-% https://www2.cs.sfu.ca/~cameron/Teaching/383/syn-sem-prag-meta.html
-
-In comparing  and discussing programming  languages (and natural  languages, for
-that matter), not only \textit{syntax} and \textit{semantics} are of importance.
-\textit{Pragmatics} is  the third  general area  of language  description, which
-deals with the  practical aspects of how language constructs  and features allow
-its users  to achieve  various objectives. In  this paper, we  will look  at the
-pragmatics of  both Rust  and C\texttt{++}. Specifically,  we will  be comparing
-the  languages in  their  ability  to be  used  as a  tool  to  write medium  to
-large  \textit{system programs}.  As a  case study,  we will  be discussing  two
-implementations of  a complete ICCCM  and EWMH compliant  top-level reparenting,
-tiling window manager, built on top of the X Window System: one in Rust, and the
-other in C\texttt{++}.
-\end{abstract}
+\input{abstract}
 
 \begin{IEEEkeywords}
 	Pragmatics, Rust, C\texttt{++}, Window Manager
 \end{IEEEkeywords}
 
-\section{Introduction}
-{ \textcolor{gray}\blindtext }
+\input{introduction}
 
-\section{External Dependency Management}
-% TODO: - Xlib (C++ impl.) and XCB (Rust impl.) dependencies
-%       - wrapper {class,struct} (resp.) and decoupling from external
-%         dependencies
-%       - {lack of,} (resp.) ease of using external libraries
-{ \textcolor{gray}\blindtext }
+\input{external_dependency_management}
+\input{main_event_loop}
+\input{communication_environment}
+\input{key_bindings}
+\input{clients}
+\input{workspaces}
 
-\subsection{Portability}
-% TODO: - package manager(s), manully by developer (C++) vs Cargo (Rust)
-%       - discrepancies between operating systems, platforms
-{ \textcolor{gray}\blindtext }
+\input{conclusion}
 
-\subsection{Versioning}
-% TODO: - manual (C++) vs automatic (Rust) versioning
-{ \textcolor{gray}\blindtext }
-
-\section{Main Event Loop}
-% TODO: - event dynamic kranewm (C++ impl.) vs wzrd (Rust impl.)
-%       - event loop constructs and feature usage kramewm vs wzrd
-{ \textcolor{gray}\blindtext }
-
-\subsection{Internal Events}
-% TODO: - data structures and language features used to represent events
-{ \textcolor{gray}\blindtext }
-
-\subsection{Event Dispatch}
-% TODO: - language constructs used to handle event dispatch
-{ \textcolor{gray}\blindtext }
-
-\section{Communication with the Environment}
-% TODO: - complex feature of which the implementation constructs trickle into
-%         many parts of the program (large fan-out)
-%       - data structures and language features used to represent key bindings
-%       - verbose (kranewm, C++) vs use of macros (wzrd, Rust)
-{ \textcolor{gray}\blindtext }
-
-\subsection{Inter-Process Communication}
-{ \textcolor{gray}\blindtext }
-
-\section{Key Bindings}
-% TODO: - complex feature of which the implementation constructs trickle into
-%         many parts of the program (large fan-out)
-%       - data structures and language features used to represent key bindings
-%       - verbose (kranewm, C++) vs use of macros (wzrd, Rust)
-{ \textcolor{gray}\blindtext }
-
-\section{Clients}
-% TODO: - main data structure that represents a window under window manager
-%         control
-%       - wrapper around X11 window
-%       - directly manipulated by practically all parts of the program
-%       - reason for pointer (C++) vs id (Rust) representation
-{ \textcolor{gray}\blindtext }
-
-\subsection{Reference Management}
-% TODO: - difference between using direct/smart pointer (C++) vs non-pointer
-%         indirection (Rust)
-{ \textcolor{gray}\blindtext }
-
-\subsection{State}
-{ \textcolor{gray}\blindtext }
-
-\section{Workspaces}
-% TODO: - data structures and language features used
-{ \textcolor{gray}\blindtext }
-
-\section{Conclusion}
-{ \textcolor{gray}\blindtext }
-
-\begin{thebibliography}{00}
-\bibitem{b1} { \textcolor{gray}\blindtext }
-\end{thebibliography}
+\input{bibliography}
 
 \end{document}
