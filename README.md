@@ -4,6 +4,37 @@ Student: Max van Deurzen<br/>
 Semester: SoSe 2021
 
 
+## Rust Topics
+- **External Dependency Management**
+	- C++ (abstract) class vs Rust trait
+	- Make (C++) vs Cargo (Rust)
+- **Main Event Loop**
+	- **_Internal Events_**
+		- `Option`, `Result`
+		- Stateful `enum`s
+	- **_Event Dispatch_**
+		- `if let`, `match`
+- **Communication with the Environment**
+	- **_Inter-Process Communication_**
+		- (not definitive) `std::os::unix::net::UnixStream`
+		- (not definitive) Servo's `ipc-channel`
+- **Key Bindings**
+	- `Box`ed functions (e.g. `Box<dyn FnMut(&mut Model<'_>)>`)
+	- `HashMap`
+	- Macro metaprogramming: `macro_rules!`
+- **Clients**
+	- **_Reference Management_**
+		- `HashMap`
+		- `std::hash::BuildHasher`, `std::hash::Hasher`
+		- `VecDeque`
+	- **_State_**
+		- `Cell`
+		- `RefCell`
+- **Workspaces**
+	- `HashSet`
+	- Iterators (`iter`, `into_iter`, `chain`, `collect`)
+
+
 ## TODOs
 
 - ~~**Abstract**~~
@@ -43,6 +74,6 @@ Semester: SoSe 2021
 		- Difference between using direct/smart pointer (C++) vs non-pointer indirection (Rust)
 	- **_State_**
 		- Data structures and language constructs used in changing the clients' state
-- **Clients**
+- **Workspaces**
 	- Data structures and language constructs used in the implementation of workspaces
 - **Conclusion**
