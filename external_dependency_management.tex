@@ -234,13 +234,48 @@ type  that  implements our  \texttt{Connection}  trait  (i.e. a  wrapper  around
  }
 \end{minted}
 
-% https://doc.rust-lang.org/1.8.0/book/trait-objects.html
+% https://doc.rust-lang.org/1.8.0/book/trait-objects.html#static-dispatch
+% https://doc.rust-lang.org/1.8.0/book/trait-objects.html#dynamic-dispatch
+% https://doc.rust-lang.org/book/ch10-01-syntax.html#performance-of-code-using-generics
 
 Since  we're  using  polymorphism  here   to  abstract  away  from  the  actual,
-concrete  implementation of  the  connection  type, Rust  needs  to  be able  to
-determine  at runtime  which  specific  version it  should  actually run  (known
-as  \textit{dispatch})[CITE].  It  can   do  so  either  \textit{statically}  or
-\textit{dynamically}.
+concrete  implementation  of  the  connection   type,  Rust  needs  to  be  able
+to  determine  at  runtime  which   specific  version  it  should  actually  run
+(known  as \textit{dispatch})[CITE].  It  can do  so either  \textit{statically}
+or   \textit{dynamically}.    Static   dispatch    in   Rust   makes    use   of
+\textit{monomorphization}  at   compile  time  to  convert   generic  code  into
+``specific'' code: one version for each concrete type that is used as a generics
+argument.  That means  that  at runtime,  no (time)  overhead  is incurred  when
+running generic code, as the specific versions of the code to run are baked into
+the binary.  An example  of static  dispatch in  \textsc{wmRS} is  the following
+\texttt{Cycle} struct, which  allows for cycling forward and  backward through a
+collection of (generic) items.
+
+\begin{minted}{rust}
+ pub struct Cycle<T>
+ where
+   T: Identify + std::fmt::Debug,
+ {
+   index: Cell<Index>,
+   elements: VecDeque<T>,
+   indices: HashMap<Ident, Index, BuildIdHasher>,
+   unwindable: bool,
+   stack: RefCell<HistoryStack>,
+ }
+\end{minted}
+
+This struct is used  to cycle through both the workspaces  managed by the window
+manager, as  well as  the clients  within a workspace.  That means  two specific
+versions of this struct  are constructed at compile-time: \mintinline{rust}{impl
+Cycle<Workspace>} and \mintinline{rust}{impl Cycle<Client>}.
+
+Dynamic dispatch defers resolving generic code until it is required,
+making use  of so-called  \textit{trait objects}.  A trait  object is  an opaque
+value of a type  that implements some set of traits. It's  opaque, as one cannot
+know which  concrete type is behind  a trait object's pointer  up front. Whereas
+the  size  of  each  monomorphized  type is  always  known,  trait  objects  are
+dynamically sized. To resolve a  generic type at runtime, \textit{virtual method
+tables} (\textit{vtables}) are used.
 
 
 The three binary executable crates  respectively represent the window manager, a
