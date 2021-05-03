@@ -50,7 +50,7 @@ development  libraries   without  the  use   of  any  form  of   own  dependency
 management.  Specifically, building  the  project is  done  using the  following
 \textbf{\texttt{Make}} script (large parts altered or redacted for clarity).
 
-\begin{minted}{make}
+\begin{minted}[fontsize=\small]{make}
   CC = g++
   CXXFLAGS = -std=c++17 -march=native -O3
   LDFLAGS = `pkg-config --libs x11` -flto
@@ -102,46 +102,46 @@ describes each of its target crates  by specifying their type (binary executable
 or library), their metadata, and how to build them[CITE].
 
 The  following manifest  file describes  the  package that  represents our  Rust
-window manager, \textsc{wmRS} (parts redacted for clarity).\\
+window manager, \textsc{wmRS} (parts redacted for clarity).
 
-\begin{minted}{shell}
- [package]
- name = "wmRS"
- version = "0.1.0"
- authors = ["deurzen <m.deurzen@tum.de>"]
- edition = "2018"
- license = "BSD3"
- documentation = "https://docs.rs/wmRS"
- readme = "README.md"
- default-run = "wmRS"
- description = """
- An ICCCM & EWMH compliant X11 reparenting,
- tiling window manager, written in Rust
- """
- [profile.release]
- lto = true
- [lib]
- name = "winsys"
- path = "src/winsys/mod.rs"
- [[bin]]
- name = "wmRS"
- path = "src/core/main.rs"
- [[bin]]
- name = "wmRSbar"
- path = "src/bar/main.rs"
- [[bin]]
- name = "wmRSclient"
- path = "src/client/main.rs"
- [dependencies]
- x11rb = {
-   version = "0.8.0",
-   features = [
-     "cursor",
-     "xinerama",
-     "randr",
-     "res"
-   ]
- }
+\begin{minted}[fontsize=\small]{shell}
+  [package]
+  name = "wmRS"
+  version = "0.1.0"
+  authors = ["deurzen <m.deurzen@tum.de>"]
+  edition = "2018"
+  license = "BSD3"
+  documentation = "https://docs.rs/wmRS"
+  readme = "README.md"
+  default-run = "wmRS"
+  description = """
+  An ICCCM & EWMH compliant X11 reparenting,
+  tiling window manager, written in Rust
+  """
+  [profile.release]
+  lto = true
+  [lib]
+  name = "winsys"
+  path = "src/winsys/mod.rs"
+  [[bin]]
+  name = "wmRS"
+  path = "src/core/main.rs"
+  [[bin]]
+  name = "wmRSbar"
+  path = "src/bar/main.rs"
+  [[bin]]
+  name = "wmRSclient"
+  path = "src/client/main.rs"
+  [dependencies]
+  x11rb = {
+    version = "0.8.0",
+    features = [
+      "cursor",
+      "xinerama",
+      "randr",
+      "res"
+    ]
+  }
 \end{minted}
 
 % https://doc.rust-lang.org/book/ch10-02-traits.html
@@ -160,17 +160,17 @@ methods that  is defined  for some (at  define-time) unknown  type \texttt{Self}
 with the intention to implement shared behavior[CITE,CITE]. A concept from other
 languages that  most closely resembles traits  are \textit{interfaces}, although
 there are differences  still[CITE]. A small snippet  from \textsc{wmRS}'s winsys
-library \texttt{Connection} trait looks as follows.\\
+library \texttt{Connection} trait looks as follows.
 
-\begin{minted}{rust}
- pub trait Connection {
-   fn step(&self) -> Option<Event>;
-   fn close_window(&self, w: Window) -> bool;
-   fn move_window(&self, w: Window, p: Pos);
-   fn resize_window(&self, w: Window, d: Dim);
-   fn focus_window(&self, w: Window);
-   // ...
- }
+\begin{minted}[fontsize=\small]{rust}
+  pub trait Connection {
+    fn step(&self) -> Option<Event>;
+    fn close_window(&self, window: Window) -> bool;
+    fn move_window(&self, window: Window, pos: Pos);
+    fn resize_window(&self, window: Window, dim: Dim);
+    fn focus_window(&self, window: Window);
+    // ...
+  }
 \end{minted}
 
 Here, we've  supplied a set  of function  prototypes that eventually  become the
@@ -191,25 +191,25 @@ the X Window System,  but interfacing with the newer and  more modern Wayland is
 as easy as  implementing a new connection to  it. \textsc{wmRS}'s implementation
 for this trait, targeting the X Window System, is partly given as follows.
 
-\begin{minted}{rust}
- use x11rb::connection;
-
- pub struct XConnection
-   <'conn, Conn: connection::Connection>
- {
-   conn: &'conn Conn,
-   // ...
- }
-
- impl<'conn, Conn: connection::Connection>
-   Connection for XConnection<'conn, Conn>
- {
-   #[inline]
-   fn step(&self) -> Option<Event> {
-     // ...
-   }
-   // ...
- }
+\begin{minted}[fontsize=\small]{rust}
+  use x11rb::connection;
+ 
+  pub struct XConnection
+    <'conn, Conn: connection::Connection>
+  {
+    conn: &'conn Conn,
+    // ...
+  }
+ 
+  impl<'conn, Conn: connection::Connection>
+    Connection for XConnection<'conn, Conn>
+  {
+    #[inline]
+    fn step(&self) -> Option<Event> {
+      // ...
+    }
+    // ...
+  }
 \end{minted}
 
 The  \texttt{XConnection}  structure  introduces  two  generic  type  arguments,
@@ -227,11 +227,11 @@ the core window manager logic. It \textit{contains} a reference to \textit{some}
 type  that  implements our  \texttt{Connection}  trait  (i.e. a  wrapper  around
 \textit{some} windowing system).
 
-\begin{minted}{rust}
- pub struct Model<'model> {
-   conn: &'model mut dyn Connection,
-   // ...
- }
+\begin{minted}[fontsize=\small]{rust}
+  pub struct Model<'model> {
+    conn: &'model mut dyn Connection,
+    // ...
+  }
 \end{minted}
 
 % https://doc.rust-lang.org/1.8.0/book/trait-objects.html#static-dispatch
@@ -251,32 +251,52 @@ the binary.  An example  of static  dispatch in  \textsc{wmRS} is  the following
 \texttt{Cycle} struct, which  allows for cycling forward and  backward through a
 collection of (generic) items.
 
-\begin{minted}{rust}
- pub struct Cycle<T>
- where
-   T: Identify + std::fmt::Debug,
- {
-   index: Cell<Index>,
-   elements: VecDeque<T>,
-   indices: HashMap<Ident, Index, BuildIdHasher>,
-   unwindable: bool,
-   stack: RefCell<HistoryStack>,
- }
+\begin{minted}[fontsize=\small]{rust}
+  pub struct Cycle<T>
+  where
+    T: Identify + Debug,
+  {
+    index: Cell<Index>,
+    elements: VecDeque<T>,
+    indices: HashMap<Ident, Index, BuildIdHasher>,
+    unwindable: bool,
+    stack: RefCell<HistoryStack>,
+  }
+
+  impl<T> Cycle<T>
+  where
+      T: Identify + Debug,
+  {
+    // ...
+  }
 \end{minted}
 
-This struct is used  to cycle through both the workspaces  managed by the window
-manager, as  well as  the clients  within a workspace.  That means  two specific
-versions of this struct  are constructed at compile-time: \mintinline{rust}{impl
-Cycle<Workspace>} and \mintinline{rust}{impl Cycle<Client>}.
+This  struct is  used to  cycle through  both the  workspace structures  managed
+by  the  window  manager, as  well  as  the  clients  within a  workspace.  That
+means  two specific  versions of  this struct  are constructed  at compile-time:
+one  for \mintinline{rust}{Workspace},  and  one for  \mintinline{rust}{Client},
+where  \mintinline{rust}{Workspace} and  \mintinline{rust}{Client} in  turn both
+implement  the \mintinline{rust}{Identify}  and \mintinline{rust}{Debug}  traits
+(as per the constraint on \mintinline{rust}{T}).
 
-Dynamic dispatch defers resolving generic code until it is required,
+% https://doc.rust-lang.org/book/ch19-04-advanced-types.html#dynamically-sized-types-and-the-sized-trait
+
+Dynamic dispatch defers resolving generic code  until it is required at runtime,
 making use  of so-called  \textit{trait objects}.  A trait  object is  an opaque
 value of a type  that implements some set of traits. It's  opaque, as one cannot
 know which  concrete type is behind  a trait object's pointer  up front. Whereas
 the  size  of  each  monomorphized  type is  always  known,  trait  objects  are
-dynamically sized. To resolve a  generic type at runtime, \textit{virtual method
-tables} (\textit{vtables}) are used.
-
+dynamically  sized.  To  resolve  a  call  to  one  of  such  an  opaque  type's
+methods at runtime, \textit{virtual  method tables} (\textit{vtables}) are used.
+Each  instance  of  a pointer  to  a  trait  object  consists of  a  pointer  to
+an  instance  of some  type  \mintinline{rust}{T}  that  implements the  set  of
+traits,  as well  as a  pointer to  a vtable  that contains  a function  pointer
+to  \mintinline{rust}{T}'s  implementation of  each  method  of the  implemented
+set  of traits  (and their  supertraits). Our  \mintinline{rust}{Model} struct's
+\mintinline{rust}{conn} field  is a pointer to  such a trait object.  Behind the
+pointer,  we can  have any  implementation of  the \mintinline{rust}{Connection}
+trait. Which of  the trait's implementors' methods are called,  is determined at
+runtime.
 
 The three binary executable crates  respectively represent the window manager, a
 client program to communicate with the window manager (to control various window
