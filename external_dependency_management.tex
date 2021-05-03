@@ -84,195 +84,175 @@ the introduction of circular dependencies  while there actually aren't any there
 (e.g. a forward declaration that was included only after the circular dependency
 was already introduced).\\
 
+% https://doc.rust-lang.org/cargo/guide/
+
 The Rust programming  language has its own package manager,  called Cargo. Cargo
 can automatically download a project's external dependencies (and, transatively,
 \textit{their} dependencies), compile them, and  install them locally, such that
-they can be used  during the linking stage of the build  process. To make proper
-use of Cargo within a Rust project, that project must be turned into a so-called
-\textit{package}.  Rust  packages  are  simply  a  collection  of  source  files
-along with  a manifest  file (named \texttt{Cargo.toml})  in the  project's root
-directory. This manifest file describes  the package's meta-information (such as
-its name  and version),  and a  set of  \textit{target crates}.  A crate  is the
-source code or  compiled artifact of either a library  or executable program, or
-possibly a  compressed package that is  grabbed from a registry  (a service that
+they can be  used during the linking  stage of the build  process[CITE]. To make
+proper use of  Cargo within a Rust  project, that project must be  turned into a
+so-called  \textit{package}. Rust  packages are  simply a  collection of  source
+files along  with a manifest  file (named \texttt{Cargo.toml}) in  the project's
+root  directory. This  manifest  file describes  the package's  meta-information
+(such as its name and version), and  a set of \textit{target crates}. A crate is
+the source code or compiled artifact  of either a library or executable program,
+or possibly a compressed package that is grabbed from a registry (a service that
 provides  a  collection  of  downloadable crates).  A  package's  manifest  file
 describes each of its target crates  by specifying their type (binary executable
-or library), their metadata, and how to build them.
+or library), their metadata, and how to build them[CITE].
 
 The  following manifest  file describes  the  package that  represents our  Rust
 window manager, \textsc{wmRS} (parts redacted for clarity).\\
 
 \begin{minted}{shell}
-  [package]
-  name = "wmRS"
-  version = "0.1.0"
-  authors = ["deurzen <m.deurzen@tum.de>"]
-  edition = "2018"
-  license = "BSD3"
-  documentation = "https://docs.rs/wmRS"
-  readme = "README.md"
-  default-run = "wmRS"
-  description = """
-  An ICCCM & EWMH compliant X11 reparenting,
-  tiling window manager, written in Rust
-  """
-  
-  [profile.release]
-  lto = true
-  
-  [lib]
-  name = "winsys"
-  path = "src/winsys/mod.rs"
-  
-  [[bin]]
-  name = "wmRS"
-  path = "src/core/main.rs"
-  
-  [[bin]]
-  name = "wmRSbar"
-  path = "src/bar/main.rs"
-  required-features = ["bar"]
-  
-  [[bin]]
-  name = "wmRSclient"
-  path = "src/client/main.rs"
-  required-features = ["client"]
-  
-  [features]
-  bar = []
-  client = []
-  
-  [dependencies]
-  x11rb = {
-    version = "0.8.0",
-    features = [
-      "cursor",
-      "xinerama",
-      "randr",
-      "res"
-    ]
-  }
-  strum = {
-    version = "0.19",
-    features = ["derive"]
-  }
-  strum_macros = "0.19"
-  anyhow = "1.0.33"
-  log = "0.4"
-  simplelog = "0.8.0"
-  nix = "0.19.0"
+ [package]
+ name = "wmRS"
+ version = "0.1.0"
+ authors = ["deurzen <m.deurzen@tum.de>"]
+ edition = "2018"
+ license = "BSD3"
+ documentation = "https://docs.rs/wmRS"
+ readme = "README.md"
+ default-run = "wmRS"
+ description = """
+ An ICCCM & EWMH compliant X11 reparenting,
+ tiling window manager, written in Rust
+ """
+ [profile.release]
+ lto = true
+ [lib]
+ name = "winsys"
+ path = "src/winsys/mod.rs"
+ [[bin]]
+ name = "wmRS"
+ path = "src/core/main.rs"
+ [[bin]]
+ name = "wmRSbar"
+ path = "src/bar/main.rs"
+ [[bin]]
+ name = "wmRSclient"
+ path = "src/client/main.rs"
+ [dependencies]
+ x11rb = {
+   version = "0.8.0",
+   features = [
+     "cursor",
+     "xinerama",
+     "randr",
+     "res"
+   ]
+ }
 \end{minted}
 
-Our package consists  of a single library, along with  three binary executables.
-The library  is an abstraction above  and wrapper around the  interface with the
-underlying windowing system. It defines a  single Rust trait that represents the
-connection between the  window manager and the windowing  system. This decouples
-the implementation  of the window  manager from that  of the interface  with the
-windowing system, and  additionally allows for the seamless  transition from one
-windowing system  to another, as multiple  windowing systems can be  targeted by
-implementing the  trait, effectively creating  a new wrapper around  an external
-library  that directly  interfaces that  windowing system.  Currently, only  the
-interface with  the X  Window System  is implemented,  but interfacing  with the
-newer and more modern Wayland is as easy as implementing a new connection to it.
-A  small portion  of \textsc{wmRS}'s  winsys library  connection trait  looks as
-follows.
+% https://doc.rust-lang.org/book/ch10-02-traits.html
+% https://doc.rust-lang.org/rust-by-example/trait.html
+% https://blog.logrocket.com/rust-traits-a-deep-dive/
+% https://doc.rust-lang.org/book/ch19-03-advanced-traits.html
+
+Our  package  consists  of  a  single  library  crate  (\texttt{winsys}),  along
+with  three  binary  executable  crates  (\texttt{wmRS},  \texttt{wmRSbar},  and
+\texttt{wmRSclient}). The library is an abstraction above and wrapper around the
+interface  with  the underlying  windowing  system.  It  defines a  single  Rust
+\textit{trait} that  represents the  connection between  the window  manager and
+some windowing system.  A trait is a  \textit{zero-overhead}[CITE] collection of
+methods that  is defined  for some (at  define-time) unknown  type \texttt{Self}
+(which at  implementation-time becomes the  implementing type), most  often used
+with the intention to implement shared behavior[CITE,CITE]. A concept from other
+languages that  most closely resembles traits  are \textit{interfaces}, although
+there are differences  still[CITE]. A small snippet  from \textsc{wmRS}'s winsys
+library \texttt{Connection} trait looks as follows.\\
 
 \begin{minted}{rust}
-  pub trait Connection {
-    fn flush(&self) -> bool;
-    fn step(&self) -> Option<Event>;
-    fn connected_outputs(&self) -> Vec<Screen>;
-    fn top_level_windows(&self) -> Vec<Window>;
-    fn get_pointer_position(&self) -> Pos;
-    fn warp_pointer(
-      &self,
-      pos: Pos,
-    );
-  
-    fn init_window(
-      &self,
-      window: Window,
-      focus_follows_mouse: bool,
-    );
-    fn init_frame(
-      &self,
-      window: Window,
-      focus_follows_mouse: bool,
-    );
-    fn init_unmanaged(
-      &self,
-      window: Window,
-    );
-    fn cleanup_window(
-      &self,
-      window: Window,
-    );
-    fn map_window(
-      &self,
-      window: Window,
-    );
-    fn unmap_window(
-      &self,
-      window: Window,
-    );
-    fn reparent_window(
-      &self,
-      window: Window,
-      parent: Window,
-      pos: Pos,
-    );
-    fn unparent_window(
-      &self,
-      window: Window,
-      pos: Pos,
-    );
-    fn destroy_window(
-      &self,
-      window: Window,
-    );
-    fn close_window(
-      &self,
-      window: Window,
-    ) -> bool;
-    fn kill_window(
-      &self,
-      window: Window,
-    ) -> bool;
-    fn place_window(
-      &self,
-      window: Window,
-      region: &Region,
-    );
-    fn move_window(
-      &self,
-      window: Window,
-      pos: Pos,
-    );
-    fn resize_window(
-      &self,
-      window: Window,
-      dim: Dim,
-    );
-    fn focus_window(
-      &self,
-      window: Window,
-    );
-    fn stack_window_above(
-      &self,
-      window: Window,
-      sibling: Option<Window>,
-    );
-
-    // ...
-  }
+ pub trait Connection {
+   fn step(&self) -> Option<Event>;
+   fn close_window(&self, w: Window) -> bool;
+   fn move_window(&self, w: Window, p: Pos);
+   fn resize_window(&self, w: Window, d: Dim);
+   fn focus_window(&self, w: Window);
+   // ...
+ }
 \end{minted}
 
+Here, we've  supplied a set  of function  prototypes that eventually  become the
+methods that every  type that implements this trait will  be required to define.
+Although we haven't  done so here, traits themselves are  also allowed to define
+their functions with  some default behavior, that may or  may not be overwritten
+by  its  implementors[CITE].  Our \texttt{Connection}  trait  represents  shared
+behavior that every windowing system wrapper is required to contain. This allows
+for the decoupling  of the implementation of the  higher-level window management
+functionality from  that of the  interface with  the windowing system  (e.g. the
+explicit drawing of primitives to the screen, or the management and manipulation
+of windowing  system specific  window representations), and  additionally allows
+for the  seamless transition from one  windowing system to another,  as multiple
+windowing  systems  can  be  targeted by  implementing  the  trait,  effectively
+creating a new wrapper around an  external library that directly interfaces that
+windowing system.  Currently, \textsc{wmRS}  only implements the  interface with
+the X Window System,  but interfacing with the newer and  more modern Wayland is
+as easy as  implementing a new connection to  it. \textsc{wmRS}'s implementation
+for this trait, targeting the X Window System, is partly given as follows.
 
-The  three binary  executable  crates  represent the  window  manager, a  client
-program  to communicate  with  the  window manager  (to  control various  window
+\begin{minted}{rust}
+ use x11rb::connection;
+
+ pub struct XConnection
+   <'conn, Conn: connection::Connection>
+ {
+   conn: &'conn Conn,
+   // ...
+ }
+
+ impl<'conn, Conn: connection::Connection>
+   Connection for XConnection<'conn, Conn>
+ {
+   #[inline]
+   fn step(&self) -> Option<Event> {
+     // ...
+   }
+   // ...
+ }
+\end{minted}
+
+The  \texttt{XConnection}  structure  introduces  two  generic  type  arguments,
+one  being   a  lifetype  parameter   (\texttt{'conn}),  and  the   other  being
+the   type  of   the   struct's  \texttt{conn}   field  (\texttt{Conn}),   which
+\textit{requires} the  \texttt{connection::Connection} trait to  be implemented.
+This \texttt{connection::Connection} trait is imported from the external package
+\texttt{x11rb}, which we supplied as a  project dependency in our manifest file.
+The  \texttt{x11rb}  package serves  as  a  Rust API  to  the  X Window  System,
+effectively  providing us  with Rust  bindings to  interact with  the X  server.
+Finally,  the  \texttt{XConnection}  struct implements  our  previously  defined
+\texttt{Connection} trait, allowing it to be used by our window manager by means
+of composition.  Given below is  the structure that represents  and encapsulates
+the core window manager logic. It \textit{contains} a reference to \textit{some}
+type  that  implements our  \texttt{Connection}  trait  (i.e. a  wrapper  around
+\textit{some} windowing system).
+
+\begin{minted}{rust}
+ pub struct Model<'model> {
+   conn: &'model mut dyn Connection,
+   // ...
+ }
+\end{minted}
+
+% https://doc.rust-lang.org/1.8.0/book/trait-objects.html
+
+Since  we're  using  polymorphism  here   to  abstract  away  from  the  actual,
+concrete  implementation of  the  connection  type, Rust  needs  to  be able  to
+determine  at runtime  which  specific  version it  should  actually run  (known
+as  \textit{dispatch})[CITE].  It  can   do  so  either  \textit{statically}  or
+\textit{dynamically}.
+
+
+The three binary executable crates  respectively represent the window manager, a
+client program to communicate with the window manager (to control various window
 management  activities,  such as  closing  the  currently focused  window,  from
 scripts or the  command line), and a status bar  that displays information about
-the state of the window manager, such as the currently activated workspace.
+the state of the window manager, such as the currently activated workspace. Each
+make use  of the  winsys library  to communicate  with the  underlying windowing
+system.\\
+
+Our  C\text{++}  window  manager  implementation,  \textsc{wmCPP},  attempts  to
+achieve the same flexibility
 
 \subsection{Versioning}
 % TODO: - manual (C++) vs automatic (Rust) versioning
