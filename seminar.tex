@@ -1,6 +1,4 @@
 \documentclass[conference]{IEEEtran}
-% \IEEEoverridecommandlockouts
-% The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
 \usepackage{cite}
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{algorithmic}
@@ -11,18 +9,33 @@
 \usepackage{minted}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
-\begin{document}
 
 \usemintedstyle{vs}
 
-\title{Pragmatics of Rust and C\texttt{++}:\\The implementation of a window manager\\
+\makeatletter
+\def\ps@mystyle{
+  \let\@oddhead\@empty
+  \let\@evenhead\@empty
+  \def\@oddfoot{\@IEEEheaderstyle{\hfill\thepage\hfill}}
+  \def\@evenfoot{\@IEEEheaderstyle\thepage\hfil\hbox{}}
+}
+\makeatother
+
+\pagestyle{mystyle}
+
+\begin{document}
+
+\title{
+  Pragmatics of Rust and C\texttt{++}:\\
+  The implementation of a window manager\\
 }
 
-\author{\IEEEauthorblockN{Max van Deurzen}
-\IEEEauthorblockA{
-\textit{Technische Universität München}\\
-Munich, Germany \\[0.08cm]
-\texttt{m.deurzen@tum.de}}
+\author{
+  \IEEEauthorblockN{Max van Deurzen}
+  \IEEEauthorblockA{
+    \textit{Technische Universität München}\\
+    Munich, Germany\\[0.08cm]
+  \texttt{m.deurzen@tum.de}}
 }
 
 \maketitle
