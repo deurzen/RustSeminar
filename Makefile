@@ -2,7 +2,6 @@ all: compile
 
 compile:
 	pdflatex -shell-escape seminar.tex
-	bibtex seminar
 
 .PHONY: clean
 clean:
