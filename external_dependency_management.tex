@@ -285,7 +285,7 @@ Dynamic dispatch defers resolving generic code  until it is required at runtime,
 making use  of so-called  \textit{trait objects}.  A trait  object is  an opaque
 value of a type  that implements some set of traits. It's  opaque, as one cannot
 know which  concrete type is behind  a trait object's pointer  up front. Whereas
-the  size  of  each  monomorphized  type is  always  known,  trait  objects  are
+the size of each monomorphized type is always known, trait objects are therefore
 dynamically  sized.  To  resolve  a  call  to  one  of  such  an  opaque  type's
 methods at runtime, \textit{virtual  method tables} (\textit{vtables}) are used.
 Each  instance  of  a pointer  to  a  trait  object  consists of  a  pointer  to
@@ -298,8 +298,9 @@ pointer,  we can  have any  implementation of  the \mintinline{rust}{Connection}
 trait. Which of  the trait's implementors' methods are called,  is determined at
 runtime.
 
-The three binary executable crates  respectively represent the window manager, a
-client program to communicate with the window manager (to control various window
+Looking  back at  \textsc{wmRS}'s  manifest file,  the  three binary  executable
+crates in its package respectively represent the window manager itself, a client
+program  to communicate  with  the  window manager  (to  control various  window
 management  activities,  such as  closing  the  currently focused  window,  from
 scripts or the  command line), and a status bar  that displays information about
 the state of the window manager, such as the currently activated workspace. Each
@@ -307,7 +308,55 @@ make use  of the  winsys library  to communicate  with the  underlying windowing
 system.\\
 
 Our  C\text{++}  window  manager  implementation,  \textsc{wmCPP},  attempts  to
-achieve the same flexibility
+achieve  the  same  flexibility  by making  use  of  \textit{abstract  classes}.
+Abstract classes  define abstract types  that cannot themselves  be implemented,
+but  are instead  used  to establish  a common  denominator  between types  that
+should  present shared  behavior. Abstract  classes can  mimick the  behavior of
+interface constructs  in languages such  as Java by declaring  only \textit{pure
+virtual}  methods. Pure  virtual  methods are  methods that  do  not expose  any
+associated  inline  logic, and  as  such  \textit{must}  be implemented  by  any
+inheriting  subclasses.  Consider \textsc{wmCPP}'s  \mintinline{cpp}{Connection}
+abstract class.
+
+\begin{minted}[fontsize=\small]{cpp}
+  class Connection
+  {
+  public:
+    virtual ~Connection() {}
+  
+    virtual void step(Event&) = 0;
+    virtual bool close_window(Window) = 0;
+    virtual void move_window(Window, Pos) = 0;
+    virtual void resize_window(Window, Dim) = 0;
+    virtual void focus_window(Window) = 0;
+    // ...
+  };
+\end{minted}
+
+The fact  that this  class contains  \textit{at least}  a single  virtual method
+declaration without an  inline implementation (i.e., its  declaration appears to
+be assigned to zero), makes it an  abstract class. When not a single method (bar
+possibly its constructor or destructor) has an inline implementation, that class
+is considered to be a proper interface.
+
+Although   an  abstract   class's  pure   virtual  methods   cannot  be   called
+\textit{dynamically}  (i.e., using  virtual  dispatch), it  may still  implement
+associated logic  that can subsequently be  called \textit{statically}. Consider
+part of \mintinline{cpp}{Connection}'s implementation.
+
+\begin{minted}[fontsize=\small]{cpp}
+  #include "connection.hh"
+  #include "log.hh"
+
+  // ...
+  void
+  Connection::focus_window(Window window)
+  {
+    Logger::log_info("Window %s was focused.",
+      window.to_string());
+  }
+  // ...
+\end{minted}
 
 \subsection{Versioning}
 % TODO: - manual (C++) vs automatic (Rust) versioning
