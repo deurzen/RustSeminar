@@ -25,11 +25,7 @@ they  rely on  an external  library  to interface  with the  X server.  Although
 \textsc{wmRS} and  \textsc{wmCPP} each use  a different library to  achieve this
 (XCB  over \texttt{libxcb}  and  Xlib over  \texttt{libX11}, respectively),  the
 concept is the same,  as they both require the importing of  an external body of
-code.
-
-\subsection{Portability}
-% TODO: - package manager(s), manully by developer (C++) vs Cargo (Rust)
-%       - discrepancies between operating systems, platforms
+code.\\
 
 C\texttt{++} does not come with an  external dependency manager. That is to say,
 the  official  ISO  standard C\texttt{++}  specification\cite{cppstd}  does  not
@@ -358,8 +354,9 @@ part of \mintinline{cpp}{Connection}'s implementation.
   void
   Connection::focus_window(Window window)
   {
-    Logger::log_info("Window %s was focused.",
+    Logger::log_info("Focusing window %s.",
       window.to_string());
+    // ...
   }
   // ...
 \end{minted}
@@ -380,7 +377,7 @@ would look as follows.
   {
   public:
     // ...
-    void focus_window(Window window) {
+    void focus_window(Window window) override {
       // non-virtual call
       Connection::focus_window(window);
       // ...
@@ -408,6 +405,9 @@ follows.
   class Model final
   {
   public:
+    Model(Connection& conn): conn(conn) {
+      // ...
+    }
     // ...
   private:
     Connection& conn;
@@ -417,8 +417,14 @@ follows.
 
 Just  as in  our  Rust  implementation, \mintinline{cpp}{conn}'s  implementation
 details  will be  resolved only  at runtime,  when they  are needed,  making use
-dynamic dispatch (through a vtable mechanism).
+dynamic dispatch (through a similar vtable mechanism).\\
 
-\subsection{Versioning}
-% TODO: - manual (C++) vs automatic (Rust) versioning
-{ \textcolor{gray}\blindtext }
+% https://blog.rust-lang.org/2015/05/11/traits.html
+
+While   in  our   window  manager   implementations  both   Rust's  traits   and
+C\texttt{++}'s abstract classes appear to  achieve the same objective in similar
+fashion, the constructs  themselves are very different.  For one, implementation
+(traits) is not the same as inheritence (abstract classes).
+
+Within a crate, owned traits can be implemented for external (and even built-in)
+types.
