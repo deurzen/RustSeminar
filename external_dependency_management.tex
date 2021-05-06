@@ -280,6 +280,7 @@ implement  the \mintinline{rust}{Identify}  and \mintinline{rust}{Debug}  traits
 (as per the constraint on \mintinline{rust}{T}).
 
 % https://doc.rust-lang.org/book/ch19-04-advanced-types.html#dynamically-sized-types-and-the-sized-trait
+% https://doc.rust-lang.org/book/ch17-02-trait-objects.html
 
 Dynamic dispatch defers resolving generic code  until it is required at runtime,
 making use  of so-called  \textit{trait objects}.  A trait  object is  an opaque
@@ -318,6 +319,8 @@ associated  inline  logic, and  as  such  \textit{must}  be implemented  by  any
 inheriting  subclasses.  Consider \textsc{wmCPP}'s  \mintinline{cpp}{Connection}
 abstract class.
 
+% https://en.cppreference.com/w/cpp/language/abstract_class
+
 \begin{minted}[fontsize=\small]{cpp}
   class Connection
   {
@@ -334,15 +337,18 @@ abstract class.
 \end{minted}
 
 The fact  that this  class contains  \textit{at least}  a single  virtual method
-declaration without an  inline implementation (i.e., its  declaration appears to
-be assigned to zero), makes it an  abstract class. When not a single method (bar
-possibly its constructor or destructor) has an inline implementation, that class
-is considered to be a proper interface.
+declaration  without an  inline  implementation (i.e.,  its declaration  appears
+to  be  assigned to  zero),  makes  it an  abstract  class.  When not  a  single
+method  (except  for possibly  its  constructor  or  destructor) has  an  inline
+implementation, that class is considered to be a proper interface.
 
 Although   an  abstract   class's  pure   virtual  methods   cannot  be   called
 \textit{dynamically}  (i.e., using  virtual  dispatch), it  may still  implement
 associated logic  that can subsequently be  called \textit{statically}. Consider
 part of \mintinline{cpp}{Connection}'s implementation.
+
+% https://stackoverflow.com/a/12855410/11069175
+% https://stackoverflow.com/questions/5481941/c-pure-virtual-function-have-body
 
 \begin{minted}[fontsize=\small]{cpp}
   #include "connection.hh"
@@ -357,6 +363,61 @@ part of \mintinline{cpp}{Connection}'s implementation.
   }
   // ...
 \end{minted}
+
+Calling  a virtual  function statically  (non-virtually)  is done  by using  its
+qualified name in the call. This  is especially useful for implementors (derived
+classes)  that all  share  an identical  part  of code.  In  our example  above,
+regardless  of the  underlying  windowing system,  the logging  of  an event  is
+identical,  and  can  thus  be  part of  the  abstract  class's  implementation.
+Performing  the call  from \textsc{wmCPP}'s  \mintinline{cpp}{XConnection} class
+would look as follows.
+
+\begin{minted}[fontsize=\small]{cpp}
+  #include "connection.hh"
+
+  // ...
+  class XConnection final: public Connection
+  {
+  public:
+    // ...
+    void focus_window(Window window) {
+      // non-virtual call
+      Connection::focus_window(window);
+      // ...
+    }
+    // ...
+  };
+  // ...
+\end{minted}
+
+As  can be  seen in  the above  example, providing  a concrete  implementing for
+our  abstract  notion of  a  connection  is done  through  \textit{inheritence}.
+Each  wrapper   around  the  connection  with   \textit{some}  windowing  system
+will   be  represented   as   a   class  that   inherits   (derives)  from   the
+\mintinline{cpp}{Connection}   abstract  class,   providing  an   implementation
+specific to that windowing system.
+
+\textsc{wmCPP}'s  \mintinline{cpp}{Model}  class  will then  \textit{contain}  a
+reference  to \textit{some}  implementation of  \mintinline{cpp}{Connection}, as
+follows.
+
+\begin{minted}[fontsize=\small]{cpp}
+  #include "connection.hh"
+
+  // ...
+  class Model final
+  {
+  public:
+    // ...
+  private:
+    Connection& conn;
+    // ...
+  };
+\end{minted}
+
+Just  as in  our  Rust  implementation, \mintinline{cpp}{conn}'s  implementation
+details  will be  resolved only  at runtime,  when they  are needed,  making use
+dynamic dispatch (through a vtable mechanism).
 
 \subsection{Versioning}
 % TODO: - manual (C++) vs automatic (Rust) versioning

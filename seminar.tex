@@ -13,7 +13,7 @@
 \usemintedstyle{vs}
 
 \makeatletter
-\def\ps@mystyle{
+\def\ps@footernumberstyle{
   \let\@oddhead\@empty
   \let\@evenhead\@empty
   \def\@oddfoot{\@IEEEheaderstyle{\hfill\thepage\hfill}}
@@ -21,7 +21,7 @@
 }
 \makeatother
 
-\pagestyle{mystyle}
+\pagestyle{footernumberstyle}
 
 \begin{document}
 
@@ -39,6 +39,7 @@
 }
 
 \maketitle
+\thispagestyle{footernumberstyle}
 
 \input{abstract}
 
