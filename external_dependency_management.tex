@@ -46,7 +46,7 @@ development  libraries   without  the  use   of  any  form  of   own  dependency
 management.  Specifically, building  the  project is  done  using the  following
 \textbf{\texttt{Make}} script (large parts altered or redacted for clarity).
 
-\begin{minted}[fontsize=\small]{make}
+\begin{mintedblock}{make}
   CC = g++
   CXXFLAGS = -std=c++17 -march=native -O3
   LDFLAGS = `pkg-config --libs x11` -flto
@@ -55,7 +55,7 @@ management.  Specifically, building  the  project is  done  using the  following
     ${CC} ${CXXFLAGS} -MMD -c $< -o $@
   release: obj/%.o
     ${CC} $< ${LDFLAGS} -o bin/wmCPP
-\end{minted}
+\end{mintedblock}
 
 Assuring the availability of an external body  of code is not the only aspect of
 external  dependecy  management that  affects  the  pragmatics of  C\texttt{++}.
@@ -100,7 +100,7 @@ or library), their metadata, and how to build them[CITE].
 The  following manifest  file describes  the  package that  represents our  Rust
 window manager, \textsc{wmRS} (parts redacted for clarity).
 
-\begin{minted}[fontsize=\small]{shell}
+\begin{mintedblock}{shell}
   [package]
   name = "wmRS"
   version = "0.1.0"
@@ -138,7 +138,7 @@ window manager, \textsc{wmRS} (parts redacted for clarity).
       "res"
     ]
   }
-\end{minted}
+\end{mintedblock}
 
 % https://doc.rust-lang.org/book/ch10-02-traits.html
 % https://doc.rust-lang.org/rust-by-example/trait.html
@@ -158,7 +158,7 @@ languages that  most closely resembles traits  are \textit{interfaces}, although
 there are differences  still[CITE]. A small snippet  from \textsc{wmRS}'s winsys
 library \texttt{Connection} trait looks as follows.
 
-\begin{minted}[fontsize=\small]{rust}
+\begin{rustblock}
   pub trait Connection {
     fn step(&self) -> Option<Event>;
     fn close_window(&self, window: Window) -> bool;
@@ -167,7 +167,7 @@ library \texttt{Connection} trait looks as follows.
     fn focus_window(&self, window: Window);
     // ...
   }
-\end{minted}
+\end{rustblock}
 
 Here, we've  supplied a set  of function  prototypes that eventually  become the
 methods that every  type that implements this trait will  be required to define.
@@ -187,7 +187,7 @@ the X Window System,  but interfacing with the newer and  more modern Wayland is
 as easy as  implementing a new connection to  it. \textsc{wmRS}'s implementation
 for this trait, targeting the X Window System, is partly given as follows.
 
-\begin{minted}[fontsize=\small]{rust}
+\begin{rustblock}
   use x11rb::connection;
  
   pub struct XConnection
@@ -206,7 +206,7 @@ for this trait, targeting the X Window System, is partly given as follows.
     }
     // ...
   }
-\end{minted}
+\end{rustblock}
 
 The  \texttt{XConnection}  structure  introduces  two  generic  type  arguments,
 one  being   a  lifetype  parameter   (\texttt{'conn}),  and  the   other  being
@@ -223,12 +223,12 @@ the core window manager logic. It \textit{contains} a reference to \textit{some}
 type  that  implements our  \texttt{Connection}  trait  (i.e. a  wrapper  around
 \textit{some} windowing system).
 
-\begin{minted}[fontsize=\small]{rust}
+\begin{rustblock}
   pub struct Model<'model> {
     conn: &'model mut dyn Connection,
     // ...
   }
-\end{minted}
+\end{rustblock}
 
 % https://doc.rust-lang.org/1.8.0/book/trait-objects.html#static-dispatch
 % https://doc.rust-lang.org/1.8.0/book/trait-objects.html#dynamic-dispatch
@@ -247,7 +247,7 @@ the binary.  An example  of static  dispatch in  \textsc{wmRS} is  the following
 \texttt{Cycle} struct, which  allows for cycling forward and  backward through a
 collection of (generic) items.
 
-\begin{minted}[fontsize=\small]{rust}
+\begin{rustblock}
   pub struct Cycle<T>
   where
     T: Identify + Debug,
@@ -265,7 +265,7 @@ collection of (generic) items.
   {
     // ...
   }
-\end{minted}
+\end{rustblock}
 
 This  struct is  used to  cycle through  both the  workspace structures  managed
 by  the  window  manager, as  well  as  the  clients  within a  workspace.  That
@@ -317,7 +317,7 @@ abstract class.
 
 % https://en.cppreference.com/w/cpp/language/abstract_class
 
-\begin{minted}[fontsize=\small]{cpp}
+\begin{cppblock}
   class Connection
   {
   public:
@@ -330,7 +330,7 @@ abstract class.
     virtual void focus_window(Window) = 0;
     // ...
   };
-\end{minted}
+\end{cppblock}
 
 The fact  that this  class contains  \textit{at least}  a single  virtual method
 declaration  without an  inline  implementation (i.e.,  its declaration  appears
@@ -346,7 +346,7 @@ part of \mintinline{cpp}{Connection}'s implementation.
 % https://stackoverflow.com/a/12855410/11069175
 % https://stackoverflow.com/questions/5481941/c-pure-virtual-function-have-body
 
-\begin{minted}[fontsize=\small]{cpp}
+\begin{cppblock}
   #include "connection.hh"
   #include "log.hh"
 
@@ -359,17 +359,17 @@ part of \mintinline{cpp}{Connection}'s implementation.
     // ...
   }
   // ...
-\end{minted}
+\end{cppblock}
 
 Calling  a virtual  function statically  (non-virtually)  is done  by using  its
 qualified name in the call. This  is especially useful for implementors (derived
-classes)  that all  share  an identical  part  of code.  In  our example  above,
-regardless  of the  underlying  windowing system,  the logging  of  an event  is
-identical,  and  can  thus  be  part of  the  abstract  class's  implementation.
+classes) that  all share  an identical  portion of code.  In our  example above,
+regardless of  the underlying  windowing system,  the logging of  an event  is a
+fixed procedure,  and can thus be  part of the abstract  class's implementation.
 Performing  the call  from \textsc{wmCPP}'s  \mintinline{cpp}{XConnection} class
 would look as follows.
 
-\begin{minted}[fontsize=\small]{cpp}
+\begin{cppblock}
   #include "connection.hh"
 
   // ...
@@ -385,10 +385,10 @@ would look as follows.
     // ...
   };
   // ...
-\end{minted}
+\end{cppblock}
 
-As  can be  seen in  the above  example, providing  a concrete  implementing for
-our  abstract  notion of  a  connection  is done  through  \textit{inheritence}.
+As can  be seen in  the above example,  providing a concrete  implementation for
+our  abstract  notion of  a  connection  is done  through  \textit{inheritance}.
 Each  wrapper   around  the  connection  with   \textit{some}  windowing  system
 will   be  represented   as   a   class  that   inherits   (derives)  from   the
 \mintinline{cpp}{Connection}   abstract  class,   providing  an   implementation
@@ -398,7 +398,7 @@ specific to that windowing system.
 reference  to \textit{some}  implementation of  \mintinline{cpp}{Connection}, as
 follows.
 
-\begin{minted}[fontsize=\small]{cpp}
+\begin{cppblock}
   #include "connection.hh"
 
   // ...
@@ -413,18 +413,59 @@ follows.
     Connection& conn;
     // ...
   };
-\end{minted}
+\end{cppblock}
 
 Just  as in  our  Rust  implementation, \mintinline{cpp}{conn}'s  implementation
-details  will be  resolved only  at runtime,  when they  are needed,  making use
-dynamic dispatch (through a similar vtable mechanism).\\
+details will be resolved only at  runtime, when they are needed, through dynamic
+dispatch (making use of a similar vtable mechanism).\\
 
 % https://blog.rust-lang.org/2015/05/11/traits.html
+% https://doc.rust-lang.org/book/ch17-01-what-is-oo.html#inheritance-as-a-type-system-and-as-code-sharing
+% https://doc.rust-lang.org/rust-by-example/generics/bounds.html
 
 While   in  our   window  manager   implementations  both   Rust's  traits   and
 C\texttt{++}'s abstract classes appear to  achieve the same objective in similar
 fashion, the constructs  themselves are very different.  For one, implementation
-(traits) is not the same as inheritence (abstract classes).
+(traits) is not the same as inheritance (abstract classes). By design, Rust does
+not allow for any type of inheritance  (i.e. one object can inherit from another
+object's definition). The traditional benefits  to inheritance are twofold: code
+reuse and polymorphism. Rust's traits attain the same functionality by combining
+implementation with  \textit{generics} and  \textit{trait bounds}.  Traits allow
+for  the  central  declaration  (and  possibly  definition  with  their  default
+implementations)  of common  behavior.  The use  of generics  on  top of  traits
+introduces the possibility for abstractions over different possible types. Trait
+bounds then  constrain these  type abstractions,  imposing restrictions  on what
+exactly  those types  are to  provide. \textsc{wmRS}'s  \mintinline{rust}{Cycle}
+trait introduces a generic type, \mintinline{rust}{T}, that is \textit{bound} by
+the restriction  \mintinline{rust}{Identify + Debug}, stipulating  that whatever
+concrete  \mintinline{rust}{T}  gets  passed  in  \textit{must}  implement  both
+\mintinline{rust}{Identify} and \mintinline{rust}{Debug}.
 
-Within a crate, owned traits can be implemented for external (and even built-in)
-types.
+Another useful feature of traits is  the ability to implement crate-owned traits
+on  external (and  even  built-in) types.  Take our  \mintinline{rust}{Identify}
+trait  as an  example,  which declares  an  \mintinline{rust}{id} function  that
+serves to uniquely identify an implementing  object, and which is additionally a
+bound on the  types passed into the \mintinline{rust}{Cycle} struct.  If we want
+our \mintinline{rust}{Cycle}  to work  on the built-in  32-bit integer  type, it
+would first need to implement  \mintinline{rust}{Identify}, which can be done as
+follows.
+
+\begin{rustblock}
+  impl Identify for i32 {
+    #[inline(always)]
+    fn id(&self) -> Ident {
+      *self
+    }
+  }
+\end{rustblock}
+
+C\texttt{++}'s  abstract  classes,   on  the  other  hand,  do   not  allow  for
+(re)derivation by already existing (external) types, without first creating some
+kind of wrapper object around them. This  makes working with external code a lot
+more convenient in Rust compared to C\texttt{++}.
+
+As inheritance often  leads to the sharing  of more code than  necessary (due to
+the fact that  \textit{all} of a parent class's  characteristics are inherited),
+many  would consider  it  to be  a  suboptimal solution.  Rust,  with its  trait
+objects, allows for tighter encapsulation, and altogether presents a more modern
+and flexible approach in that regard.
