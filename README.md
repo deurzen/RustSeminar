@@ -40,15 +40,12 @@ Semester: SoSe 2021
 - ~~**Abstract**~~
 - **Revision of Abstract**
 - **Introduction**
-- **External Dependency Management**
+- ~~**External Dependency Management**~~
 	- ~~Xlib (C++ impl.) and XCB (Rust impl.) dependencies~~
 	- ~~Wrapper {class,struct} (resp.) and decoupling from external dependencies~~
 	- ~~{lack of,} (resp.) ease of using external libraries~~
-	- **_Portability_**
-		- ~~Package manager(s), manully by developer (C++) vs Cargo (Rust)~~
-		- Discrepancies between operating systems, platforms
-	- **_Versioning_**
-		- Manual (C++) vs automatic (Rust) versioning
+	- ~~Package manager(s), manually by developer (C++) vs Cargo (Rust)~~
+	- ~~Traits (Rust) vs abstract classes (C++)~~
 - **Main Event Loop**
 	- Event dynamic kranewm (C++ impl.) vs wzrd (Rust impl.)
 	- Event loop constructs and feature usage kramewm vs wzrd
