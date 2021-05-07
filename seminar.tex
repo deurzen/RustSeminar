@@ -1,16 +1,32 @@
 \documentclass[conference]{IEEEtran}
 \usepackage{cite}
+\usepackage[super,sort]{natbib}
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{algorithmic}
 \usepackage{graphicx}
 \usepackage{textcomp}
 \usepackage{xcolor}
+\usepackage{hyperref}
 \usepackage{blindtext}
+\usepackage{xspace}
 \usepackage{minted}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  filecolor=magenta,
+  urlcolor=blue,
+  citecolor=black,
+  bookmarks=true,
+}
+
+\setcitestyle{citesep={,},square}
+
 \usemintedstyle{borland}
+
+\newcommand{\cpp}{C\texttt{++}\xspace}
 
 \newenvironment{mintedblock}[1]%[3]%
 {\VerbatimEnvironment

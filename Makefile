@@ -2,6 +2,10 @@ all: compile
 
 compile:
 	pdflatex -shell-escape seminar.tex
+	bibtex seminar
+	pdflatex -shell-escape seminar.tex
+	pdflatex -shell-escape seminar.tex
+	-pgrep llpp && pkill -HUP llpp
 
 .PHONY: clean
 clean:

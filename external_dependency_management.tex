@@ -15,10 +15,10 @@ ability  to unburden  the  programmer  from the  manual  management of  external
 dependencies  can greatly  improve the  maintainability  of a  project, and  can
 therefore  indeed be  viewed  as a  feature  of  the language  in  light of  its
 \textit{pragmatics}. In this  section, we will be  discussing the practicalities
-of working with external code in both  Rust and C\texttt{++}. We will do this by
-means of a comparison between two window manager implementations, one written in
-Rust,  and the  other  written  in C\texttt{++},  which  we  will henceforth  be
-referring to as \textsc{wmRS} and \textsc{wmCPP}, respectively.
+of working with external code in both Rust and \cpp. We will do this by means of
+a comparison  between two window  manager implementations, one written  in Rust,
+and the  other written  in \cpp,  which we  will henceforth  be referring  to as
+\textsc{wmRS} and \textsc{wmCPP}, respectively.
 
 Both  window managers  are built  on top  of the  X Window  System, which  means
 they  rely on  an external  library  to interface  with the  X server.  Although
@@ -27,24 +27,23 @@ they  rely on  an external  library  to interface  with the  X server.  Although
 concept is the same,  as they both require the importing of  an external body of
 code.\\
 
-C\texttt{++} does not come with an  external dependency manager. That is to say,
-the  official  ISO  standard C\texttt{++}  specification\cite{cppstd}  does  not
-outline the  functionality or otherwise existence  of any package manager.  As a
-result, developers have  no other choice than to resort  to third-party tools to
-manage  dependencies,  to  reinvent  the  wheel  themselves  and  hack  together
-configure and build scripts that take  external dependencies into account, or to
-disregard package management  altogether and let other developers  and end users
-resolve  dependencies  on  their  own.  In  any  case,  C\texttt{++}  dependency
-management is complex, and the lack of a standardized tool inhibits the adoption
-of C\texttt{++}  projects, as well as  their portability to other  platforms and
-development environments.
+\cpp does  not come  with an external  dependency manager. That  is to  say, the
+official  ISO  standard \cpp  specification\cite{cppstd}  does  not outline  the
+functionality  or otherwise  existence  of  any package  manager.  As a  result,
+developers have  no other choice than  to resort to third-party  tools to manage
+dependencies, to reinvent  the wheel themselves and hack  together configure and
+build  scripts that  take external  dependencies into  account, or  to disregard
+package management  altogether and  let other developers  and end  users resolve
+dependencies on their  own. In any case, \cpp dependency  management is complex,
+and the lack of  a standardized tool inhibits the adoption  of \cpp projects, as
+well as their portability to other platforms and development environments.
 
 Since   the  only   external  dependency   \textsc{wmCPP}  is   reliant  on   is
 \texttt{libX11},  which  is  fairly  ubiquitous and  readily  available  through
-distributions'   own  package   managers,   it  merely   links   with  the   X11
-development  libraries   without  the  use   of  any  form  of   own  dependency
-management.  Specifically, building  the  project is  done  using the  following
-\textbf{\texttt{Make}} script (large parts altered or redacted for clarity).
+distributions' own  package managers, it  merely links with the  X11 development
+libraries  without   the  use  of   any  form  of  own   dependency  management.
+Specifically, building  the project  is done  using the  following \textup{Make}
+script (large parts altered or redacted for clarity).
 
 \begin{mintedblock}{make}
   CC = g++
@@ -58,44 +57,45 @@ management.  Specifically, building  the  project is  done  using the  following
 \end{mintedblock}
 
 Assuring the availability of an external body  of code is not the only aspect of
-external  dependecy  management that  affects  the  pragmatics of  C\texttt{++}.
-Writing a library that is to be imported as an external dependency and including
-code from an external  dependency both require special care to  be taken to make
-sure no symbol collisions occur. In header files, this is usually done by making
-use of so-called  \textit{header guards}, a set of  preprocessor directives that
-render including a  header an idempotent operation,  preventing double inclusion
-errors. If incorrect double inclusion  does unexpectedly occur, for instance due
-to  collisions in  the header  guards themselves,  vague---as header  guards are
-handled  by  the preprocessor,  not  the  compiler---and hard-to-trace  compiler
-errors  arise,  subjecting the  programmer  to  unnecessary mental  strain,  and
-wasting  time. Although  not part  of the  official standard,  many C\texttt{++}
-compilers  support the  \mintinline{cpp}{#pragma once}  preprocessor  directive,
-providing the same functionality as header guards, but preventing the occurrence
-of double inclusion errors.
+external dependecy  management that  affects the pragmatics  of \cpp.  Writing a
+library that is to be imported as an external dependency and including code from
+an external  dependency both require  special care to be  taken to make  sure no
+symbol collisions occur. In header files, this  is usually done by making use of
+so-called \textit{header guards},  a set of preprocessor  directives that render
+including a header an idempotent  operation, preventing double inclusion errors.
+If  incorrect double  inclusion does  unexpectedly  occur, for  instance due  to
+collisions in the header guards themselves, vague---as header guards are handled
+by the preprocessor, not the compiler---and hard-to-trace compiler errors arise,
+subjecting  the  programmer to  unnecessary  mental  strain, and  wasting  time.
+Although not  part of  the official  standard\cite{cppstd}, many  \cpp compilers
+support the \mintinline{cpp}{#pragma once} preprocessor directive, providing the
+same functionality  as header  guards, but preventing  the occurrence  of double
+inclusion errors.
 
-Another source of issues is the order of include directives in C\texttt{++}. The
+Another  source of  issues  is the  order  of include  directives  in \cpp.  The
 ordering of included  files relative to one another  can significantly influence
-the outcome of the compilation step, possibly causing errors, one of which being
-the introduction of circular dependencies  while there actually aren't any there
-(e.g. a forward declaration that was included only after the circular dependency
-was already introduced).\\
+the outcome  of the  compilation stage,  possibly causing  errors, one  of which
+being the introduction of circular  dependencies while there actually aren't any
+there (e.g.  a forward  declaration that  was included  only after  the circular
+dependency was already introduced).\\
 
 % https://doc.rust-lang.org/cargo/guide/
 
-The Rust programming  language has its own package manager,  called Cargo. Cargo
-can automatically download a project's external dependencies (and, transatively,
-\textit{their} dependencies), compile them, and  install them locally, such that
-they can be  used during the linking  stage of the build  process[CITE]. To make
-proper use of  Cargo within a Rust  project, that project must be  turned into a
-so-called  \textit{package}. Rust  packages are  simply a  collection of  source
-files along  with a manifest  file (named \texttt{Cargo.toml}) in  the project's
-root  directory. This  manifest  file describes  the package's  meta-information
-(such as its name and version), and  a set of \textit{target crates}. A crate is
-the source code or compiled artifact  of either a library or executable program,
-or possibly a compressed package that is grabbed from a registry (a service that
-provides  a  collection  of  downloadable crates).  A  package's  manifest  file
+The   Rust  programming   language   has  its   own   package  manager,   called
+\textup{Cargo}. \textup{Cargo}  can automatically download a  project's external
+dependencies (and, transatively, \textit{their} dependencies), compile them, and
+install them locally, such that they can be used during the linking stage of the
+build process\cite{thecargobook}. To make proper  use of \textup{Cargo} within a
+Rust project,  that project  must be turned  into a  so-called \textit{package}.
+Rust packages are simply a collection of source files along with a manifest file
+(named \texttt{Cargo.toml}) in the project's  root directory. This manifest file
+describes the package's  meta-information (such as its name and  version), and a
+set of \textit{target crates}\cite{thecargobook}. A  crate is the source code or
+compiled  artifact of  either a  library or  executable program,  or possibly  a
+compressed package  that is grabbed from  a registry (a service  that provides a
+collection of downloadable crates)\cite{thecargobook}. A package's manifest file
 describes each of its target crates  by specifying their type (binary executable
-or library), their metadata, and how to build them[CITE].
+or library), their metadata, and how to build them\cite{thecargobook}.
 
 The  following manifest  file describes  the  package that  represents our  Rust
 window manager, \textsc{wmRS} (parts redacted for clarity).
@@ -150,13 +150,15 @@ with  three  binary  executable  crates  (\texttt{wmRS},  \texttt{wmRSbar},  and
 \texttt{wmRSclient}). The library is an abstraction above and wrapper around the
 interface  with  the underlying  windowing  system.  It  defines a  single  Rust
 \textit{trait} that  represents the  connection between  the window  manager and
-some windowing system.  A trait is a  \textit{zero-overhead}[CITE] collection of
-methods that  is defined  for some (at  define-time) unknown  type \texttt{Self}
-(which at  implementation-time becomes the  implementing type), most  often used
-with the intention to implement shared behavior[CITE,CITE]. A concept from other
-languages that  most closely resembles traits  are \textit{interfaces}, although
-there are differences  still[CITE]. A small snippet  from \textsc{wmRS}'s winsys
-library \texttt{Connection} trait looks as follows.
+some windowing system. A  trait is a \textit{zero-overhead}\cite{rustblogtraits}
+collection   of   methods   that   is  defined   for   some   (at   define-time)
+unknown   type  \texttt{Self}   (which   at   implementation-time  becomes   the
+implementing  type), most  often used  with  the intention  to implement  shared
+behavior\cite{therustbook, rustbyexample}.  A concept from other  languages that
+most  closely  resembles  traits  are \textit{interfaces},  although  there  are
+differences  still\cite{therustbook, rusttraitsdeepdive}.  A small  snippet from
+\textsc{wmRS}'s  \texttt{winsys}  library  \texttt{Connection}  trait  looks  as
+follows.
 
 \begin{rustblock}
   pub trait Connection {
@@ -171,21 +173,22 @@ library \texttt{Connection} trait looks as follows.
 
 Here, we've  supplied a set  of function  prototypes that eventually  become the
 methods that every  type that implements this trait will  be required to define.
-Although we haven't  done so here, traits themselves are  also allowed to define
-their functions with  some default behavior, that may or  may not be overwritten
-by  its  implementors[CITE].  Our \texttt{Connection}  trait  represents  shared
-behavior that every windowing system wrapper is required to contain. This allows
-for the decoupling  of the implementation of the  higher-level window management
-functionality from  that of the  interface with  the windowing system  (e.g. the
-explicit drawing of primitives to the screen, or the management and manipulation
-of windowing  system specific  window representations), and  additionally allows
-for the  seamless transition from one  windowing system to another,  as multiple
-windowing  systems  can  be  targeted by  implementing  the  trait,  effectively
-creating a new wrapper around an  external library that directly interfaces that
-windowing system.  Currently, \textsc{wmRS}  only implements the  interface with
-the X Window System,  but interfacing with the newer and  more modern Wayland is
-as easy as  implementing a new connection to  it. \textsc{wmRS}'s implementation
-for this trait, targeting the X Window System, is partly given as follows.
+Although  we  haven't done  so  here,  traits  themselves  are also  allowed  to
+define  their  functions  with  some  default behavior,  that  may  or  may  not
+be  overwritten by  its implementors\cite{therustbook,  rusttraitsdeepdive}. Our
+\texttt{Connection} trait represents shared behavior that every windowing system
+wrapper  is  required  to  contain.  This  allows  for  the  decoupling  of  the
+implementation of the higher-level window  management functionality from that of
+the interface with the windowing system (e.g. the explicit drawing of primitives
+to the screen,  or the management and manipulation of  windowing system specific
+window  representations), and  additionally allows  for the  seamless transition
+from  one windowing  system to  another, as  multiple windowing  systems can  be
+targeted by implementing the trait, effectively creating a new wrapper around an
+external  library that  directly  interfaces that  windowing system.  Currently,
+\textsc{wmRS}  only implements  the  interface  with the  X  Window System,  but
+interfacing with the newer and more modern  Wayland is as easy as implementing a
+new connection to  it. \textsc{wmRS}'s implementation for  this trait, targeting
+the X Window System, is partly given as follows.
 
 \begin{rustblock}
   use x11rb::connection;
@@ -215,7 +218,7 @@ the   type  of   the   struct's  \texttt{conn}   field  (\texttt{Conn}),   which
 This \texttt{connection::Connection} trait is imported from the external package
 \texttt{x11rb}, which we supplied as a  project dependency in our manifest file.
 The  \texttt{x11rb}  package serves  as  a  Rust API  to  the  X Window  System,
-effectively  providing us  with Rust  bindings to  interact with  the X  server.
+essentially  providing us  with Rust  bindings to  interact with  the X  server.
 Finally,  the  \texttt{XConnection}  struct implements  our  previously  defined
 \texttt{Connection} trait, allowing it to be used by our window manager by means
 of composition.  Given below is  the structure that represents  and encapsulates
@@ -235,17 +238,18 @@ type  that  implements our  \texttt{Connection}  trait  (i.e. a  wrapper  around
 % https://doc.rust-lang.org/book/ch10-01-syntax.html#performance-of-code-using-generics
 
 Since  we're  using  polymorphism  here   to  abstract  away  from  the  actual,
-concrete  implementation  of  the  connection   type,  Rust  needs  to  be  able
-to  determine  at  runtime  which   specific  version  it  should  actually  run
-(known  as \textit{dispatch})[CITE].  It  can do  so either  \textit{statically}
-or   \textit{dynamically}.    Static   dispatch    in   Rust   makes    use   of
-\textit{monomorphization}  at   compile  time  to  convert   generic  code  into
+concrete  implementation of  the  connection  type, Rust  needs  to  be able  to
+determine  at runtime  which  specific  version it  should  actually run  (known
+as  \textit{dispatch})\cite{therustbook, rustblogtraits}.  It can  do so  either
+\textit{statically} or  \textit{dynamically}. Static dispatch in  Rust makes use
+of  \textit{monomorphization}  at compile  time  to  convert generic  code  into
 ``specific'' code: one version for each concrete type that is used as a generics
-argument.  That means  that  at runtime,  no (time)  overhead  is incurred  when
-running generic code, as the specific versions of the code to run are baked into
-the binary.  An example  of static  dispatch in  \textsc{wmRS} is  the following
-\texttt{Cycle} struct, which  allows for cycling forward and  backward through a
-collection of (generic) items.
+argument\cite{therustbook,  rustblogtraits}.  That  means that  at  runtime,  no
+(time) overhead is incurred when running  generic code, as the specific versions
+of the code to run  are baked into the binary\cite{therustbook, rustblogtraits}.
+An example of  static dispatch in \textsc{wmRS} is  the following \texttt{Cycle}
+struct, which  allows for cycling forward  and backward through a  collection of
+(generic) items.
 
 \begin{rustblock}
   pub struct Cycle<T>
@@ -267,33 +271,36 @@ collection of (generic) items.
   }
 \end{rustblock}
 
-This  struct is  used to  cycle through  both the  workspace structures  managed
-by  the  window  manager, as  well  as  the  clients  within a  workspace.  That
-means  two specific  versions of  this struct  are constructed  at compile-time:
-one  for \mintinline{rust}{Workspace},  and  one for  \mintinline{rust}{Client},
-where  \mintinline{rust}{Workspace} and  \mintinline{rust}{Client} in  turn both
-implement  the \mintinline{rust}{Identify}  and \mintinline{rust}{Debug}  traits
-(as per the constraint on \mintinline{rust}{T}).
+This  struct   is  used   to  cycle  through   both  the   workspace  structures
+managed   by  the   window   manager,  as   well  as   the   clients  within   a
+workspace.  That means  two specific  versions  of this  struct are  constructed
+at   compile-time:   one   for  \mintinline{rust}{Cycle<Workspace>},   and   one
+for  \mintinline{rust}{Cycle<Client>},  where  \mintinline{rust}{Workspace}  and
+\mintinline{rust}{Client} in turn both implement the \mintinline{rust}{Identify}
+and    \mintinline{rust}{Debug}   traits    (as    per    the   constraint    on
+\mintinline{rust}{T}).
 
 % https://doc.rust-lang.org/book/ch19-04-advanced-types.html#dynamically-sized-types-and-the-sized-trait
 % https://doc.rust-lang.org/book/ch17-02-trait-objects.html
 
-Dynamic dispatch defers resolving generic code  until it is required at runtime,
-making use  of so-called  \textit{trait objects}.  A trait  object is  an opaque
-value of a type  that implements some set of traits. It's  opaque, as one cannot
-know which  concrete type is behind  a trait object's pointer  up front. Whereas
-the size of each monomorphized type is always known, trait objects are therefore
-dynamically  sized.  To  resolve  a  call  to  one  of  such  an  opaque  type's
-methods at runtime, \textit{virtual  method tables} (\textit{vtables}) are used.
-Each  instance  of  a pointer  to  a  trait  object  consists of  a  pointer  to
-an  instance  of some  type  \mintinline{rust}{T}  that  implements the  set  of
-traits,  as well  as a  pointer to  a vtable  that contains  a function  pointer
-to  \mintinline{rust}{T}'s  implementation of  each  method  of the  implemented
-set  of traits  (and their  supertraits). Our  \mintinline{rust}{Model} struct's
-\mintinline{rust}{conn} field  is a pointer to  such a trait object.  Behind the
-pointer,  we can  have any  implementation of  the \mintinline{rust}{Connection}
-trait. Which of  the trait's implementors' methods are called,  is determined at
-runtime.
+Dynamic  dispatch  defers  resolving  generic  code  until  it  is  required  at
+runtime,  making  use   of  so-called  \textit{trait  objects}\cite{therustbook,
+rustdynamicdispatch}.  A  trait  object  is  an opaque  value  of  a  type  that
+implements  some  set  of  traits\cite{therustreference}. It's  opaque,  as  one
+cannot  know  which  concrete  type  is  behind  a  trait  object's  pointer  up
+front\cite{therustreference}.   Whereas   the   size   of   each   monomorphized
+type   is    always   known,    trait   objects   are    therefore   dynamically
+sized\cite{therustreference}. To resolve a call to  one of such an opaque type's
+methods  at  runtime,  \textit{virtual  method  tables}  (\textit{vtables})  are
+used\cite{therustreference}.  Each  instance of  a  pointer  to a  trait  object
+consists of  a pointer  to an  instance of  some type  \mintinline{rust}{T} that
+implements the set of  traits, as well as a pointer to a  vtable that contains a
+function pointer to \mintinline{rust}{T}'s implementation  of each method of the
+implemented set  of traits  (and their  supertraits)\cite{therustreference}. Our
+\mintinline{rust}{Model} struct's \mintinline{rust}{conn} field  is a pointer to
+such a trait object.  Behind the pointer, we can have  any implementation of the
+\mintinline{rust}{Connection} trait. Which of  the trait's implementors' methods
+are called, is determined at runtime.
 
 Looking  back at  \textsc{wmRS}'s  manifest file,  the  three binary  executable
 crates in its package respectively represent the window manager itself, a client
@@ -301,19 +308,18 @@ program  to communicate  with  the  window manager  (to  control various  window
 management  activities,  such as  closing  the  currently focused  window,  from
 scripts or the  command line), and a status bar  that displays information about
 the state of the window manager, such as the currently activated workspace. Each
-make use  of the  winsys library  to communicate  with the  underlying windowing
-system.\\
+make  use of  the \texttt{winsys}  library  to communicate  with the  underlying
+windowing system.\\
 
-Our  C\text{++}  window  manager  implementation,  \textsc{wmCPP},  attempts  to
-achieve  the  same  flexibility  by making  use  of  \textit{abstract  classes}.
-Abstract classes  define abstract types  that cannot themselves  be implemented,
-but  are instead  used  to establish  a common  denominator  between types  that
-should  present shared  behavior. Abstract  classes can  mimick the  behavior of
-interface constructs  in languages such  as Java by declaring  only \textit{pure
-virtual}  methods. Pure  virtual  methods are  methods that  do  not expose  any
-associated  inline  logic, and  as  such  \textit{must}  be implemented  by  any
-inheriting  subclasses.  Consider \textsc{wmCPP}'s  \mintinline{cpp}{Connection}
-abstract class.
+Our \cpp window manager implementation,  \textsc{wmCPP}, attempts to achieve the
+same flexibility  by making use  of \textit{abstract classes}.  Abstract classes
+define abstract  types that  cannot themselves be  implemented, but  are instead
+used to establish a common denominator  between types that should present shared
+behavior. Abstract  classes can mimick  the behavior of interface  constructs in
+languages such  as Java  by declaring only  \textit{pure virtual}  methods. Pure
+virtual methods are methods that do  not expose any associated inline logic, and
+as  such \textit{must}  be implemented  by any  inheriting subclasses.  Consider
+\textsc{wmCPP}'s \mintinline{cpp}{Connection} abstract class.
 
 % https://en.cppreference.com/w/cpp/language/abstract_class
 
@@ -423,13 +429,13 @@ dispatch (making use of a similar vtable mechanism).\\
 % https://doc.rust-lang.org/book/ch17-01-what-is-oo.html#inheritance-as-a-type-system-and-as-code-sharing
 % https://doc.rust-lang.org/rust-by-example/generics/bounds.html
 
-While   in  our   window  manager   implementations  both   Rust's  traits   and
-C\texttt{++}'s abstract classes appear to  achieve the same objective in similar
-fashion, the constructs  themselves are very different.  For one, implementation
-(traits) is not the same as inheritance (abstract classes). By design, Rust does
-not allow for any type of inheritance  (i.e. one object can inherit from another
-object's definition). The traditional benefits  to inheritance are twofold: code
-reuse and polymorphism. Rust's traits attain the same functionality by combining
+While  in our  window  manager  implementations both  Rust's  traits and  \cpp's
+abstract classes  appear to achieve the  same objective in similar  fashion, the
+constructs themselves  are very different.  For one, implementation  (traits) is
+not the same  as inheritance (abstract classes). By design,  Rust does not allow
+for any type  of inheritance (i.e. one object can  inherit from another object's
+definition). The  traditional benefits  to inheritance  are twofold:  code reuse
+and  polymorphism. Rust's  traits  attain the  same  functionality by  combining
 implementation with  \textit{generics} and  \textit{trait bounds}.  Traits allow
 for  the  central  declaration  (and  possibly  definition  with  their  default
 implementations)  of common  behavior.  The use  of generics  on  top of  traits
@@ -446,12 +452,12 @@ on  external (and  even  built-in) types.  Take our  \mintinline{rust}{Identify}
 trait  as an  example,  which declares  an  \mintinline{rust}{id} function  that
 serves to uniquely identify an implementing  object, and which is additionally a
 bound on the  types passed into the \mintinline{rust}{Cycle} struct.  If we want
-our \mintinline{rust}{Cycle}  to work  on the built-in  32-bit integer  type, it
-would first need to implement  \mintinline{rust}{Identify}, which can be done as
-follows.
+our \mintinline{rust}{Cycle}  to work  on the  built-in 32-bit  unsigned integer
+type, it would first need to implement \mintinline{rust}{Identify}, which can be
+done as follows.
 
 \begin{rustblock}
-  impl Identify for i32 {
+  impl Identify for u32 {
     #[inline(always)]
     fn id(&self) -> Ident {
       *self
@@ -459,10 +465,10 @@ follows.
   }
 \end{rustblock}
 
-C\texttt{++}'s  abstract  classes,   on  the  other  hand,  do   not  allow  for
-(re)derivation by already existing (external) types, without first creating some
-kind of wrapper object around them. This  makes working with external code a lot
-more convenient in Rust compared to C\texttt{++}.
+\cpp's abstract classes,  on the other hand, do not  allow for (re)derivation by
+already existing (external)  types, without first creating some  kind of wrapper
+object around them. This makes working  with external code a lot more convenient
+in Rust compared to \cpp.
 
 As inheritance often  leads to the sharing  of more code than  necessary (due to
 the fact that  \textit{all} of a parent class's  characteristics are inherited),

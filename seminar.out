@@ -1,0 +1,13 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.2}{External Dependency Management}{}% 2
+\BOOKMARK [1][-]{section.3}{Main Event Loop}{}% 3
+\BOOKMARK [2][-]{subsection.3.1}{Internal Events}{section.3}% 4
+\BOOKMARK [2][-]{subsection.3.2}{Event Dispatch}{section.3}% 5
+\BOOKMARK [1][-]{section.4}{Communication with the Environment}{}% 6
+\BOOKMARK [2][-]{subsection.4.1}{Inter-Process Communication}{section.4}% 7
+\BOOKMARK [1][-]{section.5}{Key Bindings}{}% 8
+\BOOKMARK [1][-]{section.6}{Clients}{}% 9
+\BOOKMARK [2][-]{subsection.6.1}{Reference Management}{section.6}% 10
+\BOOKMARK [2][-]{subsection.6.2}{State}{section.6}% 11
+\BOOKMARK [1][-]{section.7}{Workspaces}{}% 12
+\BOOKMARK [1][-]{section.8}{Conclusion}{}% 13
