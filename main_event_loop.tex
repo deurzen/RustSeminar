@@ -1,12 +1,38 @@
 %&latex
 \section{Main Event Loop}
-% TODO: - event dynamic kranewm (C++ impl.) vs wzrd (Rust impl.)
-%       - event loop constructs and feature usage kramewm vs wzrd
-{ \textcolor{gray}\blindtext }
+
+The main  event loop  in both \textsc{wmRS}  and \textsc{wmCPP}  comprises three
+core  stages. They  first  rely on  the underlying  windowing  system to  report
+certain \textit{events} they  are interested in. This is  done synchronously, as
+without any hardware interrupts or changes  to the environment, nothing is to be
+done.  That is,  both  window managers  block  until a  new  event is  received.
+The  second stage  is the  \textit{extraction} and  \textit{bundling} of  useful
+information from underlying windowing system events into a structure that can be
+consumed  by the  various  components of  each window  manager.  The last  stage
+is  using that  windowing  system event  information  to perform  \textit{window
+management actions}, delegating work to different parts of the program.
+
+\subsection{Windowing System Events}
+
+Both \textsc{wmRS} and \textsc{wmCPP} stipulate the existence of a \texttt{step}
+method in their  \texttt{Connection} interfaces. This method  is responsible for
+converting underlying  windowing system  information into a  higher-level event,
+as  can  be  gleaned  from their  signatures:  \mintinline{rust}{fn  step(&self)
+->  Option<Event>}   (\textsc{wmRS})  and   \mintinline{cpp}{void  step(Event&)}
+(\textsc{wmCPP}), where in both cases  \texttt{Event} is some internally defined
+structure of data.
 
 \subsection{Internal Events}
-% TODO: - data structures and language features used to represent events
-{ \textcolor{gray}\blindtext }
+
+% change Cpp,Rust to Rust,Cpp
+% Size difference: scales (Rust) vs 4B (C++)
+
+% https://doc.rust-lang.org/book/ch06-00-enums.html
+
+To  structure  event  data,  \textsc{wmRS} uses  Rust  \textit{enumerations}.  A
+Rust  \texttt{enum} allows  for  the definition  of a  type  by enumerating  its
+variants, and, aside from encoding \textit{meaning}, is also able to encapsulate
+\textit{data}.
 
 \subsection{Event Dispatch}
 % TODO: - language constructs used to handle event dispatch
