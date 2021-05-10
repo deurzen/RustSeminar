@@ -24,9 +24,6 @@ structure of data.
 
 \subsection{Internal Events}
 
-% change Cpp,Rust to Rust,Cpp
-% Size difference: scales (Rust) vs 4B (C++)
-
 % https://doc.rust-lang.org/book/ch06-00-enums.html
 
 To structure event  data, \textsc{wmRS} uses Rust  \textit{enumerations}. A Rust
@@ -60,9 +57,37 @@ variant. Rust's  \textit{default representation}  stores the discriminant  as an
 \mintinline{rust}{isize}, although the compiler is free to make use of a smaller
 type if the amount of variants permits it\cite{therustreference}.\\
 
+% https://en.cppreference.com/w/cpp/utility/variant
+
 A  similar  construct  in   \cpp  is  not  \textit{its}  \mintinline{cpp}{enum},
-but   rather  \mintinline{cpp}{std::variant},   a   structure  available   since
-\texttt{C++17}. \mintinline{cpp}{std::variant}
+but   rather   \mintinline{cpp}{std::variant},   a  class   template   available
+since  \texttt{C++17}  that  represents  a  type-safe  union\cite{cppstd}.  Just
+as  with   Rust's  \mintinline{rust}{enum},  and  similar   to  regular  unions,
+the   object   representation   of   the  concrete   variant   held   inside   a
+\mintinline{cpp}{std::variant}  instance  is   allocated  entirely  within  that
+instance's  object representation\cite{cppstd}.  That  is, the  variant may  not
+allocate any additional  dynamic memory\cite{cppstd}. As a result,  just as with
+Rust's  \mintinline{rust}{enum}, the  size  of a  \mintinline{cpp}{std::variant}
+instance is dependent on its largest variant\cite{cppstd}. \textsc{wmCPP} partly
+represents its \mintinline{cpp}{Event} type as follows.
+
+\begin{cppblock}
+  typedef std::variant<
+    Mouse,
+    Key,
+    MapRequest,
+    FocusRequest,
+    CloseRequest,
+    Randr,
+    // ...
+  > Event;
+\end{cppblock}
+
+Here,  each  concrete  variant  is a  \cpp  \mintinline{cpp}{struct}  containing
+information  about  the  specific  event  that is  being  represented.  This  is
+similar to what \textsc{wmRS} does  with its Rust \mintinline{rust}{enum}s, only
+more verbose,  non-inlined (as  \mintinline{cpp}{std::variant} cannot  deal with
+anonymous \mintinline{cpp}{struct}s), and therefore less structured.
 
 \subsection{Event Dispatch}
 % TODO: - language constructs used to handle event dispatch
