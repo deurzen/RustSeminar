@@ -160,6 +160,10 @@ differences  still\cite{therustbook, rusttraitsdeepdive}.  A small  snippet from
 \textsc{wmRS}'s  \texttt{winsys}  library  \texttt{Connection}  trait  looks  as
 follows.
 
+% TRAITS VS CONCEPTS
+% https://www.modernescpp.com/index.php/c-20-concepts-the-details
+% https://www.quora.com/What-are-the-similarities-and-differences-between-C-s-concepts-and-Rusts-traits
+
 \begin{rustblock}
   pub trait Connection {
     fn step(&self) -> Option<Event>;
