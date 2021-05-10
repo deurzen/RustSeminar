@@ -5,12 +5,12 @@ The main  event loop  in both \textsc{wmRS}  and \textsc{wmCPP}  comprises three
 core  stages. They  first  rely on  the underlying  windowing  system to  report
 certain \textit{events} they  are interested in. This is  done synchronously, as
 without any hardware interrupts or changes  to the environment, nothing is to be
-done.  That is,  both  window managers  block  until a  new  event is  received.
-The  second stage  is the  \textit{extraction} and  \textit{bundling} of  useful
-information from underlying windowing system events into a structure that can be
-consumed  by the  various  components of  each window  manager.  The last  stage
-is  using that  windowing  system event  information  to perform  \textit{window
-management actions}, delegating work to different parts of the program.
+done.  That  is, both  window  managers  \textit{block}  until  a new  event  is
+received. The second  stage is the \textit{extraction}  and \textit{bundling} of
+useful information from underlying windowing system events into a structure that
+can be consumed by the various components of each window manager. The last stage
+is using  that windowing system  event information to perform  window management
+actions, \textit{delegating work} to different parts of the program.
 
 \subsection{Windowing System Events}
 
@@ -29,10 +29,40 @@ structure of data.
 
 % https://doc.rust-lang.org/book/ch06-00-enums.html
 
-To  structure  event  data,  \textsc{wmRS} uses  Rust  \textit{enumerations}.  A
-Rust  \texttt{enum} allows  for  the definition  of a  type  by enumerating  its
-variants, and, aside from encoding \textit{meaning}, is also able to encapsulate
-\textit{data}.
+To structure event  data, \textsc{wmRS} uses Rust  \textit{enumerations}. A Rust
+\mintinline{rust}{enum}  allows for  the  definition of  a  type by  enumerating
+its  variants,  and, aside  from  encoding  \textit{meaning},  is also  able  to
+encapsulate  \textit{data}\cite{therustbook}. A  small  part of  \textsc{wmRS}'s
+\mintinline{rust}{Event} \mintinline{rust}{enum} looks as follows.
+
+\begin{rustblock}
+  pub enum Event {
+    Mouse { event: MouseEvent },
+    Key { key_code: KeyCode },
+    MapRequest { window: Window, ignore: bool },
+    FocusRequest { window: Window },
+    CloseRequest { window: Window },
+    Randr,
+    // ...
+  }
+\end{rustblock}
+
+The   first  five   variants  are   what  are   known  as   \textit{struct-like}
+variants   with  named   fields,   whereas   the  last   one   is  a   fieldless
+variant  that   comprises  only  an   identifier\cite{therustreference}.  Behind
+the   scenes,   each   \mintinline{rust}{enum}  instance   has   an   associated
+integer   that  is   used  to   determine  the   underlying  concrete   variant,
+known   as  a   \textit{discriminant}\cite{therustreference}.   As  such,   Rust
+\mintinline{rust}{enum}s  are  \textit{tagged  unions},  where the  tag  is  the
+discriminant.  This   also  means  that  the   size  of  each  instance   of  an
+\mintinline{rust}{enum} is determined  by that \mintinline{rust}{enum}'s largest
+variant. Rust's  \textit{default representation}  stores the discriminant  as an
+\mintinline{rust}{isize}, although the compiler is free to make use of a smaller
+type if the amount of variants permits it\cite{therustreference}.\\
+
+A  similar  construct  in   \cpp  is  not  \textit{its}  \mintinline{cpp}{enum},
+but   rather  \mintinline{cpp}{std::variant},   a   structure  available   since
+\texttt{C++17}. \mintinline{cpp}{std::variant}
 
 \subsection{Event Dispatch}
 % TODO: - language constructs used to handle event dispatch
