@@ -142,3 +142,35 @@ its \texttt{Model} structure, partly looks as follows.
     }
   }
 \end{rustblock}
+
+The  \texttt{step} method  returns an  \mintinline{rust}{Option<Event>}, so  the
+first thing to do is to check  whether a valid \texttt{Event} was retrieved from
+the  windowing system  connection (i.e.,  whether the  event that  was generated
+is  one  the  window  manager is  interested  in).  Rust's  \mintinline{rust}{if
+let}  construct  is  syntactic  sugar  for a  match  statement  that  runs  code
+when  the   value  matches   one  specific  pattern,   and  ignores   all  other
+values\cite{therustbook}. Converting  the above \mintinline{rust}{if let}  to an
+equivalent \mintinline{rust}{match} results in the following.
+
+\begin{rustblock}
+  match self.conn.step() {
+    Some(event) => { /*...*/ },
+    _ => (), // anything else => do nothing
+  }
+\end{rustblock}
+
+Within the body  of the first match \textit{arm},  the \texttt{event} identifier
+has been \textit{bound} to the value  that was passed in, \textit{if} that value
+matches the pattern\cite{therustbook}. Here, that means that \textit{if} a valid
+event is  returned from the  \texttt{step} method, that  concrete \texttt{Event}
+instance  will be  bound to  the \texttt{event}  identifier within  the body  of
+that  match arm.  The \texttt{\_}  placeholder is  used to  denote all  possible
+\textit{remaining} values\cite{therustbook}. The Rust  compiler will assert that
+all  possible  cases are  handled  within  a  match  statement, as  matches  are
+exhaustive\cite{therustbook}.
+
+Additionally  matching on  this \texttt{event},  all \textit{variants}  that can
+possibly  exist for  its type  are enumerated,  binding identifiers  to each  of
+the  fields in  the struct-like  variants  defined in  the \texttt{Event}  enum,
+which are  then passed  on to  handler methods  within the  \texttt{Model} (e.g.
+\mintinline{rust}{fn handle_focus_request(window: Window)}).
