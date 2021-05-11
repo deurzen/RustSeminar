@@ -15,10 +15,10 @@ actions, \textit{delegating work} to different parts of the program.
 \subsection{Windowing System Events}
 
 Both \textsc{wmRS} and \textsc{wmCPP} stipulate the existence of a \texttt{step}
-method in their  \texttt{Connection} interfaces. This method  is responsible for
-converting underlying  windowing system  information into a  higher-level event,
-as  can  be  gleaned  from their  signatures:  \mintinline{rust}{fn  step(&self)
-->  Option<Event>}   (\textsc{wmRS})  and   \mintinline{cpp}{void  step(Event&)}
+method  in  their \texttt{Connection}  interfaces.  This  method is  responsible
+for  converting  underlying windowing  system  information  into a  higher-level
+event,   as  can   be  gleaned   from  their   signatures:  \mintinline{rust}{fn
+step(&self) -> Option<Event>} (\textsc{wmRS}) and \mintinline{cpp}{Event step()}
 (\textsc{wmCPP}), where in both cases  \texttt{Event} is some internally defined
 structure of data.
 
@@ -35,11 +35,11 @@ encapsulate  \textit{data}\cite{therustbook}. A  small  part of  \textsc{wmRS}'s
 \begin{rustblock}
   pub enum Event {
     Mouse { event: MouseEvent },
-    Key { key_code: KeyCode },
+    Key { keycode: KeyCode },
     MapRequest { window: Window, ignore: bool },
     FocusRequest { window: Window },
     CloseRequest { window: Window },
-    Randr,
+    ScreenChange,
     // ...
   }
 \end{rustblock}
@@ -63,32 +63,82 @@ A  similar  construct  in   \cpp  is  not  \textit{its}  \mintinline{cpp}{enum},
 but   rather   \mintinline{cpp}{std::variant},   a  class   template   available
 since  \texttt{C++17}  that  represents  a  type-safe  union\cite{cppstd}.  Just
 as  with   Rust's  \mintinline{rust}{enum},  and  similar   to  regular  unions,
-the   object   representation   of   the  concrete   variant   held   inside   a
+the  object   representation  of   the  concrete   alternative  held   inside  a
 \mintinline{cpp}{std::variant}  instance  is   allocated  entirely  within  that
-instance's  object representation\cite{cppstd}.  That  is, the  variant may  not
-allocate any additional  dynamic memory\cite{cppstd}. As a result,  just as with
-Rust's  \mintinline{rust}{enum}, the  size  of a  \mintinline{cpp}{std::variant}
-instance is dependent on its largest variant\cite{cppstd}. \textsc{wmCPP} partly
+instance's object representation\cite{cppstd}. That  is, the alternative may not
+allocate any additional dynamic memory\cite{cppstd}. As a result, as with Rust's
+\mintinline{rust}{enum}, the  size of a  \mintinline{cpp}{std::variant} instance
+is  dependent on  its  largest  alternative\cite{cppstd}. \textsc{wmCPP}  partly
 represents its \mintinline{cpp}{Event} type as follows.
 
 \begin{cppblock}
   typedef std::variant<
+    std::monostate,
     Mouse,
     Key,
     MapRequest,
     FocusRequest,
     CloseRequest,
-    Randr,
+    ScreenChange,
     // ...
   > Event;
 \end{cppblock}
 
-Here,  each  concrete  variant  is a  \cpp  \mintinline{cpp}{struct}  containing
-information  about  the  specific  event  that is  being  represented.  This  is
-similar to what \textsc{wmRS} does  with its Rust \mintinline{rust}{enum}s, only
-more verbose,  non-inlined (as  \mintinline{cpp}{std::variant} cannot  deal with
-anonymous \mintinline{cpp}{struct}s), and therefore less structured.
+Here,   each   concrete   alternative   is   a   \cpp   \mintinline{cpp}{struct}
+containing   information    about   the    specific   event   that    is   being
+represented  (e.g.  \mintinline{cpp}{typedef  struct  Mouse}  \mintinline{cpp}{{
+MouseEvent  event;  }   Mouse;  }).  This  is  similar   to  what  \textsc{wmRS}
+does   with    its   Rust    \mintinline{rust}{enum}s,   only    more   verbose,
+non-inlined  (as  \mintinline{cpp}{std::variant}   cannot  deal  with  anonymous
+\mintinline{cpp}{struct}s,  since  \cpp does  not  have  pattern matching),  and
+therefore less structured and more tedious to work with.\\
+
+% https://en.cppreference.com/w/cpp/utility/variant/monostate
+
+An astute  reader may  have noticed that  the \texttt{Connection}  interfaces of
+\textsc{wmRS}  and  \textsc{wmCPP} do  not  exactly  match. In  particular,  the
+\texttt{step}  function's signatures  seem to  communicate different  things. In
+\textsc{wmRS},  that  function  \textit{optionally}  yields  an  \texttt{Event},
+wheres  in  \textsc{wmCPP},  it  simply  returns  an  \texttt{Event}.  In  \cpp,
+when  using  a  \mintinline{cpp}{std::variant},   it  is  encouraged  to  encode
+an   empty   alternative  using   \mintinline{cpp}{std::monostate}\cite{cppstd}.
+The   same    behavior   \textit{could}    instead   have   been    encoded   as
+\mintinline{cpp}{std::option<Event>}, where in this  case, the first alternative
+of  \texttt{Event} is  omitted.  The  difference in  usage  mainly  lies in  the
+\textit{visiting} of \texttt{Event}  alternatives, which we will  discuss in the
+next section.
 
 \subsection{Event Dispatch}
-% TODO: - language constructs used to handle event dispatch
-{ \textcolor{gray}\blindtext }
+
+Once an  event has been  generated at the windowing  system and filtered  into a
+structure that is to  be consumed by the window manager,  work must be delegated
+to various handlers  that deal with specific types of  events. An \texttt{Event}
+consequently encodes not  only the \textit{information} used  by these handlers,
+but  also  which handler  is  responsible  for  that event.  \textsc{wmRS}  uses
+Rust's principle pattern matching construct, \mintinline{rust}{match}, for event
+dispatch. \textsc{wmRS}'s main event loop,  defined within a method belonging to
+its \texttt{Model} structure, partly looks as follows.
+
+\begin{rustblock}
+  while self.running {
+    if let Some(event) = self.conn.step() {
+      match event {
+        Event::Mouse { event, }
+          => self.handle_mouse(event, /*...*/),
+        Event::Key { keycode, }
+          => self.handle_key(keycode, /*...*/),
+        Event::MapRequest { window, ignore, }
+          => self.handle_map_request(
+            window, ignore
+          ),
+        Event::FocusRequest { window, }
+          => self.handle_focus_request(window),
+        Event::CloseRequest { window, }
+          => self.handle_close_request(window),
+        Event::ScreenChange
+          => self.handle_screen_change(),
+        // ...
+      }
+    }
+  }
+\end{rustblock}
