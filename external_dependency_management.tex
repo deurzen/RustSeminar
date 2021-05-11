@@ -333,7 +333,7 @@ as  such \textit{must}  be implemented  by any  inheriting subclasses.  Consider
   public:
     virtual ~Connection() {}
   
-    virtual void step(Event&) = 0;
+    virtual Event step() = 0;
     virtual bool close_window(Window) = 0;
     virtual void move_window(Window, Pos) = 0;
     virtual void resize_window(Window, Dim) = 0;
