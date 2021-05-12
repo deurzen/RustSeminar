@@ -17,15 +17,14 @@ therefore  indeed be  viewed  as a  feature  of  the language  in  light of  its
 \textit{pragmatics}. In this  section, we will be  discussing the practicalities
 of working with external code in both Rust and \cpp. We will do this by means of
 a comparison  between two window  manager implementations, one written  in Rust,
-and the  other written  in \cpp,  which we  will henceforth  be referring  to as
-\textsc{wmRS} and \textsc{wmCPP}, respectively.
+and the other written in \cpp, which we will henceforth be referring to as \wmrs
+and \wmcpp, respectively.
 
-Both  window managers  are built  on top  of the  X Window  System, which  means
-they  rely on  an external  library  to interface  with the  X server.  Although
-\textsc{wmRS} and  \textsc{wmCPP} each use  a different library to  achieve this
-(XCB  over \texttt{libxcb}  and  Xlib over  \texttt{libX11}, respectively),  the
-concept is the same,  as they both require the importing of  an external body of
-code.\\
+Both window managers are  built on top of the X Window  System, which means they
+rely on an external  library to interface with the X  server. Although \wmrs and
+\wmcpp each  use a different library  to achieve this (XCB  over \texttt{libxcb}
+and Xlib over  \texttt{libX11}, respectively), the concept is the  same, as they
+both require the importing of an external body of code.\\
 
 \cpp does  not come  with an external  dependency manager. That  is to  say, the
 official  ISO  standard \cpp  specification\cite{cppstd}  does  not outline  the
@@ -38,12 +37,12 @@ dependencies on their  own. In any case, \cpp dependency  management is complex,
 and the lack of  a standardized tool inhibits the adoption  of \cpp projects, as
 well as their portability to other platforms and development environments.
 
-Since   the  only   external  dependency   \textsc{wmCPP}  is   reliant  on   is
-\texttt{libX11},  which  is  fairly  ubiquitous and  readily  available  through
-distributions' own  package managers, it  merely links with the  X11 development
-libraries  without   the  use  of   any  form  of  own   dependency  management.
-Specifically, building  the project  is done  using the  following \textup{Make}
-script (large parts altered or redacted for clarity).
+Since  the only  external dependency  \wmcpp is  reliant on  is \texttt{libX11},
+which  is fairly  ubiquitous and  readily available  through distributions'  own
+package managers, it merely links with the X11 development libraries without the
+use of any form of own dependency management. Specifically, building the project
+is  done  using the  following  \textup{Make}  script  (large parts  altered  or
+redacted for clarity).
 
 \begin{mintedblock}{make}
   CC = g++
@@ -98,7 +97,7 @@ describes each of its target crates  by specifying their type (binary executable
 or library), their metadata, and how to build them\cite{thecargobook}.
 
 The  following manifest  file describes  the  package that  represents our  Rust
-window manager, \textsc{wmRS} (parts redacted for clarity).
+window manager, \wmrs (parts redacted for clarity).
 
 \begin{mintedblock}{shell}
   [package]
@@ -151,14 +150,13 @@ with  three  binary  executable  crates  (\texttt{wmRS},  \texttt{wmRSbar},  and
 interface  with  the underlying  windowing  system.  It  defines a  single  Rust
 \textit{trait} that  represents the  connection between  the window  manager and
 some windowing system. A  trait is a \textit{zero-overhead}\cite{rustblogtraits}
-collection   of   methods   that   is  defined   for   some   (at   define-time)
-unknown   type  \texttt{Self}   (which   at   implementation-time  becomes   the
-implementing  type), most  often used  with  the intention  to implement  shared
-behavior\cite{therustbook, rustbyexample}.  A concept from other  languages that
-most  closely  resembles  traits  are \textit{interfaces},  although  there  are
-differences  still\cite{therustbook, rusttraitsdeepdive}.  A small  snippet from
-\textsc{wmRS}'s  \texttt{winsys}  library  \texttt{Connection}  trait  looks  as
-follows.
+collection of  methods that is  defined for  some (at define-time)  unknown type
+\texttt{Self} (which at implementation-time becomes the implementing type), most
+often  used with  the intention  to implement  shared behavior\cite{therustbook,
+rustbyexample}.   A   concept   from   other   languages   that   most   closely
+resembles  traits  are  \textit{interfaces},   although  there  are  differences
+still\cite{therustbook,  rusttraitsdeepdive}.  A   small  snippet  from  \wmrs's
+\texttt{winsys} library \texttt{Connection} trait looks as follows.
 
 % TRAITS VS CONCEPTS
 % https://www.modernescpp.com/index.php/c-20-concepts-the-details
@@ -189,10 +187,10 @@ window  representations), and  additionally allows  for the  seamless transition
 from  one windowing  system to  another, as  multiple windowing  systems can  be
 targeted by implementing the trait, effectively creating a new wrapper around an
 external  library that  directly  interfaces that  windowing system.  Currently,
-\textsc{wmRS}  only implements  the  interface  with the  X  Window System,  but
-interfacing with the newer and more modern  Wayland is as easy as implementing a
-new connection to  it. \textsc{wmRS}'s implementation for  this trait, targeting
-the X Window System, is partly given as follows.
+\wmrs only  implements the interface with  the X Window System,  but interfacing
+with  the newer  and  more modern  Wayland  is  as easy  as  implementing a  new
+connection to it. \wmrs's implementation for  this trait, targeting the X Window
+System, is partly given as follows.
 
 \begin{rustblock}
   use x11rb::connection;
@@ -251,9 +249,9 @@ of  \textit{monomorphization}  at compile  time  to  convert generic  code  into
 argument\cite{therustbook,  rustblogtraits}.  That  means that  at  runtime,  no
 (time) overhead is incurred when running  generic code, as the specific versions
 of the code to run  are baked into the binary\cite{therustbook, rustblogtraits}.
-An example of  static dispatch in \textsc{wmRS} is  the following \texttt{Cycle}
-struct, which  allows for cycling forward  and backward through a  collection of
-(generic) items.
+An example of  static dispatch in \wmrs is the  following \texttt{Cycle} struct,
+which allows for cycling forward and  backward through a collection of (generic)
+items.
 
 \begin{rustblock}
   pub struct Cycle<T>
@@ -306,24 +304,23 @@ such a trait object.  Behind the pointer, we can have  any implementation of the
 \mintinline{rust}{Connection} trait. Which of  the trait's implementors' methods
 are called, is determined at runtime.
 
-Looking  back at  \textsc{wmRS}'s  manifest file,  the  three binary  executable
-crates in its package respectively represent the window manager itself, a client
-program  to communicate  with  the  window manager  (to  control various  window
-management  activities,  such as  closing  the  currently focused  window,  from
-scripts or the  command line), and a status bar  that displays information about
-the state of the window manager, such as the currently activated workspace. Each
-make  use of  the \texttt{winsys}  library  to communicate  with the  underlying
-windowing system.\\
+Looking back at \wmrs's manifest file, the three binary executable crates in its
+package respectively  represent the window  manager itself, a client  program to
+communicate  with  the window  manager  (to  control various  window  management
+activities, such  as closing the currently  focused window, from scripts  or the
+command line), and a status bar that displays information about the state of the
+window manager, such as the currently  activated workspace. Each make use of the
+\texttt{winsys} library to communicate with the underlying windowing system.\\
 
-Our \cpp window manager implementation,  \textsc{wmCPP}, attempts to achieve the
-same flexibility  by making use  of \textit{abstract classes}.  Abstract classes
-define abstract  types that  cannot themselves be  implemented, but  are instead
-used to establish a common denominator  between types that should present shared
+Our \cpp  window manager  implementation, \wmcpp, attempts  to achieve  the same
+flexibility by making use of  \textit{abstract classes}. Abstract classes define
+abstract types  that cannot themselves be  implemented, but are instead  used to
+establish  a  common  denominator  between  types  that  should  present  shared
 behavior. Abstract  classes can mimick  the behavior of interface  constructs in
 languages such  as Java  by declaring only  \textit{pure virtual}  methods. Pure
 virtual methods are methods that do  not expose any associated inline logic, and
 as  such \textit{must}  be implemented  by any  inheriting subclasses.  Consider
-\textsc{wmCPP}'s \mintinline{cpp}{Connection} abstract class.
+\wmcpp's \mintinline{cpp}{Connection} abstract class.
 
 % https://en.cppreference.com/w/cpp/language/abstract_class
 
@@ -376,8 +373,8 @@ qualified name in the call. This  is especially useful for implementors (derived
 classes) that  all share  an identical  portion of code.  In our  example above,
 regardless of  the underlying  windowing system,  the logging of  an event  is a
 fixed procedure,  and can thus be  part of the abstract  class's implementation.
-Performing  the call  from \textsc{wmCPP}'s  \mintinline{cpp}{XConnection} class
-would look as follows.
+Performing the call from \wmcpp's \mintinline{cpp}{XConnection} class would look
+as follows.
 
 \begin{cppblock}
   #include "connection.hh"
@@ -404,9 +401,8 @@ will   be  represented   as   a   class  that   inherits   (derives)  from   the
 \mintinline{cpp}{Connection}   abstract  class,   providing  an   implementation
 specific to that windowing system.
 
-\textsc{wmCPP}'s  \mintinline{cpp}{Model}  class  will then  \textit{contain}  a
-reference  to \textit{some}  implementation of  \mintinline{cpp}{Connection}, as
-follows.
+\wmcpp's \mintinline{cpp}{Model} class will then \textit{contain} a reference to
+\textit{some} implementation of \mintinline{cpp}{Connection}, as follows.
 
 \begin{cppblock}
   #include "connection.hh"
@@ -445,9 +441,9 @@ for  the  central  declaration  (and  possibly  definition  with  their  default
 implementations)  of common  behavior.  The use  of generics  on  top of  traits
 introduces the possibility for abstractions over different possible types. Trait
 bounds then  constrain these  type abstractions,  imposing restrictions  on what
-exactly  those types  are to  provide. \textsc{wmRS}'s  \mintinline{rust}{Cycle}
-trait introduces a generic type, \mintinline{rust}{T}, that is \textit{bound} by
-the restriction  \mintinline{rust}{Identify + Debug}, stipulating  that whatever
+exactly  those  types are  to  provide.  \wmrs's \mintinline{rust}{Cycle}  trait
+introduces a generic  type, \mintinline{rust}{T}, that is  \textit{bound} by the
+restriction  \mintinline{rust}{Identify  +  Debug},  stipulating  that  whatever
 concrete  \mintinline{rust}{T}  gets  passed  in  \textit{must}  implement  both
 \mintinline{rust}{Identify} and \mintinline{rust}{Debug}.
 
