@@ -430,22 +430,25 @@ dispatch (making use of a similar vtable mechanism).\\
 % https://doc.rust-lang.org/rust-by-example/generics/bounds.html
 
 While  in our  window  manager  implementations both  Rust's  traits and  \cpp's
-abstract classes  appear to achieve the  same objective in similar  fashion, the
-constructs themselves  are very different.  For one, implementation  (traits) is
-not the same  as inheritance (abstract classes). By design,  Rust does not allow
-for any type  of inheritance (i.e. one object can  inherit from another object's
-definition). The  traditional benefits  to inheritance  are twofold:  code reuse
-and  polymorphism. Rust's  traits  attain the  same  functionality by  combining
-implementation with  \textit{generics} and  \textit{trait bounds}.  Traits allow
-for  the  central  declaration  (and  possibly  definition  with  their  default
-implementations)  of common  behavior.  The use  of generics  on  top of  traits
-introduces the possibility for abstractions over different possible types. Trait
-bounds then  constrain these  type abstractions,  imposing restrictions  on what
-exactly  those  types are  to  provide.  \wmrs's \mintinline{rust}{Cycle}  trait
-introduces a generic  type, \mintinline{rust}{T}, that is  \textit{bound} by the
-restriction  \mintinline{rust}{Identify  +  Debug},  stipulating  that  whatever
-concrete  \mintinline{rust}{T}  gets  passed  in  \textit{must}  implement  both
-\mintinline{rust}{Identify} and \mintinline{rust}{Debug}.
+abstract  classes appear  to  achieve  the same  objective  in similar  fashion,
+the  constructs   themselves  are   very  different.  For   one,  implementation
+(traits)  is  not  the  same  as  inheritance  (abstract  classes).  By  design,
+Rust  does  not  allow  for  any  type  of  inheritance  (i.e.  one  object  can
+inherit  from   another  object's  definition).  The   traditional  benefits  to
+inheritance are twofold:  code reuse and polymorphism. Rust's  traits attain the
+same  functionality  by  combining  implementation  with  \textit{generics}  and
+\textit{trait  bounds}\cite{therustbook, rustblogtraits}.  Traits allow  for the
+central declaration (and possibly definition with their default implementations)
+of  common behavior\cite{therustbook,  rustblogtraits}. The  use of  generics on
+top  of  traits  introduces  the possibility  for  abstractions  over  different
+possible  types\cite{therustbook, rustblogtraits}.  Trait bounds  then constrain
+these  type abstractions,  imposing  restrictions on  what  exactly those  types
+are  to  provide\cite{therustbook,  rustblogtraits,  therustreference}.  \wmrs's
+\mintinline{rust}{Cycle} trait introduces  a generic type, \mintinline{rust}{T},
+that  is   \textit{bound}  by   the  restriction   \mintinline{rust}{Identify  +
+Debug},   stipulating   that   whatever   concrete   \mintinline{rust}{T}   gets
+passed   in  \textit{must}   implement   both  \mintinline{rust}{Identify}   and
+\mintinline{rust}{Debug}.
 
 Another useful feature of traits is  the ability to implement crate-owned traits
 on  external (and  even  built-in) types.  Take our  \mintinline{rust}{Identify}

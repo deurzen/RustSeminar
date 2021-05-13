@@ -34,7 +34,7 @@ to  encapsulate   \textit{data}\cite{therustbook}.  A  small  part   of  \wmrs's
 \begin{rustblock}
   pub enum Event {
     Mouse { event: MouseEvent },
-    Key { keycode: KeyCode },
+    Key { event: KeyEvent },
     FocusRequest { window: Window },
     CloseRequest { window: Window },
     ScreenChange,
@@ -239,5 +239,6 @@ work to the relevant handler within \wmcpp's model.\\
 
 While in  this example  both \wmrs and  \wmcpp are able  to express  the desired
 behavior with relatively little code, visiting  tagged union variants in \cpp is
-clearly more verbose and less able in communicating intent than in Rust, and the
-discrepancies only worsen as more complex situations arise\cite{stdvisitwrong}.
+clearly more  verbose and less  able in communicating  intent than in  Rust, and
+the  discrepancies only  worsen  as more  complex (or  \textit{pattern-reliant})
+situations arise\cite{stdvisitwrong}.

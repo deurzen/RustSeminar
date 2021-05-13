@@ -1,0 +1,110 @@
+%&latex
+\section{Input Bindings}
+% TODO: - complex feature of which the implementation constructs trickle into
+%         many parts of the program (large fan-out)
+%       - data structures and language features used to represent key bindings
+%       - verbose (kranewm, C++) vs use of macros (wzrd, Rust)
+
+% https://locka99.gitbooks.io/a-guide-to-porting-c-to-rust/content/features_of_rust/macros.html
+
+Key and mouse bindings are the central point of interaction between the user and
+the window  manager. At a high  level, as the  name would suggest, they  work by
+\textit{binding} to sets of \textit{input  states}. These input states typically
+comprise  keyboard  (i.e., \textit{which  keys  are  pressed down?})  and  mouse
+(\textit{which mouse  buttons are pressed  down?}) inputs, but can  in principle
+come from  any kind  of peripheral  input source, such  as sensors.  Since input
+readings  are hardware  and, transitively,  platform dependent,  both \wmrs  and
+\wmcpp rely  on the  connection with  the windowing  system to  facilitate these
+bindings. That is---as can be seen from the \texttt{Connection} interfaces given
+in  the examples  above---both  window managers  receive  specific events  (e.g.
+\texttt{Key} and  \texttt{Mouse}) that communicate  that a specific  binding has
+been activated.
+
+To  attach  window  management  activities  to these  key  and  mouse  bindings,
+\textsc{wmRS} uses a Rust \mintinline{rust}{HashMap}  to map resp. mouse and key
+input  state  abstractions to  \textit{closures}  that  call  into part  of  the
+\texttt{Model}.  Mouse  input abstractions  look  something  like the  following
+(parts redacted for clarity).
+
+\begin{rustblock}
+  pub enum MouseEventKind {
+    Press, Release, Motion,
+  }
+\end{rustblock}
+
+\vspace{0.15cm}
+\begin{minipage}{0.45\linewidth}
+\begin{rustblock}
+pub enum Button {
+  Left,
+  Middle,
+  Right,
+  ScrollUp,
+  // ...
+}
+\end{rustblock}
+\end{minipage}
+\begin{minipage}{0.50\linewidth}
+\begin{rustblock}
+pub enum Modifier {
+  Ctrl,
+  Shift,
+  Super,
+  Alt,
+  // ...
+}
+\end{rustblock}
+\end{minipage}\\
+
+\begin{rustblock}
+  pub struct MouseInput {
+    pub button: Button,
+    pub modifiers: HashSet<Modifier>,
+  }
+\end{rustblock}
+
+\begin{rustblock}
+  pub struct MouseEvent {
+    pub kind: MouseEventKind,
+    pub input: MouseInput,
+    pub window: Option<Window>,
+  }
+\end{rustblock}
+
+Again,  \textsc{wmRS} relies  on the  connection  with the  windowing system  to
+establish the mapping from concrete  underlying window system input encodings to
+the abstractions  above. In  particular, we expect  a \texttt{MouseEvent}  to be
+fired (and propagated up through \texttt{Connection::step}) whenever a button is
+pressed.  The  event's input  \textit{modifiers}  are  contained within  a  Rust
+\texttt{HashSet},  as  ordering  and  possible duplicates  are  irrelevant.  Its
+\texttt{window}  field is  to optionally  contain the  unique identifier  of the
+window  that was  clicked on  (if any).  The representation  of key  bindings is
+similar to the above, but instead  of mouse buttons it includes non-modifier key
+identifiers.
+
+The actual  mapping between these input  abstractions and hooks into  the window
+manager's \texttt{Model} then looks as follows.
+
+\begin{rustblock}
+  pub type KeyAction = Box<
+    dyn FnMut(&mut Model<'_>)
+  >;
+\end{rustblock}
+\begin{rustblock}
+  pub type MouseAction = Box<
+    dyn FnMut(&mut Model<'_>, Option<Window>)
+  >;
+\end{rustblock}
+\begin{rustblock}
+  pub type KeyBindings = HashMap<
+    KeyInput, 
+    KeyAction
+  >;
+\end{rustblock}
+\begin{rustblock}
+  pub type MouseBindings = HashMap<
+    MouseInput, 
+    MouseAction
+  >;
+\end{rustblock}
+
