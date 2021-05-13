@@ -35,7 +35,6 @@ to  encapsulate   \textit{data}\cite{therustbook}.  A  small  part   of  \wmrs's
   pub enum Event {
     Mouse { event: MouseEvent },
     Key { keycode: KeyCode },
-    MapRequest { window: Window, ignore: bool },
     FocusRequest { window: Window },
     CloseRequest { window: Window },
     ScreenChange,
@@ -75,7 +74,6 @@ represents its \mintinline{cpp}{Event} type as follows.
     std::monostate,
     Mouse,
     Key,
-    MapRequest,
     FocusRequest,
     CloseRequest,
     ScreenChange,
@@ -83,14 +81,13 @@ represents its \mintinline{cpp}{Event} type as follows.
   > Event;
 \end{cppblock}
 
-Here,   each   concrete   alternative   is   a   \cpp   \mintinline{cpp}{struct}
-containing   information    about   the    specific   event   that    is   being
-represented  (e.g.  \mintinline{cpp}{typedef  struct  Mouse}  \mintinline{cpp}{{
-MouseEvent   event;   }   Mouse;   }).   This   is   similar   to   what   \wmrs
-does   with    its   Rust    \mintinline{rust}{enum}s,   only    more   verbose,
-non-inlined  (as  \mintinline{cpp}{std::variant}   cannot  deal  with  anonymous
-\mintinline{cpp}{struct}s,  since  \cpp does  not  have  pattern matching),  and
-therefore less structured and more tedious to work with.\\
+Here, each  concrete alternative  is a \cpp  \mintinline{cpp}{struct} containing
+information  about   the  specific  event   that  is  being   represented  (e.g.
+\mintinline{cpp}{struct Mouse}  \mintinline{cpp}{{ MouseEvent event;  }};). This
+is  similar to  what \wmrs  does  with its  Rust \mintinline{rust}{enum}s,  only
+more verbose,  non-inlined (as  \mintinline{cpp}{std::variant} cannot  deal with
+anonymous \mintinline{cpp}{struct}s, since \cpp does not have pattern matching),
+and therefore less structured and more tedious to work with.\\
 
 % https://en.cppreference.com/w/cpp/utility/variant/monostate
 
@@ -115,7 +112,7 @@ delegated  to various  handlers  that deal  with specific  types  of events.  An
 \texttt{Event} consequently  encodes not  only the \textit{information}  used by
 these handlers, but also which handler is responsible for that event. \wmrs uses
 Rust's principle pattern matching construct, \mintinline{rust}{match}, for event
-dispatch. \wmrs's  main event  loop, defined  within a  method belonging  to its
+dispatch.  Its  main event  loop,  defined  within  a  method belonging  to  its
 \texttt{Model} structure, partly looks as follows.
 
 \begin{rustblock}
@@ -126,10 +123,6 @@ dispatch. \wmrs's  main event  loop, defined  within a  method belonging  to its
           => self.handle_mouse(event, /*...*/),
         Event::Key { keycode, }
           => self.handle_key(keycode, /*...*/),
-        Event::MapRequest { window, ignore, }
-          => self.handle_map_request(
-            window, ignore
-          ),
         Event::FocusRequest { window, }
           => self.handle_focus_request(window),
         Event::CloseRequest { window, }
@@ -185,11 +178,11 @@ that  means  that   \mintinline{cpp}{std::variant}  alternatives  cannot  simply
 be  \mintinline{cpp}{switch}ed  on.  Instead,  the  \mintinline{cpp}{std::visit}
 companion  function   exists  to   allow  for   the  \textit{visiting}\cite{go4}
 of   a   \mintinline{cpp}{std::variant}   instance   based   on   its   possible
-alternatives\cite{cppstd}.    It   takes    the   \mintinline{cpp}{std::variant}
-instance  to  visit,  along  with  a  \textit{visitor}  object  that  implements
-\textit{function-call  operator} overloads  for each  of the  alternative types.
-An  example visitor  for  the \texttt{Event}  variant,  defined within  \wmcpp's
-\texttt{Model} class, partly looks as follows.
+alternatives\cite{stdvisitwrong,  cppstd}. It  takes  a \textit{visitor}  object
+that  implements  \textit{function-call  operator}  overloads for  each  of  the
+alternatives' types,  along with the \mintinline{cpp}{std::variant}  instance to
+visit.  An  example  visitor  for the  \texttt{Event}  variant,  defined  within
+\wmcpp's \texttt{Model} class, partly looks as follows.
 
 \begin{cppblock}
   // ...
@@ -200,7 +193,8 @@ An  example visitor  for  the \texttt{Event}  variant,  defined within  \wmcpp's
     // ...
   private:
     // ...
-    struct EventVisitor {
+    struct EventVisitor
+    {
       EventVisitor(Model& model): model(model) {}
 
       void operator()(std::monostate) {}
@@ -209,9 +203,6 @@ An  example visitor  for  the \texttt{Event}  variant,  defined within  \wmcpp's
       }
       void operator()(Key event) {
         model.handle_key(event);
-      }
-      void operator()(MapRequest event) {
-        model.handle_map_request(event);
       }
       void operator()(FocusRequest event) {
         model.handle_focus_request(event);
@@ -230,8 +221,12 @@ An  example visitor  for  the \texttt{Event}  variant,  defined within  \wmcpp's
   };
 \end{cppblock}
 
-Within the same class, a method  exists that contains \mbox{\wmcpp}'s main event
-loop, which roughly does the following.
+Whereas  \wmrs  explicitly assured  that  a  valid  event was  received,  \wmcpp
+\textit{implicitly}  does so  through  its \mintinline{cpp}{event_visitor}.  The
+\mintinline{cpp}{std::monostate} variant represents  the \textit{no valid event}
+case,  and is  analogous to  a \textit{no-op}  event. Within  the same  class, a
+method exists that contains \mbox{\wmcpp}'s  main event loop, which roughly does
+the following.
 
 \begin{cppblock}
   while (running)
@@ -239,5 +234,10 @@ loop, which roughly does the following.
 \end{cppblock}
 
 Here, we rely on the visitor to deduce  the type of the event retrieved from the
-underlying connection's  \mintinline{cpp}{step} method,  delegating work  to the
-relevant handlers within \wmcpp's model.
+underlying connection's  \mintinline{cpp}{step} method,  subsequently delegating
+work to the relevant handler within \wmcpp's model.\\
+
+While in  this example  both \wmrs and  \wmcpp are able  to express  the desired
+behavior with relatively little code, visiting  tagged union variants in \cpp is
+clearly more verbose and less able in communicating intent than in Rust, and the
+discrepancies only worsen as more complex situations arise\cite{stdvisitwrong}.
