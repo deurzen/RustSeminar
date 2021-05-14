@@ -14,13 +14,9 @@ Semester: SoSe 2021
 		- Stateful `enum`s
 	- **_Event Dispatch_**
 		- `if let`, `match`
-- **Communication with the Environment**
-	- **_Inter-Process Communication_**
-		- (not definitive) `std::os::unix::net::UnixStream`
-		- (not definitive) Servo's `ipc-channel`
 - **Key Bindings**
 	- `Box`ed functions (e.g. `Box<dyn FnMut(&mut Model<'_>)>`)
-	- `HashMap`
+	- `HashMap`, `HashSet`
 	- Macro metaprogramming: `macro_rules!`
 - **Clients**
 	- **_Reference Management_**
@@ -46,21 +42,18 @@ Semester: SoSe 2021
 	- ~~{lack of,} (resp.) ease of using external libraries~~
 	- ~~Package manager(s), manually by developer (C++) vs Cargo (Rust)~~
 	- ~~Traits (Rust) vs abstract classes (C++)~~
-- **Main Event Loop**
-	- Event dynamic kranewm (C++ impl.) vs wzrd (Rust impl.)
-	- Event loop constructs and feature usage kramewm vs wzrd
-	- **_Internal Events_**
-		- Data structures and language features used to represent events
-	- **_Event Dispatch_**
-		- Language constructs used to handle event dispatch
-- **Communication with the Environment**
-	- Complex feature of which the implementation constructs trickle into many parts of the program (large fan-out)
-	- Data structures and language features used to represent key bindings
-	- Verbose (kranewm, C++) vs use of macros (wzrd, Rust)
-	- **_Inter-Process Communication_**
+- ~~**Main Event Loop**~~
+	- ~~Event dynamic kranewm (C++ impl.) vs wzrd (Rust impl.)~~
+	- ~~Event loop constructs and feature usage kramewm vs wzrd~~
+	- ~~**_Windowing System Events_**~~
+		- ~~Underlying windowing system event propagation and wrapping~~
+	- ~~**_Internal Events_**~~
+		- ~~Data structures and language features used to represent internal (higher-level) events~~
+	- ~~**_Event Dispatch_**~~
+		- ~~Language constructs used to handle event dispatch~~
 - **Key Bindings**
-	- Complex feature of which the implementation constructs trickle into many parts of the program (large fan-out)
-	- Data structures and language features used to represent key bindings
+	- ~~Complex feature of which the implementation constructs trickle into many parts of the program (large fan-out)~~
+	- ~~Data structures and language features used to represent key bindings~~
 	- Verbose (kranewm, C++) vs use of macros (wzrd, Rust)
 - **Clients**
 	- Main data structure that represents a window under window manager control
