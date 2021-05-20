@@ -97,14 +97,36 @@ manager's \texttt{Model} then looks as follows.
 \end{rustblock}
 \begin{rustblock}
   pub type KeyBindings = HashMap<
-    KeyInput, 
-    KeyAction
+    KeyInput, KeyAction
   >;
 \end{rustblock}
 \begin{rustblock}
   pub type MouseBindings = HashMap<
-    MouseInput, 
-    MouseAction
+    MouseInput, MouseAction
   >;
 \end{rustblock}
 
+These  are   simple  \textit{type  alias}  declarations,   giving  existing  (in
+this  case  compound)  types  a  new name.  The  first  two  represent  closures
+that   hook   into   (i.e.   take   as   parameter)   a   \textit{mutable}---or,
+more  semantically  explicative:  \textit{exclusive}---reference  to  the  model
+instance\cite{therustbook}. \mintinline{rust}{FnMut}  is a trait  that describes
+the calling of a function that  is allowed to change (\textit{mutate}) state; it
+permits its  implementors to use  call syntax, such that  they can act  and look
+like  regular  function  pointers. \mintinline{rust}{Box}  \textit{boxes}  up  a
+value, storing  it on the heap  and yielding a  pointer to it (under  the hood).
+Specifically,  here, that  means  that \textit{some}  type  that implements  the
+\mintinline{rust}{FnMut} trait and takes a mutable reference to a model instance
+(\mintinline{rust}{dyn FnMut(&mut  Model<'_>)}) is  boxed up  and stored  on the
+heap  for  future  reference.  We require  the  use  of  \mintinline{rust}{Box},
+as   we  want   to   be  able   to  store   \textit{any   implementor}  of   the
+\mintinline{rust}{FnMut} trait. To do so, Rust will rely on dynamic dispatch, as
+the size of the implementor object is  not known until runtime, and it therefore
+cannot  be stored  on the  stack\cite{rustclosureshard}. The  advantage of  this
+approach  is that  it facilitates  the changing  of input  bindings at  runtime,
+allowing  for  multi-hierarchical  input  bindings, as  well  as  user-initiated
+binding customization without requiring program restart.
+
+
+% Discuss {Build,}Hashers -> more efficient as we have unique keys (input bindings),
+% therefore we don't require complex collision safety etc.

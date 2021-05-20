@@ -195,7 +195,7 @@ visit.  An  example  visitor  for the  \texttt{Event}  variant,  defined  within
     // ...
     struct EventVisitor
     {
-      EventVisitor(Model& model): model(model) {}
+      EventVisitor(Model& m): model(m) {}
 
       void operator()(std::monostate) {}
       void operator()(Mouse event) {

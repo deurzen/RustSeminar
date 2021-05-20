@@ -165,10 +165,10 @@ still\cite{therustbook,  rusttraitsdeepdive}.  A   small  snippet  from  \wmrs's
 \begin{rustblock}
   pub trait Connection {
     fn step(&self) -> Option<Event>;
-    fn close_window(&self, window: Window) -> bool;
-    fn move_window(&self, window: Window, pos: Pos);
-    fn resize_window(&self, window: Window, dim: Dim);
-    fn focus_window(&self, window: Window);
+    fn close_window(&self, w: Window) -> bool;
+    fn move_window(&self, w: Window, p: Pos);
+    fn resize_window(&self, w: Window, d: Dim);
+    fn focus_window(&self, w: Window);
     // ...
   }
 \end{rustblock}
