@@ -1,11 +1,20 @@
 \BOOKMARK [1][-]{section.1}{Introduction}{}% 1
 \BOOKMARK [1][-]{section.2}{External Dependency Management}{}% 2
-\BOOKMARK [1][-]{section.3}{Main Event Loop}{}% 3
-\BOOKMARK [2][-]{subsection.3.1}{Windowing System Events}{section.3}% 4
-\BOOKMARK [2][-]{subsection.3.2}{Internal Events}{section.3}% 5
-\BOOKMARK [2][-]{subsection.3.3}{Event Dispatch}{section.3}% 6
-\BOOKMARK [1][-]{section.4}{Input Bindings}{}% 7
-\BOOKMARK [1][-]{section.5}{Clients}{}% 8
-\BOOKMARK [2][-]{subsection.5.1}{Reference Management}{section.5}% 9
-\BOOKMARK [2][-]{subsection.5.2}{State}{section.5}% 10
-\BOOKMARK [1][-]{section.6}{Conclusion}{}% 11
+\BOOKMARK [2][-]{subsection.2.1}{C++: Ad Hoc Dependency Management}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{Rust: Cargo}{section.2}% 4
+\BOOKMARK [2][-]{subsection.2.3}{Rust: Decoupling External Dependencies using Traits}{section.2}% 5
+\BOOKMARK [2][-]{subsection.2.4}{C++: Abstraction through Abstract Classes}{section.2}% 6
+\BOOKMARK [2][-]{subsection.2.5}{External Dependency Management: Remarks}{section.2}% 7
+\BOOKMARK [1][-]{section.3}{Main Event Loop}{}% 8
+\BOOKMARK [2][-]{subsection.3.1}{Rust and C++: Windowing System Event Decoupling}{section.3}% 9
+\BOOKMARK [2][-]{subsection.3.2}{Rust: Internal Event Structuring using Enumerations}{section.3}% 10
+\BOOKMARK [2][-]{subsection.3.3}{C++: Internal Event Encoding with std::variant}{section.3}% 11
+\BOOKMARK [2][-]{subsection.3.4}{Internal Events: Remarks}{section.3}% 12
+\BOOKMARK [2][-]{subsection.3.5}{Rust: Event Dispatch by Pattern Matching}{section.3}% 13
+\BOOKMARK [2][-]{subsection.3.6}{C++: Delegation by Visiting std::variant Alternatives}{section.3}% 14
+\BOOKMARK [2][-]{subsection.3.7}{Event Dispatch: Remarks}{section.3}% 15
+\BOOKMARK [1][-]{section.4}{Input Bindings}{}% 16
+\BOOKMARK [1][-]{section.5}{Clients}{}% 17
+\BOOKMARK [2][-]{subsection.5.1}{Reference Management}{section.5}% 18
+\BOOKMARK [2][-]{subsection.5.2}{State}{section.5}% 19
+\BOOKMARK [1][-]{section.6}{Conclusion}{}% 20

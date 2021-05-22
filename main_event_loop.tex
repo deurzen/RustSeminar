@@ -1,35 +1,37 @@
 %&latex
 \section{Main Event Loop}
 
-The main event loop  in both \wmrs and \wmcpp comprises  three core stages. They
-first rely on the underlying  windowing system to report certain \textit{events}
-they are  interested in.  This is  done synchronously,  as without  any hardware
-interrupts or changes to  the environment, nothing is to be  done. That is, both
-window managers \textit{block}  until a new event is received.  The second stage
-is  the \textit{extraction}  and  \textit{bundling} of  useful information  from
-underlying windowing system events into a  structure that can be consumed by the
-various  components  of each  window  manager.  The  last  stage is  using  that
-windowing  system  event  information  to  perform  window  management  actions,
+The main event loop in both \wmrs and \wmcpp comprises three core stages. They
+first rely on the underlying windowing system to report certain \textit{events}
+they are interested in. This is done synchronously, as without any hardware
+interrupts or changes to the environment, nothing is to be done. That is,
+both window managers \textit{block} until a new event is received. The second
+stage is the \textit{extraction} and \textit{bundling} of useful information
+from underlying windowing system events into a structure that can be consumed
+by the various components of each window manager. The last stage is using
+that windowing system event information to perform window management actions,
 \textit{delegating work} to different parts of the program.
 
-\subsection{Windowing System Events}
+\rscppsubsection{Windowing System Event Decoupling}
 
-Both  \wmrs  and  \wmcpp  stipulate  the existence  of  a  \texttt{step}  method
-in  their  \texttt{Connection}  interfaces.   This  method  is  responsible  for
-converting underlying windowing system information into a higher-level event, as
-can  be  gleaned  from  their signatures:  \mintinline{rust}{fn  step(&self)  ->
-Option<Event>}  (\wmrs) and  \mintinline{cpp}{Event step()}  (\wmcpp), where  in
-both cases \texttt{Event} is some internally defined structure of data.
+As seen in the examples from the previous section, \wmrs and \wmcpp stipulate
+the existence of a \ttt{step} method in their respective \ttt{Connection}
+interfaces. This method is responsible for converting underlying windowing
+system information into a higher-level event, as can be gleaned from their
+signatures: \rsin{fn step(&self) -> Option<Event>} (\wmrs) and \cppin{Event
+step()} (\wmcpp). In both cases, \ttt{Event} is some internally defined
+structure of data that decouples low-level windowing system event specifics from
+that which is consumed at the higher level.
 
-\subsection{Internal Events}
+\rssubsection{Internal Event Structuring using Enumerations}
 
 % https://doc.rust-lang.org/book/ch06-00-enums.html
 
-To  structure  event  data,  \wmrs   uses  Rust  \textit{enumerations}.  A  Rust
-\mintinline{rust}{enum}  allows for  the  definition of  a  type by  enumerating
-its  variants,  and,   aside  from  encoding  \textit{meaning},   is  also  able
-to  encapsulate   \textit{data}\cite{therustbook}.  A  small  part   of  \wmrs's
-\mintinline{rust}{Event} \mintinline{rust}{enum} looks as follows.
+To structure event data, \wmrs uses Rust \textit{enumerations}. A Rust
+\rsin{enum} allows for the definition of a type by enumerating its variants,
+and, aside from encoding \textit{meaning}, is also able to encapsulate
+\textit{data}\cite{therustbook}. A small part of \wmrs's \rsin{Event}
+\rsin{enum} looks as follows.
 
 \begin{rustblock}
   pub enum Event {
@@ -42,32 +44,33 @@ to  encapsulate   \textit{data}\cite{therustbook}.  A  small  part   of  \wmrs's
   }
 \end{rustblock}
 
-The   first  five   variants  are   what  are   known  as   \textit{struct-like}
-variants   with  named   fields,   whereas   the  last   one   is  a   fieldless
-variant  that   comprises  only  an   identifier\cite{therustreference}.  Behind
-the   scenes,   each   \mintinline{rust}{enum}  instance   has   an   associated
-integer   that  is   used  to   determine  the   underlying  concrete   variant,
-known   as  a   \textit{discriminant}\cite{therustreference}.   As  such,   Rust
-\mintinline{rust}{enum}s  are  \textit{tagged  unions},  where the  tag  is  the
-discriminant.  This   also  means  that  the   size  of  each  instance   of  an
-\mintinline{rust}{enum} is determined  by that \mintinline{rust}{enum}'s largest
-variant. Rust's  \textit{default representation}  stores the discriminant  as an
-\mintinline{rust}{isize}, although the compiler is free to make use of a smaller
-type if the amount of variants permits it\cite{therustreference}.\\
+The first four variants are what are known as \textit{struct-like} variants
+with named fields, whereas the last one is a fieldless variant that comprises
+only an identifier\cite{therustreference}. Behind the scenes, each \rsin{enum}
+instance has an associated integer that is used to determine the underlying
+concrete variant, known as a \textit{discriminant}\cite{therustreference}.
+As such, Rust \rsin{enum}s are \textit{tagged unions}, where the tag is the
+discriminant. This also means that the size of each instance of an \rsin{enum}
+is determined by that \rsin{enum}'s largest variant. Rust's \textit{default
+representation} stores the discriminant as an \rsin{isize}, although the
+compiler is free to make use of a smaller type if the amount of variants permits
+it\cite{therustreference}.
 
 % https://en.cppreference.com/w/cpp/utility/variant
 
-A  similar construct  in  \cpp is  not  \textit{its} \mintinline{cpp}{enum}  (or
-\mintinline{cpp}{enum  class}),  but  rather  \mintinline{cpp}{std::variant},  a
-class template available since \texttt{C++17} that represents a type-safe tagged
-union\cite{cppstd}. Just as with  Rust's \mintinline{rust}{enum}, and similar to
-regular  unions, the  object  representation of  the  concrete alternative  held
-inside a  \mintinline{cpp}{std::variant} instance  is allocated  entirely within
-that instance's object representation\cite{cppstd}. That is, the alternative may
-not allocate  any additional dynamic  memory\cite{cppstd}. As a result,  as with
-Rust's  \mintinline{rust}{enum}, the  size  of a  \mintinline{cpp}{std::variant}
-instance  is dependent  on its  largest alternative\cite{cppstd}.  \wmcpp partly
-represents its \mintinline{cpp}{Event} type as follows.
+\cppsubsection{Internal Event Encoding with std::variant}
+
+A similar construct in \cpp is not \textit{its} \cppin{enum} (or \cppin{enum
+class}), but rather \cppin{std::variant}, a class template available since
+\ttt{C++17} that represents a type-safe tagged union\cite{cppstd}. Just as with
+Rust's \rsin{enum}, and similar to regular unions, the object representation
+of the concrete alternative held inside a \cppin{std::variant} instance is
+allocated entirely within that instance's object representation\cite{cppstd}.
+That is, the alternative may not allocate any additional dynamic
+memory\cite{cppstd}. As a result, as with Rust's \rsin{enum}, the
+size of a \cppin{std::variant} instance is dependent on its largest
+alternative\cite{cppstd}. \wmcpp partly represents its \cppin{Event} type as
+follows.
 
 \begin{cppblock}
   typedef std::variant<
@@ -81,39 +84,39 @@ represents its \mintinline{cpp}{Event} type as follows.
   > Event;
 \end{cppblock}
 
-Here, each  concrete alternative  is a \cpp  \mintinline{cpp}{struct} containing
-information  about   the  specific  event   that  is  being   represented  (e.g.
-\mintinline{cpp}{struct Mouse}  \mintinline{cpp}{{ MouseEvent event;  }};). This
-is  similar to  what \wmrs  does  with its  Rust \mintinline{rust}{enum}s,  only
-more verbose,  non-inlined (as  \mintinline{cpp}{std::variant} cannot  deal with
-anonymous \mintinline{cpp}{struct}s, since \cpp does not have pattern matching),
-and therefore less structured and more tedious to work with.\\
+Here, each concrete alternative is a \cpp \cppin{struct} containing information
+about the specific event that is being represented (e.g. \cppin{struct Mouse}
+\cppin{{ MouseEvent event; }};). This is similar to what \wmrs does with its
+Rust \rsin{enum}s, only more verbose, non-inlined (as \cppin{std::variant}
+cannot deal with anonymous \cppin{struct}s, since \cpp does not have pattern
+matching), and therefore less structured and more tedious to work with.
 
 % https://en.cppreference.com/w/cpp/utility/variant/monostate
 
-An  astute  reader may  have  noticed  that the  \texttt{Connection}  interfaces
-of   \wmrs   and   \wmcpp   do   not   exactly   match.   In   particular,   the
-\texttt{step}  function's  signatures  seem  to  communicate  different  things.
-In   \wmrs,  that   function  \textit{optionally}   yields  an   \texttt{Event},
-wheres  in  \wmcpp,   it  simply  returns  an  \texttt{Event}.   In  \cpp,  when
-using   a   \mintinline{cpp}{std::variant},   it   is   encouraged   to   encode
-an   empty   alternative  using   \mintinline{cpp}{std::monostate}\cite{cppstd}.
-The   same    behavior   \textit{could}    instead   have   been    encoded   as
-\mintinline{cpp}{std::option<Event>}, where in this  case, the first alternative
-of  \texttt{Event} is  omitted.  The  difference in  usage  mainly  lies in  the
-\textit{visiting} of \texttt{Event}  alternatives, which we will  discuss in the
-next section.
+\subsection{Internal Events: Remarks}
 
-\subsection{Event Dispatch}
+An astute reader may have noticed that the \ttt{Connection} interfaces of
+\wmrs and \wmcpp do not exactly match. In particular, their respective
+\ttt{step} functions' signatures seem to communicate different things. In
+\wmrs, that function \textit{optionally} yields an \rsin{Event}, wheres
+in \wmcpp, it simply returns an \cppin{Event}. In \cpp, when using a
+\cppin{std::variant}, it is encouraged to encode an empty alternative using
+\cppin{std::monostate}\cite{cppstd}. The same behavior \textit{could} instead
+have been encoded as \cppin{std::option<Event>}, where in this case, the first
+alternative of \cppin{Event} is omitted. The difference in usage mainly lies in
+the \textit{visiting} of \cppin{Event} alternatives, which we will discuss in
+the next section.
 
-Once an  event has been  generated at the windowing  system and filtered  into a
-structure  that  is  to  be  consumed  by  the  window  manager,  work  must  be
-delegated  to various  handlers  that deal  with specific  types  of events.  An
-\texttt{Event} consequently  encodes not  only the \textit{information}  used by
-these handlers, but also which handler is responsible for that event. \wmrs uses
-Rust's principle pattern matching construct, \mintinline{rust}{match}, for event
-dispatch.  Its  main event  loop,  defined  within  a  method belonging  to  its
-\texttt{Model} structure, partly looks as follows.
+\rssubsection{Event Dispatch by Pattern Matching}
+
+Once an event has been generated at the windowing system and filtered into a
+structure that is to be consumed by the window manager, work must be delegated
+to various handlers that deal with specific types of events. An \ttt{Event}
+consequently encodes not only the \textit{information} used by these handlers,
+but also which handler is responsible for that event. \wmrs uses Rust's
+principle pattern matching construct, \rsin{match}, for event dispatch. Its main
+event loop, defined within a method belonging to its \ttt{Model} structure,
+partly looks as follows.
 
 \begin{rustblock}
   while self.running {
@@ -135,14 +138,13 @@ dispatch.  Its  main event  loop,  defined  within  a  method belonging  to  its
   }
 \end{rustblock}
 
-The  \texttt{step} method  returns an  \mintinline{rust}{Option<Event>}, so  the
-first thing to do is check whether a valid \texttt{Event} was retrieved from the
-windowing system connection  (i.e., whether the event that was  generated is one
-the window manager is interested in). Rust's \mintinline{rust}{if let} construct
-is syntactic sugar for  a match statement that runs code  when the value matches
-one specific pattern, and ignores all other values\cite{therustbook}. Converting
-the above  \mintinline{rust}{if let}  to an  equivalent \mintinline{rust}{match}
-results in the following.
+The \ttt{step} method returns an \rsin{Option<Event>}, so the first thing to do
+is check whether a valid \ttt{Event} was retrieved from the windowing system
+connection (i.e., whether the event that was generated is one the window manager
+is interested in). Rust's \rsin{if let} construct is syntactic sugar for a
+match statement that runs code when the value matches one specific pattern, and
+ignores all other values\cite{therustbook}. Converting the above \rsin{if let}
+to an equivalent \rsin{match} results in the following.
 
 \begin{rustblock}
   match self.conn.step() {
@@ -151,38 +153,39 @@ results in the following.
   }
 \end{rustblock}
 
-Within the body  of the first match \textit{arm},  the \texttt{event} identifier
-has been \textit{bound} to the value  that was passed in, \textit{if} that value
-matches the pattern\cite{therustbook}. Here, that means that \textit{if} a valid
-event is  returned from the  \texttt{step} method, that  concrete \texttt{Event}
-instance  will be  bound to  the \texttt{event}  identifier within  the body  of
-that  match arm.  The \texttt{\_}  placeholder is  used to  denote all  possible
-\textit{remaining} values\cite{therustbook}. The Rust  compiler will assert that
-all  possible  cases are  handled  within  a  match  statement, as  matches  are
+Within the body of the first match \textit{arm}, the \ttt{event} identifier has
+been \textit{bound} to the value that was passed in, \textit{if} that value
+matches the pattern\cite{therustbook}. Here, that means that \textit{if} a
+valid event is returned from the \ttt{step} method, that concrete \ttt{Event}
+instance will be bound to the \ttt{event} identifier within the body of
+that match arm. The \ttt{\_} placeholder is used to denote all possible
+\textit{remaining} values\cite{therustbook}. The Rust compiler will assert
+that all possible cases are handled within a match statement, as matches are
 exhaustive\cite{therustbook}.
 
-Additionally  matching on  this \texttt{event},  all \textit{variants}  that can
-possibly  exist for  its type  are enumerated,  binding identifiers  to each  of
-the  fields in  the struct-like  variants  defined in  the \texttt{Event}  enum,
-which are  then passed  on to  handler methods  within the  \texttt{Model} (e.g.
-\mintinline{rust}{fn handle_focus_request(window: Window)}).\\
+Additionally matching on this \ttt{event}, all \textit{variants} that can
+possibly exist for its type are enumerated, binding identifiers to each of
+the fields in the struct-like variants defined in the \ttt{Event} enum, which
+are then passed on to handler methods within the \ttt{Model} (e.g. \rsin{fn
+handle_focus_request(window: Window)}).
 
 % https://news.ycombinator.com/item?id=15249994
 % https://bitbashing.io/std-visit.html
 % https://pabloariasal.github.io/2018/06/26/std-variant/
 
-\cpp  does   not  consist   of  a  similar   pattern  matching   construct.  Its
-\mintinline{cpp}{switch}   statement  merely   allows   an   identifier  to   be
-tested   for  \textit{equality}   against  a   list  of   values.  Specifically,
-that  means  that   \mintinline{cpp}{std::variant}  alternatives  cannot  simply
-be  \mintinline{cpp}{switch}ed  on.  Instead,  the  \mintinline{cpp}{std::visit}
-companion  function   exists  to   allow  for   the  \textit{visiting}\cite{go4}
-of   a   \mintinline{cpp}{std::variant}   instance   based   on   its   possible
-alternatives\cite{stdvisitwrong,  cppstd}. It  takes  a \textit{visitor}  object
-that  implements  \textit{function-call  operator}  overloads for  each  of  the
-alternatives' types,  along with the \mintinline{cpp}{std::variant}  instance to
-visit.  An  example  visitor  for the  \texttt{Event}  variant,  defined  within
-\wmcpp's \texttt{Model} class, partly looks as follows.
+\cppsubsection{Delegation by Visiting std::variant Alternatives}
+
+\cpp does not consist of a similar pattern matching construct. Its
+\cppin{switch} statement merely allows an identifier to be tested for
+\textit{equality} against a list of values. Specifically, that means that
+\cppin{std::variant} alternatives cannot simply be \cppin{switch}ed on.
+Instead, the \cppin{std::visit} companion function exists to allow for the
+\textit{visiting}\cite{go4} of a \cppin{std::variant} instance based on its
+possible alternatives\cite{stdvisitwrong, cppstd}. It takes a \textit{visitor}
+object that implements \textit{function-call operator} overloads for each of the
+alternatives' types, along with the \cppin{std::variant} instance to visit. An
+example visitor for the \ttt{Event} variant, defined within \wmcpp's \ttt{Model}
+class, partly looks as follows.
 
 \begin{cppblock}
   // ...
@@ -195,7 +198,7 @@ visit.  An  example  visitor  for the  \texttt{Event}  variant,  defined  within
     // ...
     struct EventVisitor
     {
-      EventVisitor(Model& m): model(m) {}
+      EventVisitor(Model& model): model(model) {}
 
       void operator()(std::monostate) {}
       void operator()(Mouse event) {
@@ -221,24 +224,25 @@ visit.  An  example  visitor  for the  \texttt{Event}  variant,  defined  within
   };
 \end{cppblock}
 
-Whereas  \wmrs  explicitly assured  that  a  valid  event was  received,  \wmcpp
-\textit{implicitly}  does so  through  its \mintinline{cpp}{event_visitor}.  The
-\mintinline{cpp}{std::monostate} variant represents  the \textit{no valid event}
-case,  and is  analogous to  a \textit{no-op}  event. Within  the same  class, a
-method exists that contains \mbox{\wmcpp}'s  main event loop, which roughly does
-the following.
+Whereas \wmrs explicitly assured that a valid event was received, \wmcpp
+\textit{implicitly} does so through its \cppin{event_visitor}. The
+\cppin{std::monostate} variant represents the \textit{no valid event} case, and
+is analogous to a \textit{no-op} event. Within the same class, a method exists
+that contains \mbox{\wmcpp}'s main event loop, which roughly does the following.
 
 \begin{cppblock}
   while (running)
     std::visit(event_visitor, conn.step());
 \end{cppblock}
 
-Here, we rely on the visitor to deduce  the type of the event retrieved from the
-underlying connection's  \mintinline{cpp}{step} method,  subsequently delegating
-work to the relevant handler within \wmcpp's model.\\
+Here, we rely on the visitor to deduce the type of the event retrieved from the
+underlying connection's \cppin{step} method, subsequently delegating work to the
+relevant handler within \wmcpp's model.
 
-While in  this example  both \wmrs and  \wmcpp are able  to express  the desired
-behavior with relatively little code, visiting  tagged union variants in \cpp is
-clearly more  verbose and less  able in communicating  intent than in  Rust, and
-the  discrepancies only  worsen  as more  complex (or  \textit{pattern-reliant})
+\subsection{Event Dispatch: Remarks}
+
+While in this example both \wmrs and \wmcpp are able to express the desired
+behavior with relatively little code, visiting tagged union variants in \cpp is
+clearly more verbose and less able in communicating intent than in Rust, and
+the discrepancies only worsen as more complex (or \textit{pattern-reliant})
 situations arise\cite{stdvisitwrong}.

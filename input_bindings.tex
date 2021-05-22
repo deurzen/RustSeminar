@@ -128,29 +128,30 @@ satisfy   several   conditions.   These   conditions   are   expressed   through
 the  trait   bounds  \mintinline{rust}{PartialEq},   \mintinline{rust}{Eq},  and
 \mintinline{rust}{Hash},   respectively   defining   partial   equivalence   and
 equivalence relations,  enabling the  comparison for  (partial) equality,  and a
-hash function, allowing instances of its implementors to be \textit{hashed} with
-an  implementation  of  \mintinline{rust}{Hasher}.  \mintinline{rust}{PartialEq}
-and    \mintinline{rust}{Eq}    can    be    automatically    implemented    for
-\mintinline{rust}{KeyInput} and  \mintinline{rust}{MouseInput} by making  use of
-Rust's \mintinline{rust}{derive} attribute. This  attribute asks the compiler to
-provide  basic  implementations  for  built-in (and  even  self-written,  if  an
-implementation  is  first  defined  using  \textit{procedural  macros})  traits,
-given  that   the  trait   and  the  type   requiring  the   implementation  are
-\textit{derivable}.  For \mintinline{rust}{PartialEq}  and \mintinline{rust}{Eq}
+hash  function, allowing  instances of  its implementors  to be  \textit{hashed}
+with    an    implementation   of    \mintinline{rust}{Hasher}\cite{therustbook,
+therustreference}.   \mintinline{rust}{PartialEq}    and   \mintinline{rust}{Eq}
+can   be   automatically   implemented   for   \mintinline{rust}{KeyInput}   and
+\mintinline{rust}{MouseInput} by making  use of Rust's \mintinline{rust}{derive}
+attribute. This  attribute asks  the compiler  to provide  basic implementations
+for  built-in (and  even self-written,  if  an implementation  is first  defined
+using  \textit{procedural  macros})  traits,  given   that  the  trait  and  the
+type  requiring  the   implementation  are  \textit{derivable}\cite{therustbook,
+therustreference}.  For  \mintinline{rust}{PartialEq} and  \mintinline{rust}{Eq}
 in  particular,  all  fields  of a  to-be-derived  compound  type  \textit{must}
 already   implement   \mintinline{rust}{PartialEq}  and   \mintinline{rust}{Eq},
 which  is  the case  for  \mintinline{rust}{MouseEvent}'s  fields given  in  the
 example above.  The same  condition holds for  \mintinline{rust}{Hash}, although
 \mintinline{rust}{HashSet},  a field  of  \mintinline{rust}{MouseInput}, is  not
-automatically derivable. To satisfy  the \mintinline{rust}{Hash} trait bound for
-\mintinline{rust}{MouseInput}, it  must therefore  be defined manually.  To this
-end, each variant of  \textsc{wmRS}'s \mintinline{rust}{Modifier} enumeration is
-represented by an unsigned 8-bit integer value (\mintinline{rust}{#[repr(u8)]}).
-The values are  assigned in such a manner that  the \mintinline{rust}{enum} acts
-as a collection  of \textit{bit flags}, resolving each  variant \textit{and} the
-logical  disjunction  of  any  combination  of variants  into  a  unique  value.
-\mintinline{rust}{MouseInput}'s   \mintinline{rust}{Hash}  implementation   then
-looks as follows.
+automatically  derivable\cite{therustbook,  therustreference}.  To  satisfy  the
+\mintinline{rust}{Hash} trait  bound for \mintinline{rust}{MouseInput},  it must
+therefore  be defined  manually. To  this end,  each variant  of \textsc{wmRS}'s
+\mintinline{rust}{Modifier}  enumeration is  represented  by  an unsigned  8-bit
+integer value (\mintinline{rust}{#[repr(u8)]}). The  values are assigned in such
+a manner  that the \mintinline{rust}{enum}  acts as a collection  of \textit{bit
+flags},  resolving each  variant  \textit{and} the  logical  disjunction of  any
+combination  of variants  into a  unique value.  \mintinline{rust}{MouseInput}'s
+\mintinline{rust}{Hash} implementation then looks as follows.
 
 \begin{rustblock}
 impl Hash for MouseInput {
@@ -163,16 +164,18 @@ impl Hash for MouseInput {
 }
 \end{rustblock}
 
-Hashing   works   relative  to   \textit{some}   object   that  implements   the
-\mintinline{rust}{Hasher}  trait (\mintinline{rust}{<H: Hasher>}).  The  methods
-required by  \mintinline{rust}{Hasher} are to  contain the logic of  the hashing
-function in  use, and an  instance of an implementor  of the trait  will usually
-represent some  \textit{state} that changes as  data is being hashed.  The final
-state of such an instance then represents the hashed value. To obtain the hashed
-value  of  a  \mintinline{rust}{MouseInput}  instance,  we  change,  in  ordered
-succession, the state  of the \mintinline{rust}{Hasher} object  by supplying the
-hasher  the \mintinline{rust}{button}  field's  value, followed  by the  logical
-disjunction of all of the  \mintinline{rust}{Modifier} variants contained in the
+Hashing      works      relative      to     \textit{some}      object      that
+implements    the    \mintinline{rust}{Hasher}   trait    (\mintinline{rust}{<H:
+Hasher>})\cite{therustbook}. The  methods required  by \mintinline{rust}{Hasher}
+are  to contain  the logic  of  the hashing  function  in use,  and an  instance
+of  an implementor  of  the  trait will  usually  represent some  \textit{state}
+that  changes  as  data  is  being  hashed\cite{therustbook,  rusttrickhashmap}.
+The   final   state  of   such   an   instance   then  represents   the   hashed
+value\cite{therustbook,  rusttrickhashmap}.  To obtain  the  hashed  value of  a
+\mintinline{rust}{MouseInput} instance,  we change,  in ordered  succession, the
+state  of  the \mintinline{rust}{Hasher}  object  by  supplying the  hasher  the
+\mintinline{rust}{button}  field's value,  followed by  the logical  disjunction
+of   all  of   the   \mintinline{rust}{Modifier}  variants   contained  in   the
 \mintinline{rust}{modifiers} field.
 
 % Discuss {Build,}Hashers -> more efficient as we have known-to-be-distinct keys (input bindings),
