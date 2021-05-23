@@ -8,23 +8,25 @@
 % https://locka99.gitbooks.io/a-guide-to-porting-c-to-rust/content/features_of_rust/macros.html
 
 Key and mouse bindings are the central point of interaction between the user and
-the window  manager. At a high  level, as the  name would suggest, they  work by
-\textit{binding} to sets of \textit{input  states}. These input states typically
-comprise  keyboard  (i.e., \textit{which  keys  are  pressed down?})  and  mouse
-(\textit{which mouse  buttons are pressed  down?}) inputs, but can  in principle
-come from  any kind  of peripheral  input source, such  as sensors.  Since input
-readings  are hardware  and, transitively,  platform dependent,  both \wmrs  and
-\wmcpp rely  on the  connection with  the windowing  system to  facilitate these
+the window manager. At a high level, as the name would suggest, they work by
+\textit{binding} to sets of \textit{input states}. These input states typically
+comprise keyboard (i.e., \textit{which keys are pressed down?}) and mouse
+(\textit{which mouse buttons are pressed down?}) inputs, but can in principle
+come from any kind of peripheral input source, such as sensors. Since input
+readings are hardware and, transitively, platform dependent, both \wmrs and
+\wmcpp rely on the connection with the windowing system to facilitate these
 bindings. That is---as can be seen from the \texttt{Connection} interfaces given
-in  the examples  above---both  window managers  receive  specific events  (e.g.
-\texttt{Key} and  \texttt{Mouse}) that communicate  that a specific  binding has
+in the examples above---both window managers receive specific events (e.g.
+\texttt{Key} and \texttt{Mouse}) that communicate that a specific binding has
 been activated.
 
-To  attach  window  management  activities  to these  key  and  mouse  bindings,
-\textsc{wmRS} uses a Rust \mintinline{rust}{HashMap}  to map resp. mouse and key
-input  state  abstractions to  \textit{closures}  that  call  into part  of  the
-\texttt{Model}.  Mouse  input abstractions  look  something  like the  following
-(parts redacted for clarity).
+\rssubsection{Storing and Retrieving Callable Objects}
+
+To attach window management activities to these key and mouse bindings,
+\textsc{wmRS} uses a Rust \rsin{HashMap} to map resp. mouse and key input state
+abstractions to \textit{closures} that call into part of the \texttt{Model}.
+Mouse input abstractions look something like the following (parts redacted for
+clarity):
 
 \begin{rustblock}
   #[derive(Clone, Copy, PartialEq, Eq, Hash)]
@@ -43,7 +45,8 @@ input  state  abstractions to  \textit{closures}  that  call  into part  of  the
   #[repr(u8)]
   #[derive(Clone, Copy, PartialEq, Eq, Hash)]
   pub enum Modifier {
-    Ctrl = 1, Shift = 2, Super = 4, Alt = 8,
+    Ctrl = 1 << 0, Shift = 1 << 1,
+    Super = 1 << 2, Alt = 1 << 3,
     // ...
   }
 \end{rustblock}
@@ -65,19 +68,20 @@ input  state  abstractions to  \textit{closures}  that  call  into part  of  the
   }
 \end{rustblock}
 
-Again,  \textsc{wmRS} relies  on the  connection  with the  windowing system  to
-establish the mapping from concrete  underlying window system input encodings to
-the abstractions  above. In  particular, we expect  a \texttt{MouseEvent}  to be
-fired (and propagated up through \texttt{Connection::step}) whenever a button is
-pressed.  The  event's input  \textit{modifiers}  are  contained within  a  Rust
-\texttt{HashSet},  as  ordering  and  possible duplicates  are  irrelevant.  Its
-\texttt{window}  field is  to optionally  contain the  unique identifier  of the
-window that was clicked on (if any). The representation of key events is similar
-to  the  above, but  instead  of  mouse  buttons  it includes  non-modifier  key
-identifiers.
+Since we are dealing with hardware and platform dependencies, \textsc{wmRS}
+again relies on the connection with the windowing system to establish the
+mapping from concrete underlying window system input encodings to the
+abstractions above. In particular, we expect a \texttt{MouseEvent} to be
+fired (and propagated up through \texttt{Connection::step}) whenever a
+button is pressed. The event's input \textit{modifiers} are contained within
+a Rust \texttt{HashSet}, as ordering is irrelevant and possible duplicates
+are redundant. Its \texttt{window} field is to optionally contain the unique
+identifier of the window that was clicked on (if any). The representation of
+key events is similar to the above, but instead of mouse buttons it includes
+non-modifier key identifiers.
 
-The actual  mapping between these input  abstractions and hooks into  the window
-manager's \texttt{Model} then looks as follows.
+The actual mapping between these input abstractions and hooks into the window
+manager's \texttt{Model} then looks as follows:
 
 \begin{rustblock}
   pub type KeyAction = Box<
@@ -100,83 +104,137 @@ manager's \texttt{Model} then looks as follows.
   >;
 \end{rustblock}
 
-These  are   simple  \textit{type  alias}  declarations,   giving  existing  (in
-this  case  compound)  types  a  new name.  The  first  two  represent  closures
-that   hook   into   (i.e.   take   as   parameter)   a   \textit{mutable}---or,
-more  semantically  explicative:  \textit{exclusive}---reference  to  the  model
-instance\cite{therustbook}. \mintinline{rust}{FnMut}  is a trait  that describes
-the calling of a function that  is allowed to change (\textit{mutate}) state; it
-permits  its  implementors to  use  call  syntax, such  that  they  can act  and
-look like  regular function  pointers. \mintinline{rust}{Box}  \textit{boxes} up
-a  value,  storing  it  on  the  heap  and  yielding  a  pointer  to  it  (under
-the  hood).  Specifically,  here,  that   means  that  \textit{some}  type  that
-implements  the \mintinline{rust}{FnMut}  trait  and takes  a mutable  reference
-to  a model  instance  (\mintinline{rust}{dyn FnMut(&mut  Model<'_>)}) is  boxed
-up  and  stored  on the  heap  for  future  reference.  We require  the  use  of
-\mintinline{rust}{Box}, as we want to  be able to store \textit{any implementor}
-of  the \mintinline{rust}{FnMut}  trait. To  do so,  Rust will  rely on  dynamic
-dispatch, as the size of the implementor  object is not known until runtime, and
-it therefore cannot be stored on the stack\cite{rustclosureshard}. The advantage
-of  this approach  is that  it  facilitates the  changing of  input bindings  at
-runtime, allowing for multi-mode hierarchical input bindings, as well as dynamic
-user-initiated binding customizations.
+These are simple \textit{type alias} declarations, giving existing (in
+this case compound) types a new name. The first two represent closures
+that hook into (i.e. take as parameter) a \textit{mutable}---or, more
+semantically explicative: \textit{exclusive}---reference to the model
+instance\cite{therustbook}. \rsin{FnMut} is a trait that describes the calling
+of a function that is allowed to change (\textit{mutate}) state; it permits
+its implementors to use call syntax, such that they can act and look like
+regular function pointers. \rsin{Box} \textit{boxes} up a value, storing it
+on the heap and yielding a pointer to it (under the hood). Specifically,
+here, that means that \textit{some} type that implements the \rsin{FnMut}
+trait and takes a mutable reference to a model instance (\rsin{dyn FnMut(&mut
+Model<'_>)}) is boxed up and stored on the heap for future reference. We
+require the use of \rsin{Box}, because we want to be able to store \textit{any
+implementor} of the \rsin{FnMut} trait. To do so, Rust will again rely on
+dynamic dispatch\cite{rustclosureshard}. The advantage of this approach is
+that it facilitates the changing of input bindings at runtime, allowing for
+multi-mode hierarchical input bindings, as well as dynamic user-initiated
+binding customizations.
 
-To      be      able       to      use      \mintinline{rust}{KeyInput}      and
-\mintinline{rust}{MouseInput}  as  keys  to  the  \mintinline{rust}{KeyBindings}
-and  \mintinline{rust}{MouseBindings}   \mintinline{rust}{HashMap}s,  they  must
-satisfy   several   conditions.   These   conditions   are   expressed   through
-the  trait   bounds  \mintinline{rust}{PartialEq},   \mintinline{rust}{Eq},  and
-\mintinline{rust}{Hash},   respectively   defining   partial   equivalence   and
-equivalence relations,  enabling the  comparison for  (partial) equality,  and a
-hash  function, allowing  instances of  its implementors  to be  \textit{hashed}
-with    an    implementation   of    \mintinline{rust}{Hasher}\cite{therustbook,
-therustreference}.   \mintinline{rust}{PartialEq}    and   \mintinline{rust}{Eq}
-can   be   automatically   implemented   for   \mintinline{rust}{KeyInput}   and
-\mintinline{rust}{MouseInput} by making  use of Rust's \mintinline{rust}{derive}
-attribute. This  attribute asks  the compiler  to provide  basic implementations
-for  built-in (and  even self-written,  if  an implementation  is first  defined
-using  \textit{procedural  macros})  traits,  given   that  the  trait  and  the
-type  requiring  the   implementation  are  \textit{derivable}\cite{therustbook,
-therustreference}.  For  \mintinline{rust}{PartialEq} and  \mintinline{rust}{Eq}
-in  particular,  all  fields  of a  to-be-derived  compound  type  \textit{must}
-already   implement   \mintinline{rust}{PartialEq}  and   \mintinline{rust}{Eq},
-which  is  the case  for  \mintinline{rust}{MouseEvent}'s  fields given  in  the
-example above.  The same  condition holds for  \mintinline{rust}{Hash}, although
-\mintinline{rust}{HashSet},  a field  of  \mintinline{rust}{MouseInput}, is  not
-automatically  derivable\cite{therustbook,  therustreference}.  To  satisfy  the
-\mintinline{rust}{Hash} trait  bound for \mintinline{rust}{MouseInput},  it must
-therefore  be defined  manually. To  this end,  each variant  of \textsc{wmRS}'s
-\mintinline{rust}{Modifier}  enumeration is  represented  by  an unsigned  8-bit
-integer value (\mintinline{rust}{#[repr(u8)]}). The  values are assigned in such
-a manner  that the \mintinline{rust}{enum}  acts as a collection  of \textit{bit
-flags},  resolving each  variant  \textit{and} the  logical  disjunction of  any
-combination  of variants  into a  unique value.  \mintinline{rust}{MouseInput}'s
-\mintinline{rust}{Hash} implementation then looks as follows.
+To be able to use \rsin{KeyInput} and \rsin{MouseInput} as keys to the
+\rsin{KeyBindings} and \rsin{MouseBindings} \rsin{HashMap}s, they must satisfy
+several conditions. These conditions are expressed through the trait bounds
+\rsin{PartialEq}, \rsin{Eq}, and \rsin{Hash}, respectively defining partial
+equivalence and equivalence relations, enabling the comparison for (partial)
+equality, and a hash function, allowing instances of its implementors to be
+\textit{hashed} with an implementation of \rsin{Hasher}\cite{therustbook,
+therustreference}. \rsin{PartialEq} and \rsin{Eq} can be automatically
+implemented for \rsin{KeyInput} and \rsin{MouseInput} by making use of Rust's
+\rsin{derive} attribute. This attribute asks the compiler to provide basic
+implementations for built-in (and even self-written, if an implementation is
+first defined using \textit{procedural macros}) traits, given that the trait and
+the type requiring the implementation are \textit{derivable}\cite{therustbook,
+therustreference}. For \rsin{PartialEq} and \rsin{Eq} in particular, all
+fields of a to-be-derived compound type \textit{must} already implement
+\rsin{PartialEq} and \rsin{Eq}, which is the case for \rsin{MouseEvent}'s
+fields given in the example above. The same condition holds for \rsin{Hash},
+although \rsin{HashSet}, the type of \rsin{MouseInput}'s \rsin{modifiers}
+field, is not automatically derivable\cite{therustbook, therustreference}.
+To satisfy the \rsin{Hash} trait bound for \rsin{MouseInput}, it must
+therefore be defined manually. To this end, each variant of \textsc{wmRS}'s
+\rsin{Modifier} enumeration is represented by an unsigned 8-bit integer value
+(\rsin{#[repr(u8)]}). The values are assigned in such a manner that the
+\rsin{enum} acts as a collection of \textit{bit flags}, resolving each variant
+\textit{and} the logical disjunction of any combination of variants into a
+unique value. \rsin{MouseInput}'s \rsin{Hash} implementation then looks as
+follows:
 
 \begin{rustblock}
-impl Hash for MouseInput {
-  fn hash<H: Hasher>(&self, state: &mut H) {
-    self.button.hash(state);
-    self.modifiers.iter()
-      .fold(0u8, |acc, &m| acc | m as u8)
-      .hash(state);
+  impl Hash for MouseInput {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+      self.button.hash(state);
+      self.modifiers.iter()
+        .fold(0u8, |acc, &m| acc | m as u8)
+        .hash(state);
+    }
   }
-}
 \end{rustblock}
 
-Hashing      works      relative      to     \textit{some}      object      that
-implements    the    \mintinline{rust}{Hasher}   trait    (\mintinline{rust}{<H:
-Hasher>})\cite{therustbook}. The  methods required  by \mintinline{rust}{Hasher}
-are  to contain  the logic  of  the hashing  function  in use,  and an  instance
-of  an implementor  of  the  trait will  usually  represent some  \textit{state}
-that  changes  as  data  is  being  hashed\cite{therustbook,  rusttrickhashmap}.
-The   final   state  of   such   an   instance   then  represents   the   hashed
-value\cite{therustbook,  rusttrickhashmap}.  To obtain  the  hashed  value of  a
-\mintinline{rust}{MouseInput} instance,  we change,  in ordered  succession, the
-state  of  the \mintinline{rust}{Hasher}  object  by  supplying the  hasher  the
-\mintinline{rust}{button}  field's value,  followed by  the logical  disjunction
-of   all  of   the   \mintinline{rust}{Modifier}  variants   contained  in   the
-\mintinline{rust}{modifiers} field.
+Hashing works relative to an object that implements the \rsin{Hasher} trait
+(\rsin{<H: Hasher>})\cite{therustbook}. The methods required by \rsin{Hasher}
+are to contain the logic of the hashing function in use, and an instance of
+an implementor of the trait will usually represent some \textit{state} that
+changes as data is being hashed\cite{therustbook, rusttrickhashmap}. The final
+state of such an instance then represents the hashed value\cite{therustbook,
+rusttrickhashmap}. Hashing structures that expose this behavior are called
+\textit{streaming} hashers\cite{buildingahashmap}. To obtain the hashed value
+of a \rsin{MouseInput} instance, we change, in ordered succession, the state
+of the \rsin{Hasher} object by supplying the hasher the \rsin{button} field's
+value, followed by the logical disjunction of all of the \rsin{Modifier}
+variants contained in the \rsin{modifiers} field. When looking for the
+matching value of a supplied key in the \rsin{HashMap}, Rust will use the key
+instance's \rsin{hash}ed value to compute the \textit{''bucket``} from which
+to start the search, and \rsin{eq} (the comparison method implemented through
+\rsin{PartialEq} and \rsin{Eq}) to actually perform the search.
+
+To finally add a new mouse binding, we insert an input/action pair into the
+\rsin{MouseBindings} \rsin{HashMap}, as follows:
+
+\begin{rustblock}
+  let mut mouse_bindings = HashMap::new();
+
+  mouse_bindings.insert(
+    MouseInput {
+      button: Button::Middle,
+      modifiers: {
+        let mut modifiers = HashSet::with_capacity(3);
+        modifiers.insert(Modifier::Ctrl);
+        modifiers.insert(Modifier::Shift);
+        modifiers.insert(Modifier::Super);
+        modifiers
+      }
+    },
+    Box::new(|model: &mut Model, w: Option<Window>| {
+      if let Some(window) = w {
+        model.set_fullscreen_window(window);
+      }
+    })
+  );
+\end{rustblock}
+
+To retrieve a mouse binding and call its function, a handler method within
+\textsc{wmRS}'s \rsin{Model} gets passed in a \rsin{MouseEvent} that contains
+information about the button and modifiers that had been pressed. The contained
+logic looks somewhat as follows:
+
+\begin{rustblock}
+  fn handle_mouse(
+      &mut self,
+      event: MouseEvent,
+      mouse_bindings: &MouseBindings,
+  ) {
+    // ...
+    if let Some(action)
+        = mouse_bindings.get(&event.input)
+    {
+      action(self, event.window);
+    }
+    // ...
+  }
+\end{rustblock}
+
+Population of and retrieval from \textsc{wmRS}'s \rsin{KeyBindings}
+\rsin{HashMap} is done in similar fashion.
+
+\subsection{Input Bindings: Remarks}
+
+In \textsc{wmRS}, simply registering a single mouse binding is quite verbose.
+To aid in populating the \rsin{HashMap}, and to increase readability and
+programmer convenience, Rust's \textit{macros} can be used. Specifically,
+\textit{declarative macros} facilitate a form of \textit{metaprogramming}---a
+way of \textit{writing code with code}\cite{therustbook, therustreference}.
 
 % Discuss {Build,}Hashers -> more efficient as we have known-to-be-distinct keys (input bindings),
 % Pass-through hasher
