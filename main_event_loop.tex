@@ -102,7 +102,7 @@ An astute reader may have noticed that the \ttt{Connection} interfaces of
 in \wmcpp, it simply returns an \cppin{Event}. In \cpp, when using a
 \cppin{std::variant}, it is encouraged to encode an empty alternative using
 \cppin{std::monostate}\cite{cppstd}. The same behavior \textit{could} instead
-have been encoded as \cppin{std::option<Event>}, where in this case, the first
+have been encoded as \cppin{std::optional<Event>}, where in this case, the first
 alternative of \cppin{Event} is omitted. The difference in usage mainly lies in
 the \textit{visiting} of \cppin{Event} alternatives, which we will discuss in
 the next section.

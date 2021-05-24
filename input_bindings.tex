@@ -228,7 +228,118 @@ logic looks somewhat as follows:
 Population of and retrieval from \textsc{wmRS}'s \rsin{KeyBindings}
 \rsin{HashMap} is done in similar fashion.
 
+\cppsubsection{std::function and std::unordered\_map}
+
+To achieve an analogous mouse and key binding setup in \textsc{wmCPP}, we
+first create \cpp{}-equivalent scoped enumerations (\cppin{enum class}) for
+\cppin{MouseEventKind} and \cppin{Button}, and an unscoped enumeration (C-style
+\cppin{enum}) for \cppin{Modifier}. Unfortunately, an \cppin{enum class} cannot
+be used to represent modifier keys, as that construct is not effective in
+encoding bit flags. The reason for this is that the logical disjunction of
+two scoped bit flag enumerators would not resolve into another valid scoped
+enumerator. Additionally, the following \cppin{struct}s are constructed to
+represent \cppin{MouseInput} and \cppin{MouseEvent}:
+
+\begin{cppblock}
+  struct MouseInput final {
+    const Button button;
+    const std::unordered_set<Modifier> modifiers;
+  };
+
+  struct MouseEvent final {
+    MouseEventKind kind;
+    MouseInput input;
+    std::optional<Window> window;
+  };
+\end{cppblock}
+
+Just as in \textsc{wmRS}, a hash map construct is used to map input
+abstractions to closures that call into the \cppin{Model} object. Specifically,
+\cppin{std::unordered_map}---and not \cppin{std::map}, which \textit{orders} its
+entries by key and is therefore (in this case needlessly) less efficient---will
+take as key arbitrary objects of type \cppin{T} that provide overloads for
+\cppin{operator==} and \cppin{std::hash<T>::operator()}. The first is the
+equality comparison operator, comparable to Rust's \rsin{PartialEq::eq} trait
+method. The \cppin{std::hash<T>} template's \cppin{operator()} overload
+implements a hash function that, when called, converts instances of type
+\cppin{T} into an unsigned integer (\cppin{std::size_t}) that represents the
+hashed value. \textsc{wmCPP}'s implementation for both overloads looks as
+follows:
+
+\begin{cppblock}
+inline bool
+operator==(const MouseInput& lhs, const MouseInput& rhs)
+{
+  return lhs.button == rhs.button
+    && lhs.modifiers == rhs.modifiers;
+}
+
+namespace std
+{
+  template <>
+  struct hash<MouseInput>
+  {
+    std::size_t
+    operator()(const MouseInput& input) const
+    {
+      std::size_t button_hash
+        = std::hash<Button>()(input.button);
+
+      std::size_t modifiers_hash
+        = std::hash<std::size_t>()(
+          std::accumulate(input.modifiers.begin(),
+            input.modifiers.end(),
+            static_cast<Modifier>(0),
+            std::bit_or<Modifier>()
+        )
+      );
+
+      return button_hash ^ modifiers_hash;
+    }
+  };
+}
+\end{cppblock}
+
+Conceptually, the same is happening here as in \textsc{wmRS}'s overloads for
+\rsin{PartialEq::eq} and \rsin{Hash::hash}. Comparison of \cppin{MouseInput}
+objects is simply done based on their constituent fields. To obtain the hashed
+value of such an object, we take the \textit{exclusive or} of the hashed values
+of both the \cppin{button} field and the logical disjunction of the values in
+the \cppin{modifiers} \cppin{std::unordered_set}. The \cppin{std::accumulate}
+function is similar to Rust's \rsin{Iterator::fold} method that \textit{folds}
+every element of a collection into an accumulator by applying some operation.
+In both cases, this operation is the logical disjunction (bitwise or), and the
+accumulator is initialized to zero. The reason \cppin{Modifier} needed to be an
+unscoped enumeration is due to this particular use of the \cppin{std::bit_or}
+operation. However, something is still missing. Since, out of the box, the
+bitwise or operator is not defined on \cppin{Modifier}'s enumerators, we must
+first define it ourselves:
+
+\begin{cppblock}
+  inline Modifier
+  operator|(Modifier lhs, Modifier rhs)
+  {
+    return static_cast<Modifier>(
+      static_cast<std::size_t>(lhs)
+        | static_cast<std::size_t>(rhs)
+    );
+  }
+\end{cppblock}
+
+% convey
+
 \subsection{Input Bindings: Remarks}
+
+Whereas Rust uses streaming hashers, consuming an arbitrary amount of
+data byte-per-byte until it is told to yield a hashed summary, \cpp{}'s
+\cppin{std::hash<T>::operator()} relies on so-called \textit{hash
+coding}\cite{buildingahashmap}. Hash coding is a lot less convenient---as
+can clearly be seen in the examples provided above---as complex data types
+are expected to be reduced into a single integer within the body of a single
+function\cite{buildingahashmap}. Moreover, \cpp does not allow for a central
+(e.g. on a per \rsin{HashMap} instance basis) hashing algorithm to be defined,
+which Rust does allow for through its \rsin{Hasher} trait\cite{therustbook,
+therustreference}.
 
 In \textsc{wmRS}, simply registering a single mouse binding is quite verbose.
 To aid in populating the \rsin{HashMap}, and to increase readability and
