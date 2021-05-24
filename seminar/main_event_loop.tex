@@ -37,14 +37,13 @@ and, aside from encoding \textit{meaning}, is also able to encapsulate
   pub enum Event {
     Mouse { event: MouseEvent },
     Key { event: KeyEvent },
-    FocusRequest { window: Window },
     CloseRequest { window: Window },
     ScreenChange,
     // ...
   }
 \end{rustblock}
 
-The first four variants are what are known as \textit{struct-like} variants
+The first thee variants are what are known as \textit{struct-like} variants
 with named fields, whereas the last one is a fieldless variant that comprises
 only an identifier\cite{therustreference}. Behind the scenes, each \rsin{enum}
 instance has an associated integer that is used to determine the underlying
@@ -77,7 +76,6 @@ follows.
     std::monostate,
     Mouse,
     Key,
-    FocusRequest,
     CloseRequest,
     ScreenChange,
     // ...
@@ -126,8 +124,6 @@ partly looks as follows.
           => self.handle_mouse(event, /*...*/),
         Event::Key { keycode, }
           => self.handle_key(keycode, /*...*/),
-        Event::FocusRequest { window, }
-          => self.handle_focus_request(window),
         Event::CloseRequest { window, }
           => self.handle_close_request(window),
         Event::ScreenChange
@@ -167,7 +163,7 @@ Additionally matching on this \ttt{event}, all \textit{variants} that can
 possibly exist for its type are enumerated, binding identifiers to each of
 the fields in the struct-like variants defined in the \ttt{Event} enum, which
 are then passed on to handler methods within the \ttt{Model} (e.g. \rsin{fn
-handle_focus_request(window: Window)}).
+handle_close_request(window: Window)}).
 
 % https://news.ycombinator.com/item?id=15249994
 % https://bitbashing.io/std-visit.html
@@ -188,7 +184,6 @@ example visitor for the \ttt{Event} variant, defined within \wmcpp's \ttt{Model}
 class, partly looks as follows.
 
 \begin{cppblock}
-  // ...
   class Model;
   class Model final
   {
@@ -199,16 +194,14 @@ class, partly looks as follows.
     struct EventVisitor
     {
       EventVisitor(Model& model): model(model) {}
-
+\end{cppblock}
+\begin{cppblock}
       void operator()(std::monostate) {}
       void operator()(Mouse event) {
         model.handle_mouse(event);
       }
       void operator()(Key event) {
         model.handle_key(event);
-      }
-      void operator()(FocusRequest event) {
-        model.handle_focus_request(event);
       }
       void operator()(CloseRequest event) {
         model.handle_close_request(event);

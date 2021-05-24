@@ -163,10 +163,9 @@ still\cite{therustbook, rusttraitsdeepdive}. A small snippet from \wmrs's
 \begin{rustblock}
   pub trait Connection {
     fn step(&self) -> Option<Event>;
-    fn close_window(&self, window: Window) -> bool;
     fn move_window(&self, window: Window, pos: Pos);
     fn resize_window(&self, window: Window, dim: Dim);
-    fn focus_window(&self, window: Window);
+    fn close_window(&self, window: Window);
     // ...
   }
 \end{rustblock}
@@ -192,21 +191,21 @@ Window System, is partly given as follows:
 
 \begin{rustblock}
   use x11rb::connection;
- 
+\end{rustblock}
+\begin{rustblock}
   pub struct XConnection
     <'conn, Conn: connection::Connection>
   {
     conn: &'conn Conn,
     // ...
   }
- 
+\end{rustblock}
+\begin{rustblock}
   impl<'conn, Conn: connection::Connection>
     Connection for XConnection<'conn, Conn>
   {
     #[inline]
-    fn step(&self) -> Option<Event> {
-      // ...
-    }
+    fn step(&self) -> Option<Event> { /* ... */ }
     // ...
   }
 \end{rustblock}
@@ -254,20 +253,13 @@ allows for cycling forward and backward through a collection of generic items.
   pub struct Cycle<T>
   where
     T: Identify + Debug,
-  {
-    index: Cell<Index>,
-    elements: VecDeque<T>,
-    indices: HashMap<Ident, Index, BuildIdHasher>,
-    unwindable: bool,
-    stack: RefCell<HistoryStack>,
-  }
-
+  { /* ... */ }
+\end{rustblock}
+\begin{rustblock}
   impl<T> Cycle<T>
   where
       T: Identify + Debug,
-  {
-    // ...
-  }
+  { /* ... */ }
 \end{rustblock}
 
 This struct is used to cycle through both the workspace structures managed
@@ -327,10 +319,9 @@ as such \textit{must} be implemented by any inheriting subclasses. Consider
     virtual ~Connection() {}
   
     virtual Event step() = 0;
-    virtual bool close_window(Window) = 0;
     virtual void move_window(Window, Pos) = 0;
     virtual void resize_window(Window, Dim) = 0;
-    virtual void focus_window(Window) = 0;
+    virtual void close_window(Window) = 0;
     // ...
   };
 \end{cppblock}

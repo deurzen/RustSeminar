@@ -22,7 +22,7 @@ been activated.
 
 \rssubsection{Storing and Retrieving Callable Objects}
 
-To attach window management activities to these key and mouse bindings,
+To attach window management actions to these key and mouse bindings,
 \textsc{wmRS} uses a Rust \rsin{HashMap} to map resp. mouse and key input state
 abstractions to \textit{closures} that call into part of the \texttt{Model}.
 Mouse input abstractions look something like the following (parts redacted for
@@ -34,7 +34,6 @@ clarity):
     Press, Release, Motion,
   }
 \end{rustblock}
-
 \begin{rustblock}
   #[derive(Clone, Copy, PartialEq, Eq, Hash)]
   pub enum Button {
@@ -46,11 +45,9 @@ clarity):
   #[derive(Clone, Copy, PartialEq, Eq, Hash)]
   pub enum Modifier {
     Ctrl = 1 << 0, Shift = 1 << 1,
-    Super = 1 << 2, Alt = 1 << 3,
-    // ...
+    Super = 1 << 2, Alt = 1 << 3, // ...
   }
 \end{rustblock}
-
 \begin{rustblock}
   #[derive(PartialEq, Eq)]
   pub struct MouseInput {
@@ -58,7 +55,6 @@ clarity):
     pub modifiers: HashSet<Modifier>,
   }
 \end{rustblock}
-
 \begin{rustblock}
   #[derive(PartialEq, Eq, Hash)]
   pub struct MouseEvent {
@@ -184,7 +180,8 @@ To finally add a new mouse binding, we insert an input/action pair into the
 
 \begin{rustblock}
   let mut mouse_bindings = HashMap::new();
-
+\end{rustblock}
+\begin{rustblock}
   mouse_bindings.insert(
     MouseInput {
       button: Button::Middle,
@@ -245,7 +242,8 @@ represent \cppin{MouseInput} and \cppin{MouseEvent}:
     const Button button;
     const std::unordered_set<Modifier> modifiers;
   };
-
+\end{cppblock}
+\begin{cppblock}
   struct MouseEvent final {
     MouseEventKind kind;
     MouseInput input;
@@ -273,7 +271,8 @@ operator==(const MouseInput& lhs, const MouseInput& rhs)
   return lhs.button == rhs.button
     && lhs.modifiers == rhs.modifiers;
 }
-
+\end{cppblock}
+\begin{cppblock}
 namespace std
 {
   template <>
@@ -326,6 +325,60 @@ first define it ourselves:
   }
 \end{cppblock}
 
+Now, to capture and store hooks into the \cppin{Model} instance in the
+\cppin{unordered_map}, the \cppin{std::function} class template is used, a
+polymorphic function wrapper that encapsulates a callable \textit{target}.
+Particularly, as in \textsc{wmRS}, \cppin{MouseAction} is simply a type alias:
+
+\begin{cppblock}
+  typedef
+    std::function<void(Model&, std::optional<Window>)>
+    MouseAction;
+\end{cppblock}
+
+And so is the \cppin{MouseBindings} type that represents the map between input
+abstractions and actions:
+
+\begin{cppblock}
+  typedef
+    std::unordered_map<MouseInput, MouseAction>
+    MouseBindings;
+\end{cppblock}
+
+An instance of this type is stored as a field inside of the \cppin{Model}
+instance. Registering the initial bindings happens inside of \cppin{Model}'s
+constructor, and can be done rather compactly as follows:
+
+\begin{cppblock}
+  Model(/* ... */)
+    : mouse_bindings({
+      { { Button::Middle, { Ctrl, Shift, Super } },
+        { [](Model& model, std::optional<Window> w) {
+            if (w) model.set_fullscreen_window(*w);
+          }
+        }
+      },
+      // ...
+    })
+  { /* ... */ }
+\end{cppblock}
+
+To subsequently retrieve a mouse binding and call its target, the relevant
+\cppin{MouseEvent} event dispatches work to a handler method that partly
+comprises the following:
+
+\begin{cppblock}
+  void
+  Model::handle_mouse(MouseEvent& event)
+  {
+    MouseBindings& mb = this->mouse_bindings;
+\end{cppblock}
+\begin{cppblock}
+    if (mb.find(event.input) != mb.end())
+      mb.at(event.input)(*this, event.window);
+  }
+\end{cppblock}
+
 % convey
 
 \subsection{Input Bindings: Remarks}
@@ -346,6 +399,8 @@ To aid in populating the \rsin{HashMap}, and to increase readability and
 programmer convenience, Rust's \textit{macros} can be used. Specifically,
 \textit{declarative macros} facilitate a form of \textit{metaprogramming}---a
 way of \textit{writing code with code}\cite{therustbook, therustreference}.
+
+% Plus: Rust -> Traits for everything => operator overloading
 
 % Discuss {Build,}Hashers -> more efficient as we have known-to-be-distinct keys (input bindings),
 % Pass-through hasher
