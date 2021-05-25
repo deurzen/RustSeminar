@@ -317,7 +317,8 @@ as such \textit{must} be implemented by any inheriting subclasses. Consider
   {
   public:
     virtual ~Connection() {}
-  
+\end{cppblock}
+\begin{cppblock}
     virtual Event step() = 0;
     virtual void move_window(Window, Pos) = 0;
     virtual void resize_window(Window, Dim) = 0;
@@ -343,7 +344,8 @@ part of \cppin{Connection}'s implementation.
 \begin{cppblock}
   #include "connection.hh"
   #include "log.hh"
-
+\end{cppblock}
+\begin{cppblock}
   // ...
   void
   Connection::focus_window(Window window)
@@ -365,7 +367,8 @@ follows.
 
 \begin{cppblock}
   #include "connection.hh"
-
+\end{cppblock}
+\begin{cppblock}
   // ...
   class XConnection final: public Connection
   {
@@ -392,7 +395,8 @@ abstract class, providing an implementation specific to that windowing system.
 
 \begin{cppblock}
   #include "connection.hh"
-
+\end{cppblock}
+\begin{cppblock}
   // ...
   class Model final
   {

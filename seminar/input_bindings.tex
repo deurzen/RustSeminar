@@ -5,8 +5,6 @@
 %       - data structures and language features used to represent key bindings
 %       - verbose (kranewm, C++) vs use of macros (wzrd, Rust)
 
-% https://locka99.gitbooks.io/a-guide-to-porting-c-to-rust/content/features_of_rust/macros.html
-
 Key and mouse bindings are the central point of interaction between the user and
 the window manager. At a high level, as the name would suggest, they work by
 \textit{binding} to sets of \textit{input states}. These input states typically
@@ -100,23 +98,26 @@ manager's \texttt{Model} then looks as follows:
   >;
 \end{rustblock}
 
-These are simple \textit{type alias} declarations, giving existing (in
-this case compound) types a new name. The first two represent closures
-that hook into (i.e. take as parameter) a \textit{mutable}---or, more
-semantically explicative: \textit{exclusive}---reference to the model
-instance\cite{therustbook}. \rsin{FnMut} is a trait that describes the calling
-of a function that is allowed to change (\textit{mutate}) state; it permits
-its implementors to use call syntax, such that they can act and look like
-regular function pointers. \rsin{Box} \textit{boxes} up a value, storing it
-on the heap and yielding a pointer to it (under the hood). Specifically,
-here, that means that \textit{some} type that implements the \rsin{FnMut}
-trait and takes a mutable reference to a model instance (\rsin{dyn FnMut(&mut
-Model<'_>)}) is boxed up and stored on the heap for future reference. We
-require the use of \rsin{Box}, because we want to be able to store \textit{any
-implementor} of the \rsin{FnMut} trait. To do so, Rust will again rely on
-dynamic dispatch\cite{rustclosureshard}. The advantage of this approach is
-that it facilitates the changing of input bindings at runtime, allowing for
-multi-mode hierarchical input bindings, as well as dynamic user-initiated
+These are simple \textit{type alias} declarations, giving existing (in this case
+compound) types a new name. The first two represent closures that hook into
+(i.e. take as parameter) a \textit{mutable}---or, more semantically explicative:
+\textit{exclusive}---reference to the model instance\cite{therustbook}.
+\rsin{FnMut} is a trait that describes the calling of a function that is
+allowed to change (\textit{mutate}) state; it permits its implementors to use
+call syntax, such that they can act and look like regular function pointers.
+\rsin{Box} \textit{boxes} up a value, storing it on the heap and yielding
+a pointer to it (under the hood). Specifically, for \rsin{KeyAction}, that
+means that \textit{some} type that implements the \rsin{FnMut} trait and takes
+a mutable reference to a model instance (\rsin{dyn FnMut(&mut Model<'_>)})
+is boxed up and stored on the heap for future reference. We require the use
+of \rsin{Box}, because we want to be able to store \textit{any implementor}
+of the \rsin{FnMut} trait. Since the size of an arbitrary implementor is
+not fixed (in Rust terms: \rsin{FnMut} does not implement the \rsin{Sized}
+trait), we require this indirection through \rsin{Box}, which will point to a
+virtual table. To retrieve the exact function to call, Rust will again rely
+on dynamic dispatch\cite{rustclosureshard}. The advantage of this approach
+is that it facilitates the changing of input bindings at runtime, allowing
+for multi-mode hierarchical input bindings, as well as dynamic user-initiated
 binding customizations.
 
 To be able to use \rsin{KeyInput} and \rsin{MouseInput} as keys to the
@@ -191,10 +192,10 @@ To finally add a new mouse binding, we insert an input/action pair into the
         modifiers.insert(Modifier::Shift);
         modifiers.insert(Modifier::Super);
         modifiers
-      }
+      },
     },
-    Box::new(|model: &mut Model, w: Option<Window>| {
-      if let Some(window) = w {
+    Box::new(|model: &mut Model, win: Option<Window>| {
+      if let Some(window) = win {
         model.set_fullscreen_window(window);
       }
     })
@@ -208,13 +209,13 @@ logic looks somewhat as follows:
 
 \begin{rustblock}
   fn handle_mouse(
-      &mut self,
-      event: MouseEvent,
-      mouse_bindings: &MouseBindings,
+    &mut self,
+    event: MouseEvent,
+    mouse_bindings: &MouseBindings,
   ) {
     // ...
     if let Some(action)
-        = mouse_bindings.get(&event.input)
+      = mouse_bindings.get(&event.input)
     {
       action(self, event.window);
     }
@@ -251,18 +252,18 @@ represent \cppin{MouseInput} and \cppin{MouseEvent}:
   };
 \end{cppblock}
 
-Just as in \textsc{wmRS}, a hash map construct is used to map input
-abstractions to closures that call into the \cppin{Model} object. Specifically,
-\cppin{std::unordered_map}---and not \cppin{std::map}, which \textit{orders} its
-entries by key and is therefore (in this case needlessly) less efficient---will
-take as key arbitrary objects of type \cppin{T} that provide overloads for
-\cppin{operator==} and \cppin{std::hash<T>::operator()}. The first is the
-equality comparison operator, comparable to Rust's \rsin{PartialEq::eq} trait
-method. The \cppin{std::hash<T>} template's \cppin{operator()} overload
-implements a hash function that, when called, converts instances of type
-\cppin{T} into an unsigned integer (\cppin{std::size_t}) that represents the
-hashed value. \textsc{wmCPP}'s implementation for both overloads looks as
-follows:
+Just as in \textsc{wmRS}, a hash map construct (\textit{associative container}
+in \cpp parlance) is used to map input abstractions to closures that call into
+the \cppin{Model} object. Specifically, \cppin{std::unordered_map}---and not
+\cppin{std::map}, which \textit{orders} its entries by key and is therefore
+(in this case needlessly) less efficient---will take as key arbitrary
+objects of type \cppin{T} that provide overloads for \cppin{operator==} and
+\cppin{std::hash<T>::operator()}. The first is the equality comparison operator,
+comparable to Rust's \rsin{PartialEq::eq} trait method. The \cppin{std::hash<T>}
+template's \cppin{operator()} overload implements a hash function that,
+when called, converts instances of type \cppin{T} into an unsigned integer
+(\cppin{std::size_t}) that represents the hashed value. \textsc{wmCPP}'s
+implementation for both overloads looks as follows:
 
 \begin{cppblock}
 inline bool
@@ -283,7 +284,8 @@ namespace std
     {
       std::size_t button_hash
         = std::hash<Button>()(input.button);
-
+\end{cppblock}
+\begin{cppblock}
       std::size_t modifiers_hash
         = std::hash<std::size_t>()(
           std::accumulate(input.modifiers.begin(),
@@ -292,7 +294,8 @@ namespace std
             std::bit_or<Modifier>()
         )
       );
-
+\end{cppblock}
+\begin{cppblock}
       return button_hash ^ modifiers_hash;
     }
   };
@@ -336,8 +339,21 @@ Particularly, as in \textsc{wmRS}, \cppin{MouseAction} is simply a type alias:
     MouseAction;
 \end{cppblock}
 
-And so is the \cppin{MouseBindings} type that represents the map between input
-abstractions and actions:
+Just like Rust's \rsin{FnMut}, calling a \cppin{std::function} instance will
+make use of dynamic dispatch to retrieve the logic to execute\cite{cppstd}.
+The reason this virtual lookup is required is because, under the hood, the
+callable object gets wrapped inside a structure that additionally contains
+possibly bound data\cite{cppstd}. As a result, the exact type and, by
+extension, its size, will not be known to callers of the \cppin{std::function}
+instance\cite{underhoodfunction}. A benefit to \cpp{}'s \cppin{std::function}
+over Rust's \rsin{FnMut} is that memory will not be dynamically allocated when
+storing lambda functions without any bound parameters, thanks to \cpp{}'s
+\textit{Small Buffer Optimization}\cite{commonoptimizations, underhoodfunction}.
+That implies that retrieving such instances from a growable collection, such as
+a hash map, saves us one level of indirection.
+
+The \cppin{MouseBindings} type that represents the map between input
+abstractions and actions is also a simple type alias:
 
 \begin{cppblock}
   typedef
@@ -345,17 +361,17 @@ abstractions and actions:
     MouseBindings;
 \end{cppblock}
 
-An instance of this type is stored as a field inside of the \cppin{Model}
-instance. Registering the initial bindings happens inside of \cppin{Model}'s
-constructor, and can be done rather compactly as follows:
+An instance of this type is stored as a member field inside of the \cppin{Model}
+instance. Registering the initial bindings happens through \cppin{Model}'s
+constructor, and can be done rather compactly using \textit{aggregate
+initialization} as follows\cite{stdcpp}:
 
 \begin{cppblock}
   Model(/* ... */)
     : mouse_bindings({
       { { Button::Middle, { Ctrl, Shift, Super } },
-        { [](Model& model, std::optional<Window> w) {
-            if (w) model.set_fullscreen_window(*w);
-          }
+        [](Model& model, std::optional<Window> win) {
+          if (win) model.set_fullscreen_window(*win);
         }
       },
       // ...
@@ -394,13 +410,42 @@ function\cite{buildingahashmap}. Moreover, \cpp does not allow for a central
 which Rust does allow for through its \rsin{Hasher} trait\cite{therustbook,
 therustreference}.
 
+Rust's way of overloading operators through trait implementations is also
+a much cleaner approach than that of \cpp. Depending on the operator, \cpp
+operator overloading is done through class methods, non-method functions,
+non-member friend functions, or even by providing a concrete implementation to
+a templated class, such as in our \cppin{std::hash<MouseInput>::operator()}
+example above\cite{cppstd}.
+
+% https://locka99.gitbooks.io/a-guide-to-porting-c-to-rust/content/features_of_rust/macros.html
+
 In \textsc{wmRS}, simply registering a single mouse binding is quite verbose.
 To aid in populating the \rsin{HashMap}, and to increase readability and
-programmer convenience, Rust's \textit{macros} can be used. Specifically,
+programmer convenience, Rust \textit{macros} can be used. In particular,
 \textit{declarative macros} facilitate a form of \textit{metaprogramming}---a
-way of \textit{writing code with code}\cite{therustbook, therustreference}.
+way of \textit{writing code with code}\cite{therustbook, therustreference,
+rustmacros}. Declarative macros allow code to be generated by providing
+\rsin{match}-like syntax, which is particularly useful for elimiting duplicate
+code. Function-like declarative macros could reduce the code from our example
+above into the following:
 
-% Plus: Rust -> Traits for everything => operator overloading
+\begin{rustblock}
+  let mouse_bindings = init_mouse_bindings!(
+    1-C-S-Middle => execute_model_window!(model, win,
+      if let Some(window) = win {
+        model.set_fullscreen_window(window);
+      }
+    ),
+    // more mouse bindings
+  );
+\end{rustblock}
+
+Here, \rsin{init_mouse_bindings!} and \rsin{execute_model_window!} are macro
+invocations. Another form of Rust macros, called \textit{procedural macros},
+are even more powerful, but also more complex\cite{rustmacros}. These macros
+allow the Rust syntax to be expanded; they take arbitrary input, operate on the
+abstract syntax tree, and produce valid Rust code\cite{rustmacros}. \cpp does
+not have a similarly powerful meta-programming feature\cite{cppstd}.
 
 % Discuss {Build,}Hashers -> more efficient as we have known-to-be-distinct keys (input bindings),
 % Pass-through hasher

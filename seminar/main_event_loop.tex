@@ -206,8 +206,8 @@ class, partly looks as follows.
       void operator()(CloseRequest event) {
         model.handle_close_request(event);
       }
-      void operator()(ScreenChange event) {
-        model.handle_screen_change(event);
+      void operator()(ScreenChange) {
+        model.handle_screen_change();
       }
       // ...
     private:
