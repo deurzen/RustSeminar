@@ -5,12 +5,28 @@
 %       - wrapper around X11 window
 %       - directly manipulated by practically all parts of the program
 %       - reason for pointer (C++) vs id (Rust) representation
-{ \textcolor{gray}\blindtext }
 
-\subsection{Reference Management}
-% TODO: - difference between using direct/smart pointer (C++) vs non-pointer
-%         indirection (Rust)
-{ \textcolor{gray}\blindtext }
+So far, the notion of a \textit{window} was used throughout without defining
+what exactly it is to entail. In both \textsc{wmRS} and \textsc{wmCPP}, a
+\texttt{Window} is a unique identifier for a window that, again, maps windowing
+system specific representations to an abstraction that is to be used within
+the window manager. A window in and of itself therefore does not contain any
+\textit{state}. To associate state with a window, we wrap it in a structure
+that we call a \textit{client}. Clients are objects that contain all relevant
+information about a window: its title, position and size on-screen, process
+identifier, whether it is in the fullscreen state, and much more.
 
-\subsection{State}
-{ \textcolor{gray}\blindtext }
+\rssubsection{Mutable State with Cell and RefCell}
+
+Part of \textsc{wmRS}'s client structure looks as follows.
+
+\begin{rustblock}
+  pub struct Client {
+    window: Window,
+    title: RefCell<String>,
+    workspace: Cell<usize>,
+    active_region: Cell<Region>,
+    managed_since: SystemTime,
+    // ...
+  }
+\end{rustblock}
