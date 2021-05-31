@@ -1,0 +1,47 @@
+%&latex
+\section{Collision in header guards}\label{appendixa}
+
+Appendix \ref{appendixa} shows the type of error that may arise when a minor
+programmer oversight results in a collision in the header guards of two header
+files that are included throughout a \cpp project. Consider the following two
+files that are part of \textsc{wmCPP}.
+
+\begin{cppblock}
+  #ifndef __WINSYS_WINDOW_H_GUARD__
+  #define __WINSYS_WINDOW_H_GUARD__
+  
+  namespace winsys {
+
+    typedef int Window;
+
+    // ...
+
+  }
+
+  #endif//__WINSYS_WINDOW_H_GUARD__
+\end{cppblock}
+
+\begin{cppblock}
+  #ifndef __WINSYS_EVENT_H_GUARD__
+  #define __WINSYS_EVENT_H_GUARD__
+  
+  #include "common.hh"
+  #include "window.hh"
+  #include "geometry.hh"
+  #include "input.hh"
+  
+  #include <optional>
+  #include <variant>
+  
+  namespace winsys {
+
+    enum class StackMode
+    {
+        Above,
+        Below
+    };
+  
+    // ...
+  }
+  #endif//__WINSYS_EVENT_H_GUARD__
+\end{cppblock}

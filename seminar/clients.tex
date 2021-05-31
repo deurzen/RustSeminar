@@ -8,25 +8,112 @@
 
 So far, the notion of a \textit{window} was used throughout without defining
 what exactly it is to entail. In both \textsc{wmRS} and \textsc{wmCPP}, a
-\texttt{Window} is a unique identifier for a window that, again, maps windowing
-system specific representations to an abstraction that is to be used within
-the window manager. A window in and of itself therefore does not contain any
-\textit{state}. To associate state with a window, we wrap it in a structure
-that we call a \textit{client}. Clients are objects that contain all relevant
-information about a window: its title, position and size on-screen, process
-identifier, whether it is in the fullscreen state, and much more.
+\texttt{Window} is a unique identifier (e.g., a \rsin{usize}) for a window that,
+again, maps windowing system specific representations to an abstraction that is
+to be used within the window manager. A window in and of itself therefore does
+not contain any \textit{state}. To associate state with a window, we wrap it in
+a structure that we call a \textit{client}. Clients are objects that contain all
+relevant information about a window: its title, position and size on-screen,
+process identifier, whether it is in the fullscreen state, and much more.
 
 \rssubsection{Mutable State with Cell and RefCell}
 
-Part of \textsc{wmRS}'s client structure looks as follows.
+So far, we have deferred discussing a major aspect of the Rust programming
+language: \textit{mutability}. Rust's \rsin{mut} keyword carries two kinds
+of semantics, depending on where it is used. In patterns, \rsin{mut} indeed
+indicates that mutating is allowed. In references, however, it rather pertains
+to \textit{exclusivity}. That is, a \rsin{&mut} reference is not allowed to be
+\textit{aliased}. Consider part of \textsc{wmRS}'s \rsin{Client} structure:
 
 \begin{rustblock}
   pub struct Client {
     window: Window,
-    title: RefCell<String>,
-    workspace: Cell<usize>,
-    active_region: Cell<Region>,
+    name: RefCell<String>,
+    parent: Option<Window>,
+    children: RefCell<Vec<Window>>,
+    fullscreen: Cell<bool>,
     managed_since: SystemTime,
     // ...
   }
 \end{rustblock}
+
+We want to pass around references to instances of this structure throughout
+the \rsin{Model}, to read and alter state, and make window management
+decisions accordingly. One possibility would be to have the different
+client-mutating methods that are part of the \rsin{Model} take as parameter
+a \rsin{&mut Client}. While this is a plausible approach, it heavily limits
+us in using and passing around references. In concreto, no more than a single
+reference to a to-be-changed \rsin{Client} may exist at a time. This is
+particularly troublesome, as we need to store \rsin{Client} instances within the
+\rsin{Model}, as follows:
+
+\begin{rustblock}
+  pub struct Model<'model> {
+    client_map: HashMap<Window, Client>,
+    // ...
+  }
+\end{rustblock}
+
+Since mutability transitively affects all surrounding structures, mutating a
+single field within a \rsin{Client} instance means that that instance would have
+to be \rsin{&mut}. This additionally requires that the \rsin{Model}'s method
+that retrieves and operates on such an instance would \textit{also} have to
+take \rsin{&mut self}. As a result, something like the following would not be
+possible:
+
+\begin{rustblock}
+  impl<'model> Model<'model> {
+    fn set_fullscreen_window(&mut self, win: Window) {
+      if let Some(c) = self.client_map.get_mut(&win) {
+        self.set_fullscreen_client(c);
+      }
+    }
+\end{rustblock}
+\begin{rustblock}
+    fn set_fullscreen_client(&self, cli: &mut Client) {
+      cli.set_fullscreen(true);
+    }
+    // ...
+  }
+\end{rustblock}
+
+Even though \rsin{set_fullscreen_client} can be called on a non-exclusive
+reference to the model (i.e. it takes \rsin{&self}), the above will not compile,
+as an immutable borrow of \rsin{self} occurs after a mutable one inside
+\rsin{set_fullscreen_window}, which is not allowed due to the exclusivity rules
+discussed above.
+
+Moreover, it is rarely the
+case that more than a single field of a \rsin{Client} instance is mutated.
+The \rsin{set_fullscreen_client} method will only change the value of the
+\rsin{fullscreen} field, for instance.
+
+Furthermore, two types of mutability exist: \textit{interior}
+and \textit{exterior} mutability. Part of \textsc{wmRS}'s client structure looks
+as follows:
+
+Each field that is expected to \textit{mutate} throughout program
+execution---representing state changes instigated by windowing system
+events---gets wrapped inside either a \rsin{Cell} or a \rsin{RefCell}.
+
+That is,
+an \textit{alias} of that instance may not exist elsewhere within the
+program.  What \rsin{Cell} and \rsin{RefCell} allow
+us to do, is to instead take as parameter a non-exclusive \rsin{&Client} as
+parameter, and mutate individual fields, therein enabling reference aliasing.
+Consider the following \rsin{Client} method:
+
+\begin{rustblock}
+  impl Client {
+    pub fn set_fullscreen(&self, bool: value) {
+      self.fullscreen.set(value);
+    }
+    // ...
+  }
+\end{rustblock}
+
+To be able to call this method on a \rsin{Client} reference, that reference
+does not need to be exclusive (due to it operating on \rsin{&self} instead of
+\rsin{&mut self}).
+
+% https://stackoverflow.com/questions/63487359/interior-mutability-abuse-in-api-design#:~:text=Conversely%2C%20C%2B%2B%20has%20nothing%20like,implicitly%20behind%20an%20UnsafeCell%20already.

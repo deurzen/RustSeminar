@@ -31,14 +31,15 @@ of code.
 
 \cpp does not come with an external dependency manager. That is to say, the
 official ISO standard \cpp specification\cite{cppstd} does not outline the
-functionality or otherwise existence of any package manager. As a result,
-developers have no other choice than to resort to third-party tools to manage
-dependencies, to reinvent the wheel themselves and hack together configure and
-build scripts that take external dependencies into account, or to disregard
-package management altogether and let other developers and end users resolve
-dependencies on their own. In any case, \cpp dependency management is complex,
-and the lack of a standardized tool inhibits the adoption of \cpp projects, as
-well as their portability to other platforms and development environments.
+functionality or otherwise existence of any \textit{package manager}. As a
+result, developers have no other choice than to resort to third-party tools
+to manage dependencies, to reinvent the wheel themselves and hack together
+configure and build scripts that take external dependencies into account, or to
+disregard package management altogether and let other developers and end users
+resolve dependencies on their own. In any case, \cpp dependency management is
+complex, and the lack of a standardized tool inhibits the adoption of \cpp
+projects, as well as their portability to other platforms and development
+environments.
 
 Since the only external dependency \wmcpp is reliant on is \ttt{libX11}, which
 is fairly ubiquitous and readily available through distributions' own package
@@ -82,7 +83,7 @@ dependency was already introduced).
 
 % https://doc.rust-lang.org/cargo/guide/
 
-\rssubsection{Cargo}
+\rssubsection{Automated Dependency Management using Cargo}
 
 The Rust programming language has its own package manager, called
 \textup{Cargo}. \textup{Cargo} can automatically download a project's external
@@ -144,8 +145,8 @@ binary executable crates (\ttt{wmRS}, \ttt{wmRSbar}, and \ttt{wmRSclient}).
 
 \rssubsection{Decoupling External Dependencies using Traits}
 
-\textsc{wmRS}'s \rsin{winsys} library is an abstraction above and wrapper around
-the interface with the underlying windowing system. It defines a single Rust
+\textsc{wmRS}'s \rsin{winsys} library is an abstraction above and wrapper
+around the API into the underlying windowing system. It defines a single Rust
 \textit{trait} that represents the connection between the window manager and
 some windowing system. A trait is a \textit{zero-overhead}\cite{rustblogtraits}
 collection of methods that is declared for some (at declare-time) unknown type
@@ -180,13 +181,13 @@ system wrapper is required to contain. This allows for the decoupling of the
 implementation of the higher-level window management functionality from that of
 the interface with the windowing system (e.g. the explicit drawing of primitives
 to the screen, or the management and manipulation of windowing system specific
-window representations), and additionally allows for the seamless transition
-from one windowing system to another, as multiple windowing systems can be
-targeted by implementing the trait, effectively creating a new wrapper around
-an external library that directly interfaces that windowing system. Currently,
-\wmrs only implements the interface with the X Window System, but interfacing
-with the newer and more modern Wayland\cite{wayland} is as easy as implementing
-a new connection to it. \wmrs's implementation for this trait, targeting the X
+window representations). It additionally allows for the seamless transition from
+one windowing system to another, as multiple windowing systems can be targeted
+by implementing the trait, effectively creating a new wrapper around an external
+library that directly interfaces that windowing system. Currently, \wmrs only
+implements the interface with the X Window System, but interfacing with the
+newer and more modern Wayland\cite{wayland} is as easy as implementing a new
+\rsin{Connection} to it. \wmrs's implementation for this trait, targeting the X
 Window System, is partly given as follows:
 
 \begin{rustblock}
