@@ -231,10 +231,10 @@ While Rust's mutability rules make the language much more secure in regard to
 memory-safety and data races, its borrowing system is actually more restrictive
 than strictly necessary to ensure these guarantees. That is to say, in a
 \textit{perfect implementation}, static (i.e. compile-time) borrow checking
-would be as flexible as dynamic (i.e. runtime) borrow checking. That is
-consequently the main reason for the existence of Rust's interior mutability
-constructs: This perfect implementation does not exist. And, for several good
-reasons, two of which are language simplicity and compilation speed.
+would be as flexible as dynamic (i.e. runtime) borrow checking. The main reason
+for the existence of Rust's interior mutability constructs is that this perfect
+implementation \textit{does not exist}. And, for several good reasons, two of
+which being language simplicity and compilation speed.
 
 From a pure pragmatics standpoint, Rust's mutability restrictions add
 significant additional accounting effort. In fact, they even render the
