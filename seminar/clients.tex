@@ -7,25 +7,30 @@
 %       - reason for pointer (C++) vs id (Rust) representation
 
 So far, the notion of a \textit{window} was used throughout without defining
-what exactly it is to entail. In both \textsc{wmRS} and \textsc{wmCPP}, a
-\texttt{Window} is a unique identifier (e.g., an unsigned integer) for a
-window that, again, maps windowing system specific representations to an
-abstraction that is to be used within the window manager. A window in and of
+what exactly it is to entail. In both \textsc{wmRS} and \textsc{wmCPP}, the
+\texttt{Window} type is a unique identifier (e.g., an unsigned integer) for a
+window that, again, serves to map windowing system specific representations to
+an abstraction that is to be used within the window manager. A window in and of
 itself therefore does not contain any \textit{state}. To associate state with a
 window, we wrap around it a structure that we call a \textit{client}. Clients
-are objects that contain all relevant information about a window: its title,
-position and size on-screen, process identifier, whether it is in fullscreen
-mode, and much more.
+are objects that contain all relevant information about a window with regard to
+the window manager: its title, position and size on-screen, process identifier,
+whether it is in fullscreen mode, and much more.
 
 \rssubsection{Mutable State with Cell and RefCell}
 
-We have thus far deferred discussing a major aspect of the Rust programming
-language: \textit{mutability}. Rust's \rsin{mut} keyword carries two kinds
-of semantics, depending on where it is used. In patterns, \rsin{mut} indeed
-indicates that changing the underlying value is allowed. In references, however,
-it rather pertains to \textit{exclusivity}. That is, a \rsin{&mut} reference may
-be mutated, but additionally is not allowed to be \textit{aliased}. Consider
-part of \textsc{wmRS}'s \rsin{Client} structure:
+We have thus far deferred discussing a major aspect of the Rust
+programming language: \textit{mutability}. Rust's \rsin{mut} keyword
+carries two kinds of semantics, depending on where it is used. In
+patterns, \rsin{mut} indeed indicates that changing the underlying value
+is allowed\cite{therustbook, intmutpatterns}. In references, however,
+it rather pertains to \textit{exclusivity}. That is, a \rsin{&mut}
+reference may be mutated, but additionally is not allowed to be
+\textit{aliased}\cite{therustbook, intmutpatterns}. The reason this rule
+exist, is because Rust's safety foundation is based on the principle
+\text{\textit{aliasing} \texttt{XOR} \textit{mutability}}: An object can only be
+safely mutated if no other reference exists to its contents\cite{therustbook,
+therustreference}. Consider part of \textsc{wmRS}'s \rsin{Client} structure:
 
 \begin{rustblock}
   pub struct Client {
@@ -42,12 +47,13 @@ We want to pass around references to instances of this structure throughout the
 \rsin{Model}, to read and alter state, and to make window management decisions
 accordingly. Disregarding the concrete contents of the \rsin{Client} structure
 for a moment, one possibility would be to have the different client-mutating
-methods that are part of the \rsin{Model} operate on a \rsin{&mut Client}. While
-this is a plausible approach, it heavily limits us in using and passing around
-references as, in concreto, no more than a single reference to a to-be-mutated
-\rsin{Client} may then exist at a time. This becomes particularly troublesome,
-as we need to store \rsin{Client} instances within the \rsin{Model}, mapping
-window representations to their associated \rsin{Client} structure, as follows:
+methods that are part of the \rsin{Model} operate on a \rsin{&mut Client}.
+While this is a plausible approach, it heavily limits us in using and passing
+around references as, in concreto, no more than a single reference to a
+to-be-mutated \rsin{Client} may then exist at a time\cite{therustbook}. This
+becomes particularly troublesome, as we need to store \rsin{Client} instances
+within the \rsin{Model}, mapping window representations to their associated
+\rsin{Client} structure, as follows:
 
 \begin{rustblock}
   pub struct Model<'model> {
@@ -62,7 +68,7 @@ instance would have to be \rsin{&mut}. This additionally requires that the
 \rsin{Model}'s method that retrieves from its \rsin{client_map} and operates on
 such an instance would \textit{also} have to take \rsin{&mut self}. For this
 reason, this kind of mutability is what's known in Rust as \textit{inherited}
-mutability, also referred to as \textit{external} mutability.
+mutability, also referred to as \textit{external} mutability\cite{therustbook}.
 
 Considering that the windowing system generates events in respect to some
 \textit{window}, whenever we need to alter the state that is associated with
@@ -98,31 +104,36 @@ not viable.
 To solve this, we use a technique called \textit{interior mutability}. Interior
 mutability enables the mutating of an underlying structure of data with a
 \textit{non-exclusive} reference to it, therein defying the requirement that
-only exclusive references may be mutated. To facilitate this, four language
-constructs exist: \rsin{Cell} and \rsin{RefCell} for single-threaded solutions,
-and \rsin{Mutex} and \rsin{RwLock} as their thread-safe alternatives.
+only exclusive references may be mutated\cite{therustbook}. To facilitate
+this, four language constructs exist: \rsin{Cell} and \rsin{RefCell} for
+single-threaded solutions, and \rsin{Mutex} and \rsin{RwLock} as their
+thread-safe alternatives\cite{therustbook, therustreference}.
 
-In view of the fact that window managers operate on an \textit{ordered} stream
-of events, they function well as event-driven, single-threaded applications.
-To that end, each \rsin{Client} field that is expected to mutate throughout
-program execution---representing state changes instigated by windowing system
-events---gets wrapped inside either a \rsin{Cell} or a \rsin{RefCell}.
-\rsin{Cell} deals solely with \textit{values}: values are moved or copied
-into the cell, or retrieved from it as a whole. Retrieving a reference to
-the contents of a \rsin{Cell} is not possible. \rsin{RefCell}, on the other
+In view of the fact that window managers operate on an \textit{ordered}
+stream of events, they function well as event-driven, single-threaded
+applications. To that end, each \rsin{Client} field that is expected to
+mutate throughout program execution---representing state changes instigated
+by windowing system events---gets wrapped inside either a \rsin{Cell} or a
+\rsin{RefCell}. \rsin{Cell} deals solely with \textit{values}: values are moved
+or copied into the cell, or retrieved from it as a whole\cite{therustbook,
+intmutpatterns}. Retrieving a reference to the contents of a \rsin{Cell} is
+not possible\cite{therustbook, intmutpatterns}. \rsin{RefCell}, on the other
 hand, works exclusively with \textit{references}, and implements so-called
-\textit{dynamic borrowing}. That means that access to mutable references to
-the contents of a \rsin{RefCell} are tracked \textit{at runtime}, which may
-cause a panic if a second mutable borrow is attempted while another is already
-outstanding. Compared to \textit{static borrowing}, at a slight runtime cost,
-dynamic borrowing permits much more flexible use of references, since the
-compiler is only able to perform borrow checks at a rather coarse level of
-granularity.
+\textit{dynamic borrowing}\cite{therustbook, intmutpatterns}. That means
+that access to mutable references to the contents of a \rsin{RefCell} are
+tracked \textit{at runtime}, which will cause a panic if a second mutable
+borrow is attempted while another is already outstanding\cite{therustbook,
+intmutpatterns}. Compared to \textit{static borrowing}, at a slight runtime
+cost, dynamic borrowing permits much more flexible use of references, since
+the compiler is only able to perform borrow checks at a rather coarse level of
+granularity\cite{therustbook, intmutpatterns}.
 
-From a pragmatics point of view, what \rsin{Cell} and \rsin{RefCell} allow us to
-do, is to instead take as parameter a non-exclusive \rsin{&Client} as parameter,
-and mutate individual fields, therein enabling reference aliasing \textit{and}
-retaining mutability. Consider the following \rsin{Client} method:
+From a practical point of view, what \rsin{Cell} and \rsin{RefCell} allow us to
+do, is to instead take a non-exclusive \rsin{&Client} as parameter, and mutate
+individual fields, therein enabling reference aliasing \textit{and} retaining
+mutability. In a sense, interior mutability makes it possible to \textit{divide}
+mutability of an entire structure into its individual constituents. Consider the
+following \rsin{Client} method:
 
 \begin{rustblock}
   impl Client {
@@ -137,7 +148,7 @@ retaining mutability. Consider the following \rsin{Client} method:
 Thanks to interior mutability, to be able to call this method on a \rsin{Client}
 reference, that reference does not need to be exclusive (due to it operating
 on \rsin{&self} instead of \rsin{&mut self}). This allows us to rewrite the
-\rsin{set_fullscreen_window} method, as follows:
+\rsin{set_fullscreen_window} method as follows:
 
 \begin{rustblock}
   fn set_fullscreen_window(&self, win: Window) {
@@ -147,6 +158,96 @@ on \rsin{&self} instead of \rsin{&mut self}). This allows us to rewrite the
     }
   }
 \end{rustblock}
+
+Using this technique, \textit{most} \rsin{Model} methods will now take
+\rsin{&self}, therein greatly improving flexibility, and consequently allowing
+for a much better structuring of code.
+
+\cppsubsection{Implicit interior mutability with references}
+
+Disregarding the non-standardized \cppin{restrict} keyword, in \cpp,
+\textit{every} reference (and pointer) can be aliased\cite{cppstd}. Moreover,
+there is no inherent restriction on the mutability of references to an object.
+Compared to Rust, all mutability in \cpp would therefore be considered interior
+mutability. Part of \textsc{wmCPP}'s \cppin{Client} structure looks as follows:
+
+\begin{cppblock}
+  typedef struct Client* Client_ptr;
+  typedef struct Client final
+  {
+    Window window;
+    unsigned workspace;
+    Client_ptr parent;
+    std::vector<Client_ptr> children;
+    bool fullscreen;
+    // ...
+  }* Client_ptr;
+\end{cppblock}
+
+Instead of encoding relationships with other client objects (i.e. \cppin{parent}
+and \cppin{children}) using window representations (\cppin{Window}), we store
+\textit{pointers} to the associated objects directly. Furthermore, we do not
+need to make use of smart pointers (e.g. \cppin{std::shared_ptr}). The reason
+we can safely store \textit{raw} pointers to other \cppin{Client}s within a
+client structure, is thanks to a main event loop invariant we rely on: For each
+window that gets destroyed, an event will be generated by the windowing system,
+and propagated up to the window manager. That is, we know \textit{exactly} when
+to deallocate a \cppin{Client} and all of its \cppin{children}. To map window
+representations to their associated client structures, we again make use of a
+\cppin{std::unoredered_map}:
+
+\begin{cppblock}
+  class Model final
+  {
+    // ...
+  private:
+    std::unordered_map<Window, Client_ptr> client_map;
+    // ...
+  };
+\end{cppblock}
+
+Each \cppin{Client_ptr} in the map is a heap-allocated object. To change the
+state of a window, the \cppin{Model} has associated methods that retrieve and
+mutate client objects, an example of which is the following:
+
+\begin{cppblock}
+  void
+  Model::set_fullscreen_window(Window window)
+  {
+    if (client_map.find(window) != client_map.end()) {
+      Client_ptr client = client_map.at(window);
+      client->fullscreen = true;
+      apply_layout(client->workspace);
+    }
+  }
+\end{cppblock}
+
+Most client-mutating methods that are part of the \cppin{Model} follow the same
+approach.
+
+\subsection{Clients: Remarks}
+
+While Rust's mutability rules make the language much more secure in regard to
+memory-safety and data races, its borrowing system is actually more restrictive
+than strictly necessary to ensure these guarantees. That is to say, in a
+\textit{perfect implementation}, static (i.e. compile-time) borrow checking
+would be as flexible as dynamic (i.e. runtime) borrow checking. That is
+consequently the main reason for the existence of Rust's interior mutability
+constructs: This perfect implementation does not exist. And, for several good
+reasons, two of which are language simplicity and compilation speed.
+
+From a pure pragmatics standpoint, Rust's mutability restrictions add
+significant additional accounting effort. In fact, they even render the
+implementation of some programming patterns impossible. For instance, compared
+to our \cpp examples, self-referential structures are not allowed in Rust.
+For this reason, the only way to encode relationships to other instances is
+through use of some kind of non-referential indirection. For our \rsin{Client}
+structure in particular, that means we need to store the window representations
+of \rsin{parent} and \rsin{children} instead of direct references to their
+\rsin{Client} instances. This adds both a programming and runtime overhead, as
+we repeatedly need to retrieve their instances through the \rsin{client_map}
+whenever we need to read or alter their state.
+
 
 % TODO: discuss problem of Rust mutability -> decourages encapsulation: even though 1 field needs to change, reference to _whole_ structure needs to be mutable
 

@@ -19,5 +19,7 @@
 \BOOKMARK [2][-]{subsection.4.3}{Input Bindings: Remarks}{section.4}% 19
 \BOOKMARK [1][-]{section.5}{Clients}{}% 20
 \BOOKMARK [2][-]{subsection.5.1}{Rust: Mutable State with Cell and RefCell}{section.5}% 21
-\BOOKMARK [1][-]{section.6}{Conclusion}{}% 22
-\BOOKMARK [1][-]{section*.2}{Appendix A: Collision in header guards}{}% 23
+\BOOKMARK [2][-]{subsection.5.2}{C++: Implicit interior mutability with references}{section.5}% 22
+\BOOKMARK [2][-]{subsection.5.3}{Clients: Remarks}{section.5}% 23
+\BOOKMARK [1][-]{section.6}{Conclusion}{}% 24
+\BOOKMARK [1][-]{section*.2}{Appendix A: Collision in header guards}{}% 25
