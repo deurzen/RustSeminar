@@ -1,13 +1,31 @@
 %&latex
 \section{Conclusion}
 
-We have compared Rust and \cpp in their pragmatics when writing medium to
-large system software. Specifically, we have sought to achieve \textit{the
-same objective} using both languages: the implementating of a window manager.
-In doing so, we have discussed four core phases in the implementation of
-such software: external dependency management, the main event loop and event
-dispatch, input bindings and the storage of callable objects, and, finally, the
-central storage and distributed mutating of state.
+In this seminar, we have compared Rust and \cpp in their \textit{pragmatics}
+when writing medium to large system software. Specifically, we have sought to
+achieve \textit{the same objective} using both languages: the implementing
+of a window manager. In doing so, we have discussed four core phases in the
+implementation of such software: external dependency management, the main event
+loop and event dispatch, input bindings and the storage of callable objects,
+and, finally, the central storage and distributed mutating of state.
 
-Even though Rust is able to make certain guarantees in regard to memory safety and data races, it is still often able to capture more concisely and elegently the semantics 
+While Rust is able to make certain guarantees in regard to memory safety and
+data races---making it an eminently safer choice compared to \cpp---it is
+additionally often able to capture in its syntax more concisely and eloquently
+the semantics required to achieve an objective. This has much to do with its
+more minimal and simplistic, but at the same time more expressively powerful
+language features, such as, for example, the pattern matching constructs
+reminiscent of functional languages, or its tagged union enumerations. Another
+decisive factor in Rust's perceived efficacy is its \textit{consistency}.
+Whereas \cpp offers operator overloading through a multitude of constructs
+(varying from class methods to concrete template class implementations), Rust
+does so solely through \textit{trait} implementations.
+
+Rust's safety guarantees indeed make the language demonstrably superior from
+an \textit{error mitigation} point of view. However, those guarantees can at
+times still come at a cost in light of its pragmatics. Assuming memory safety
+assertions are properly taken care of, dealing with references in \cpp can be
+much easier than in Rust. Due to the fact that Rust's borrow checking system is
+more restrictive than strictly necessary, certain programming patterns are even
+unable to be used, such as, for instance, self-referential structures.
 
