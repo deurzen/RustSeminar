@@ -43,43 +43,20 @@ environments.
 
 Since the only external dependency \wmcpp is reliant on is \ttt{libX11}, which
 is fairly ubiquitous and readily available through distributions' own package
-managers, it merely links with the X11 development libraries without the use of
-any form of own dependency management. Specifically, building the project is
-done using the following \textup{Make} script (large parts altered or redacted
-for clarity):
+managers, it merely links with the X11 development libraries without the use
+of any form of own dependency management. Specifically, building the project
+is done using a \textup{Make} script that manually encodes which files must be
+compiled.
 
-\begin{mintedblock}{make}
-  CXXFLAGS = -std=c++17 -march=native -O3
-  LDFLAGS = `pkg-config --libs x11` -flto
+% \begin{mintedblock}{make}
+%   CXXFLAGS = -std=c++17 -march=native -O3
+%   LDFLAGS = `pkg-config --libs x11` -flto
 
-  obj/%.o: src/%.cc
-    g++ ${CXXFLAGS} -MMD -c $< -o $@
-  release: obj/%.o
-    g++ $< ${LDFLAGS} -o bin/wmCPP
-\end{mintedblock}
-
-Assuring the availability of an external body of code is not the only aspect
-of external dependecy management that affects the pragmatics of \cpp. Writing
-a library that is to be imported as an external dependency and including code
-from an external dependency both require special care to be taken to make sure
-no symbol collisions occur. In header files, this is usually done by making
-use of so-called \textit{header guards}, a set of preprocessor directives that
-render including a header an idempotent operation, preventing double inclusion
-errors. If incorrect double inclusion does unexpectedly occur, for instance
-due to collisions in the header guards themselves, vague---as header guards
-are handled by the preprocessor, not the compiler---and hard-to-trace compiler
-errors arise, subjecting the programmer to unnecessary mental strain, and
-wasting time. Although not part of the official standard\cite{cppstd}, many \cpp
-compilers support the \cppin{#pragma once} preprocessor directive, providing the
-same functionality as header guards, but preventing the occurrence of double
-inclusion errors.
-
-Another source of issues is the order of include directives in \cpp. The
-ordering of included files relative to one another can significantly influence
-the outcome of the compilation stage, possibly causing errors, one of which
-being the introduction of circular dependencies while there actually aren't any
-there (e.g. a forward declaration that was included only after the circular
-dependency was already introduced).
+%   obj/%.o: src/%.cc
+%     g++ ${CXXFLAGS} -MMD -c $< -o $@
+%   release: obj/%.o
+%     g++ $< ${LDFLAGS} -o bin/wmCPP
+% \end{mintedblock}
 
 % https://doc.rust-lang.org/cargo/guide/
 
@@ -100,48 +77,51 @@ compressed package that is grabbed from a registry (a service that provides a
 collection of downloadable crates)\cite{thecargobook}. A package's manifest file
 describes each of its target crates by specifying their type (binary executable
 or library), their metadata, and how to build them\cite{thecargobook}.
+\wmrs's manifest file defines a package that consists of a single library
+crate (\ttt{winsys}), along with three binary executable crates (\ttt{wmRS},
+\ttt{wmRSbar}, and \ttt{wmRSclient}).
 
-The following manifest file describes the package that represents our Rust
-window manager, \wmrs (parts redacted for clarity):
+% The following manifest file describes the package that represents our Rust
+% window manager, \wmrs (parts redacted for clarity):
 
-\begin{mintedblock}{shell}
-  [package]
-  name = "wmRS"
-  edition = "2018"
-  description = """
-  An ICCCM & EWMH compliant X11 reparenting,
-  tiling window manager, written in Rust
-  """
-  [profile.release]
-  lto = true
-  [lib]
-  name = "winsys"
-  path = "src/winsys/mod.rs"
-  [[bin]]
-  name = "wmRS"
-  path = "src/core/main.rs"
-  [[bin]]
-  name = "wmRSbar"
-  path = "src/bar/main.rs"
-  [[bin]]
-  name = "wmRSclient"
-  path = "src/client/main.rs"
-  [dependencies]
-  x11rb = {
-    version = "0.8.0",
-    features = [
-      # ...
-    ]
-  }
-\end{mintedblock}
+% \begin{mintedblock}{shell}
+%   [package]
+%   name = "wmRS"
+%   edition = "2018"
+%   description = """
+%   An ICCCM & EWMH compliant X11 reparenting,
+%   tiling window manager, written in Rust
+%   """
+%   [profile.release]
+%   lto = true
+%   [lib]
+%   name = "winsys"
+%   path = "src/winsys/mod.rs"
+%   [[bin]]
+%   name = "wmRS"
+%   path = "src/core/main.rs"
+%   [[bin]]
+%   name = "wmRSbar"
+%   path = "src/bar/main.rs"
+%   [[bin]]
+%   name = "wmRSclient"
+%   path = "src/client/main.rs"
+%   [dependencies]
+%   x11rb = {
+%     version = "0.8.0",
+%     features = [
+%       # ...
+%     ]
+%   }
+% \end{mintedblock}
 
 % https://doc.rust-lang.org/book/ch10-02-traits.html
 % https://doc.rust-lang.org/rust-by-example/trait.html
 % https://blog.logrocket.com/rust-traits-a-deep-dive/
 % https://doc.rust-lang.org/book/ch19-03-advanced-traits.html
 
-The package consists of a single library crate (\ttt{winsys}), along with three
-binary executable crates (\ttt{wmRS}, \ttt{wmRSbar}, and \ttt{wmRSclient}).
+% The package consists of a single library crate (\ttt{winsys}), along with three
+% binary executable crates (\ttt{wmRS}, \ttt{wmRSbar}, and \ttt{wmRSclient}).
 
 \rssubsection{Decoupling External Dependencies using Traits}
 
@@ -205,7 +185,6 @@ Window System, is partly given as follows:
   impl<'conn, Conn: connection::Connection>
     Connection for XConnection<'conn, Conn>
   {
-    #[inline]
     fn step(&self) -> Option<Event> { /* ... */ }
     // ...
   }
@@ -422,6 +401,30 @@ be resolved only at runtime, when they are needed, through dynamic dispatch
 
 \subsection{External Dependency Management: Remarks}
 
+The ad hoc solution to \cpp package management, and the assuring the
+availability of an external body of code are not the only aspects of external
+dependecy management that affect the pragmatics of \cpp. Writing a library
+that is to be imported as an external dependency and including code from an
+external dependency both require special care to be taken to make sure no
+symbol collisions occur. In header files, this is usually done by making use
+of so-called \textit{header guards}, a set of preprocessor directives that
+render including a header an idempotent operation, preventing double inclusion
+errors. If incorrect double inclusion does unexpectedly occur, for instance
+due to collisions in the header guards themselves, vague---as header guards
+are handled by the preprocessor, not the compiler---and hard-to-trace compiler
+errors arise, subjecting the programmer to unnecessary mental strain, and
+wasting time. Although not part of the official standard\cite{cppstd}, many \cpp
+compilers support the \cppin{#pragma once} preprocessor directive, providing the
+same functionality as header guards, but preventing the occurrence of double
+inclusion errors.
+
+Another source of issues is the order of include directives in \cpp. The
+ordering of included files relative to one another can significantly influence
+the outcome of the compilation stage, possibly causing errors, one of which
+being the introduction of circular dependencies while there actually aren't any
+there (e.g. a forward declaration that was included only after the circular
+dependency was already introduced).
+
 While in our window manager implementations both Rust's traits and \cpp's
 abstract classes appear to achieve the same objective in similar fashion, the
 constructs themselves are very different. For one, implementation (traits)
@@ -452,7 +455,6 @@ the built-in 32-bit unsigned integer type, it would first need to implement
 
 \begin{rustblock}
   impl Identify for u32 {
-    #[inline(always)]
     fn id(&self) -> Ident {
       *self
     }

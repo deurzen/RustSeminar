@@ -25,7 +25,20 @@ Rust's safety guarantees indeed make the language demonstrably superior from
 an \textit{error mitigation} point of view. However, those guarantees can at
 times still come at a cost in light of its pragmatics. Assuming memory safety
 assertions are properly taken care of, dealing with references in \cpp can be
-much easier than in Rust. Due to the fact that Rust's borrow checking system is
-more restrictive than strictly necessary, certain programming patterns are even
-unable to be used, such as, for instance, self-referential structures.
+much easier than in Rust. Due to the fact that Rust's borrow checking system
+is more restrictive than strictly necessary, certain programming patterns are
+even unable to be used, such as, for instance, self-referential structures. In
+fact, Rust even has \textit{interior mutability} constructs just to improve
+programming flexibility, something \cpp has by default.
 
+All in all, the Rust programming language is the product of learning from years
+and years of how best \textit{not} to do it, while at the same time borrowing
+features from languages that \textit{did} get it right. Due to the complexity
+and strictness of its borrow checking system, the developers have sought to
+keep the core language as simple yet expressive as possible. \cpp, on the other
+hand, lacks in its design the \textit{hindsight} Rust has profited from so much,
+and is in comparison immensely complex---some would even say convoluted. This
+results from decades of revisions that add new, powerful language features,
+which are all required to coexist nicely with older constructs that were
+initially not designed to cater to these new features, all the while maintaining
+the design goals of the initial core language.
