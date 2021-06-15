@@ -1,5 +1,5 @@
 %&latex
-\section{Input Bindings}
+\section{Input Bindings}\label{inputbindings}
 % TODO: - complex feature of which the implementation constructs trickle into
 %         many parts of the program (large fan-out)
 %       - data structures and language features used to represent key bindings
@@ -21,10 +21,9 @@ been activated.
 \rssubsection{Storing and Retrieving Callable Objects}
 
 To attach window management actions to these key and mouse bindings,
-\textsc{wmRS} uses a Rust \rsin{HashMap} to map resp. mouse and key input state
+\textsc{wmRS} uses a Rust \rsin{HashMap} to map mouse and key input state
 abstractions to \textit{closures} that call into part of the \texttt{Model}.
-Mouse input abstractions look something like the following (parts redacted for
-clarity):
+Mouse input abstractions look as follows:
 
 \begin{rustblock}
   #[derive(Clone, Copy, PartialEq, Eq, Hash)]

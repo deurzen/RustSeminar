@@ -1,0 +1,9 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+   \PYG{n+nv}{CXXFLAGS} \PYG{o}{=} \PYGZhy{}std\PYG{o}{=}c++17 \PYGZhy{}march\PYG{o}{=}native \PYGZhy{}O3
+   \PYG{n+nv}{LDFLAGS} \PYG{o}{=} \PYG{l+s+sb}{`}pkg\PYGZhy{}config \PYGZhy{}\PYGZhy{}libs x11 xrandr\PYG{l+s+sb}{`} \PYGZhy{}flto
+
+   obj/\PYGZpc{}.o: src/\PYGZpc{}.cc
+     g++ \PYG{l+s+si}{\PYGZdl{}\PYGZob{}}\PYG{n+nv}{CXXFLAGS}\PYG{l+s+si}{\PYGZcb{}} \PYGZhy{}MMD \PYGZhy{}c \PYGZdl{}\PYGZlt{} \PYGZhy{}o \PYG{n+nv}{\PYGZdl{}@}
+   all: obj/\PYGZpc{}.o
+     g++ \PYGZdl{}\PYGZlt{} \PYG{l+s+si}{\PYGZdl{}\PYGZob{}}\PYG{n+nv}{LDFLAGS}\PYG{l+s+si}{\PYGZcb{}} \PYGZhy{}o bin/wmCPP
+\end{Verbatim}

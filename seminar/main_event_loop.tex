@@ -1,15 +1,15 @@
 %&latex
-\section{Main Event Loop}
+\section{Main Event Loop}\label{maineventloop}
 
-The main event loop in both \wmrs and \wmcpp comprises three core stages. They
-first rely on the underlying windowing system to report certain \textit{events}
-they are interested in. This is done synchronously, as without any hardware
-interrupts or changes to the environment, nothing is to be done. That is,
-both window managers \textit{block} until a new event is received. The second
-stage is the \textit{extraction} and \textit{bundling} of useful information
-from underlying windowing system events into a structure that can be consumed
-by the various components of each window manager. The last stage is using
-that windowing system event information to perform window management actions,
+The main event loop in both \wmrs and \wmcpp comprises three core stages. The
+window managers first rely on the underlying windowing system to report certain
+\textit{events} they are interested in. This is done synchronously, as without
+any hardware interrupts or changes to the environment, nothing is to be done.
+That is, both window managers \textit{block} until a new event is received.
+The second stage is the \textit{extraction} and \textit{bundling} of useful
+information from underlying windowing system events into a structure that can
+be consumed by the various components of each window manager. The last stage
+is using that bundled event information to perform window management actions,
 \textit{delegating work} to different parts of the program.
 
 \rscppsubsection{Windowing System Event Decoupling}
@@ -30,8 +30,8 @@ that which is consumed at the higher level.
 To structure event data, \wmrs uses Rust \textit{enumerations}. A Rust
 \rsin{enum} allows for the definition of a type by enumerating its variants,
 and, aside from encoding \textit{meaning}, is also able to encapsulate
-\textit{data}\cite{therustbook}. A small part of \wmrs's \rsin{Event}
-\rsin{enum} looks as follows.
+\textit{data}\cite{therustbook}. Part of \wmrs's \rsin{Event} enumeration looks
+as follows:
 
 \begin{rustblock}
   pub enum Event {
@@ -68,8 +68,8 @@ allocated entirely within that instance's object representation\cite{cppstd}.
 That is, the alternative may not allocate any additional dynamic
 memory\cite{cppstd}. As a result, as with Rust's \rsin{enum}, the
 size of a \cppin{std::variant} instance is dependent on its largest
-alternative\cite{cppstd}. \wmcpp partly represents its \cppin{Event} type as
-follows.
+alternative\cite{cppstd}. \wmcpp partly presents its \cppin{Event} type as
+follows:
 
 \begin{cppblock}
   typedef std::variant<
@@ -114,7 +114,7 @@ consequently encodes not only the \textit{information} used by these handlers,
 but also which handler is responsible for that event. \wmrs uses Rust's
 principle pattern matching construct, \rsin{match}, for event dispatch. Its main
 event loop, defined within a method belonging to its \ttt{Model} structure,
-partly looks as follows.
+partly looks as follows:
 
 \begin{rustblock}
   while self.running {
@@ -140,7 +140,7 @@ connection (i.e., whether the event that was generated is one the window manager
 is interested in). Rust's \rsin{if let} construct is syntactic sugar for a
 match statement that runs code when the value matches one specific pattern, and
 ignores all other values\cite{therustbook}. Converting the above \rsin{if let}
-to an equivalent \rsin{match} results in the following.
+to an equivalent \rsin{match} results in the following:
 
 \begin{rustblock}
   match self.conn.step() {
@@ -181,7 +181,7 @@ possible alternatives\cite{stdvisitwrong, cppstd}. It takes a \textit{visitor}
 object that implements \textit{function-call operator} overloads for each of the
 alternatives' types, along with the \cppin{std::variant} instance to visit. An
 example visitor for the \ttt{Event} variant, defined within \wmcpp's \ttt{Model}
-class, partly looks as follows.
+class, partly looks as follows:
 
 \begin{cppblock}
   class Model;
@@ -221,7 +221,7 @@ Whereas \wmrs explicitly assured that a valid event was received, \wmcpp
 \textit{implicitly} does so through its \cppin{event_visitor}. The
 \cppin{std::monostate} variant represents the \textit{no valid event} case, and
 is analogous to a \textit{no-op} event. Within the same class, a method exists
-that contains \mbox{\wmcpp}'s main event loop, which roughly does the following.
+that contains \mbox{\wmcpp}'s main event loop which does the following:
 
 \begin{cppblock}
   while (running)

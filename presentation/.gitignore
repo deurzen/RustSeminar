@@ -3,4 +3,10 @@
 /*.blg
 /*.dvi
 /*.log
+/*.snm
+/*.nav
+/*.out
+/*.toc
 /_minted-seminar
+/TODO
+/SCRIPT

@@ -1,0 +1,133 @@
+\documentclass[t]{beamer}
+\usetheme{metropolis}
+
+\usepackage{nameref}
+\usepackage{xspace}
+\usepackage{minted}
+\usepackage{inconsolata}
+
+\usepackage{csquotes}
+
+\def\signed #1{{\leavevmode\unskip\nobreak\hfil\penalty50\hskip1em
+  \hbox{}\nobreak\hfill #1%
+  \parfillskip=0pt \finalhyphendemerits=0 \endgraf}}
+
+\newsavebox\mybox
+\newenvironment{aquote}[1]
+  {\savebox\mybox{#1}\begin{quote}\openautoquote\hspace*{-.7ex}}
+  {\unskip\closeautoquote\vspace*{1mm}\signed{\usebox\mybox}\end{quote}}
+
+\newcommand{\cpp}{C\texttt{++}\xspace}
+
+\newcommand{\wmcpp}{\mbox{\textsc{wmCPP}}\xspace}
+\newcommand{\wmrs}{\mbox{\textsc{wmRS}}\xspace}
+
+\newenvironment{mintedblock}[1]%[3]%
+{\VerbatimEnvironment
+    \begin{minted}[fontsize=\small]{#1}%
+}
+{%
+    \end{minted}%
+}
+
+\newenvironment{rustblock}%[2]%
+{\VerbatimEnvironment
+  \begin{mintedblock}{rust}%{#1}{#2}%
+}
+{%
+  \end{mintedblock}%
+}
+
+\newenvironment{cppblock}%[2]%
+{\VerbatimEnvironment
+  \begin{mintedblock}{cpp}%{#1}{#2}%
+}
+{%
+  \end{mintedblock}%
+}
+
+\newenvironment{mintedinline}[2]%[3]%
+{\VerbatimEnvironment
+	\mintinline{#1}{#2}%
+}
+
+\newmintinline[rsin]{rust}{escapeinside=||,autogobble,fontsize=\small}
+\newmintinline[cppin]{cpp}{escapeinside=||,autogobble,fontsize=\small}
+
+\newcommand{\ttt}[1]{{\small\texttt{#1}}}
+\newcommand{\tbf}[1]{{\textbf{#1}}}
+\newcommand{\tit}[1]{{\textit{#1}}}
+
+\makeatletter
+\newcommand*{\currentname}{\@currentlabelname}
+\makeatother
+
+\newenvironment{secframe}[1]
+{
+\begin{frame}{{{#1}} \hfill {\footnotesize\currentname}}%
+}
+{%
+\end{frame}%
+}
+
+\newenvironment{csecframe}[1]
+{
+\begin{frame}[c]{{{#1}} \hfill {\footnotesize\currentname}}%
+}
+{%
+\end{frame}%
+}
+
+\newenvironment{rssecframe}[1]
+{
+\begin{frame}{{{\underline{Rust}: #1}} \hfill {\footnotesize\currentname}}%
+}
+{%
+\end{frame}%
+}
+
+\newenvironment{rscsecframe}[1]
+{
+\begin{frame}[c]{{{\underline{Rust}: #1}} \hfill {\footnotesize\currentname}}%
+}
+{%
+\end{frame}%
+}
+
+\newenvironment{cppsecframe}[1]
+{
+\begin{frame}[fragile]{{{\underline{\cpp}: #1}} \hfill {\footnotesize\currentname}}%
+}
+{%
+\end{frame}%
+}
+
+\newenvironment{cppcsecframe}[1]
+{
+\begin{frame}[fragile]{{{\underline{\cpp}: #1}} \hfill {\footnotesize\currentname}}%
+}
+{%
+\end{frame}%
+}
+
+\title{
+  Pragmatics of Rust and C\texttt{++}:\\
+  The implementation of a window manager\\
+}
+
+\date{\today}
+\author{Max van Deurzen}
+\institute{Technische Universität München}
+
+\begin{document}
+\maketitle
+
+\input{agenda}
+\input{pragmatics}
+\input{objective}
+\input{external_dependency_management}
+\input{main_event_loop}
+\input{input_bindings}
+\input{clients}
+
+\end{document}

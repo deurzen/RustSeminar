@@ -1,0 +1,170 @@
+%&latex
+
+\section{External Dependency Management}
+
+\begin{csecframe}{Package Management}
+
+    \begin{itemize}
+
+        \item The ability to \textit{aid} the programmer in managing external code\\
+            \begin{itemize}
+                \item Automatically downloading a dependency's source code
+                \item Built-in version control
+                \item Conflict detection
+            \end{itemize}
+
+        \item Part of the \textit{ecosystem} of a language\\
+            \begin{itemize}
+                \item Installed with its compiler or development environment
+            \end{itemize}
+
+        \item A \textit{must} for any modern programming language\\
+
+    \end{itemize}
+
+    \vfill
+
+\end{csecframe}
+
+\begin{frame}[fragile]{\underline{\cpp}: Package Management \hfill {\footnotesize \currentname}}
+
+    \begin{itemize}
+
+        \item \textit{No} official package manager\\
+
+        \item \textit{Ad hoc} package management\\
+            \begin{itemize}
+                \item Third-party package management tools
+                \item Custom configure and build scripts
+                \item Let the user manage the dependencies themselves (e.g. through
+                their distribution's package manager)
+            \end{itemize}
+
+        \item Example: \texttt{Make} script\\
+\begin{minted}[fontsize=\scriptsize]{make}
+   CXXFLAGS = -std=c++17 -march=native -O3
+   LDFLAGS = `pkg-config --libs x11 xrandr` -flto
+
+   obj/%.o: src/%.cc
+     g++ ${CXXFLAGS} -MMD -c $< -o $@
+   all: obj/%.o
+     g++ $< ${LDFLAGS} -o bin/wmCPP
+\end{minted}
+
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}[c,fragile]{\underline{Rust}: Package Management \hfill {\footnotesize \currentname}}
+
+    \begin{itemize}
+
+        \item \textit{Cargo}, Rust's official package manager\\
+            \begin{itemize}
+                \item Automatically downloads and compiles dependencies
+                \item A Rust project is a Cargo \textit{package}
+                \item A package is a collection of \textit{source files} plus a \textit{manifest file}
+                \item The manifest file describes the package's \textit{meta-information}, \textit{dependencies}, and a set of \textit{target crates}
+                \item A crate represents a \textit{library} or \textit{binary executable} program
+            \end{itemize}
+
+        \item Example: \texttt{Cargo.toml} manifest file\\
+\begin{minted}[fontsize=\scriptsize]{rust}
+   [package]
+   name = "wmRS"
+   version = "0.1.0"
+   edition = "2018"
+   license = "BSD3"
+   default-run = "wmRS"
+   description = """
+   An ICCCM & EWMH compliant X11 reparenting,
+   tiling window manager, written in Rust
+   """
+\end{minted}
+
+    \end{itemize}
+
+\end{frame}
+
+\begin{csecframe}{Decoupling Dependencies}
+
+    \begin{itemize}
+
+        \item What is a \textit{Windowing System}?\\
+            \begin{itemize}
+                \item System software
+                \item Responsible for providing graphical primitives to construct and present GUIs
+                \item Render applications' windows' contents
+                \item Main dependency of the window manager
+            \end{itemize}
+
+        \item The window manager's implementation is made \textit{agnostic} to that of the windowing system\\
+            \begin{itemize}
+                \item We create a \textit{library}, \texttt{winsys}, that represents an abstraction above and wrapper around the API into the windowing system
+                \begin{itemize}
+                    \item The library defines an \textit{interface} that outlines desired behavior
+                    \item The interface is \textit{implemented} for each supported windowing system
+                \end{itemize}
+                \item The connection with windowing system is \textit{decoupled} from the implementation of the window manager
+            \end{itemize}
+
+    \end{itemize}
+
+    \vfill
+
+\end{csecframe}
+
+\begin{frame}[c,fragile]{\underline{Rust}: Decoupling using Traits \hfill {\footnotesize \currentname}}
+    To define an interface that represents the connection with the windowing system, we use a Rust \textit{trait}
+    \begin{itemize}
+
+        \item Traits are \textit{zero-overhead} collections of methods that are:\\
+            \begin{itemize}
+                \item Declared for \textit{some} type \texttt{Self}
+                \item Most often used to implement \textit{shared behavior}
+            \end{itemize}
+
+        \item Traits most closely resemble the concept of \textit{interfaces} from other languages\\
+
+        \item Traits can provide a \textit{default implementation} for their defined methods\\
+
+        \item Example: \texttt{wmRS}'s \texttt{Connection} trait\\
+\begin{minted}[fontsize=\scriptsize]{rust}
+   pub trait Connection {
+     fn step(&self) -> Option<Event>;
+     fn move_window(&self, window: Window, pos: Pos);
+     fn resize_window(&self, window: Window, dim: Dim);
+     fn close_window(&self, window: Window);
+     // ...
+   }
+\end{minted}
+
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}[c,fragile]{\underline{Rust}: Decoupling using Traits \hfill {\footnotesize \currentname}}
+    We implement the \texttt{Connection} trait to target a \textit{specific} windowing system
+    \begin{itemize}
+
+        \item Example: \textsc{wmRS}'s \texttt{Connection} implementation for the X Window System\\
+\begin{minted}[fontsize=\scriptsize]{rust}
+   use x11rb::connection;
+
+   pub struct XConnection
+     <'conn, Conn: connection::Connection>
+   {
+     conn: &'conn Conn,
+     // ...
+   }
+   impl<'conn, Conn: connection::Connection>
+     Connection for XConnection<'conn, Conn>
+   {
+     fn step(&self) -> Option<Event> { /* ... */ }
+     // ...
+   }
+\end{minted}
+
+    \end{itemize}
+
+\end{frame}

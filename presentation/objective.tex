@@ -1,0 +1,89 @@
+%&latex
+
+\section{The Common Objective}
+
+\begin{secframe}{A Bounded Comparison}
+
+    \textit{Case Study}: The implementation of a \underline{window manager}
+
+    \begin{itemize}
+        \item \tbf{System Software}\\
+            \begin{itemize}
+                \item Low-level
+                \item Platform-specific
+            \end{itemize}
+
+        \item \tbf{Medium to Large-Sized}\\
+            \begin{itemize}
+                \item Increased Risk of \textit{Code Smells}
+                    \begin{itemize}
+                        \item Monolithic classes
+                        \item Global data
+                        \item High interdependence (Coupling)
+                        \item ...
+                    \end{itemize}
+            \end{itemize}
+
+        \item \tbf{Event-Driven}\\
+            \begin{itemize}
+                \item Reacts to windowing system events
+                \item Deterministic event dispatch
+            \end{itemize}
+    \end{itemize}
+
+    \vfill
+
+\end{secframe}
+
+\begin{secframe}{A Bounded Comparison}
+
+    \textit{Case Study}: The implementation of a \underline{window manager}
+
+    \begin{itemize}
+        \item \tbf{External Dependency Management}\\
+            \begin{itemize}
+                \item Package management
+                \item Abstracting and decoupling
+            \end{itemize}
+
+        \item \tbf{Main Event Loop}\\
+            \begin{itemize}
+                \item Windowing system events
+                \item Internal events
+                \item Event dispatch
+            \end{itemize}
+
+        \item \tbf{Input Bindings}\\
+            \begin{itemize}
+                \item Storing and retrieving callable objects
+            \end{itemize}
+
+        \item \tbf{Clients}\\
+            \begin{itemize}
+                \item Distributed, mutable state
+            \end{itemize}
+    \end{itemize}
+
+    \vfill
+
+\end{secframe}
+
+\begin{secframe}{A Bounded Comparison}
+
+    \textit{Case Study}: The implementation of a \underline{window manager}
+
+    \begin{itemize}
+        \item \tbf{Implemented in \cpp}:
+            \begin{itemize}
+                \item \textsc{wmCPP}
+            \end{itemize}
+
+        \item \tbf{Implemented in Rust}:
+            \begin{itemize}
+                \item \textsc{wmCPP}
+            \end{itemize}
+    \end{itemize}
+
+    \vfill
+
+\end{secframe}

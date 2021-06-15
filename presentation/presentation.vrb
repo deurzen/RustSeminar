@@ -1,0 +1,24 @@
+\frametitle{\underline {Rust}: Decoupling using Traits \hfill {\footnotesize \currentname }}
+We implement the \texttt{Connection} trait to target a \textit{specific} windowing system
+    \begin{itemize}
+
+        \item Example: \textsc{wmRS}'s \texttt{Connection} implementation for the X Window System\\
+\begin{minted}[fontsize=\scriptsize]{rust}
+   use x11rb::connection;
+
+   pub struct XConnection
+     <'conn, Conn: connection::Connection>
+   {
+     conn: &'conn Conn,
+     // ...
+   }
+   impl<'conn, Conn: connection::Connection>
+     Connection for XConnection<'conn, Conn>
+   {
+     fn step(&self) -> Option<Event> { /* ... */ }
+     // ...
+   }
+\end{minted}
+
+    \end{itemize}
+

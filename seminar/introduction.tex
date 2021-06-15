@@ -1,6 +1,32 @@
 %&latex
-\section{Introduction}
-{ \textcolor{gray}\blindtext }
+\section{Introduction}\label{introduction}
+
+Both Rust and \cpp are \textit{system programming} languages, as they offer
+high performance and ease of access to the underlying hardware. On top of that,
+Rust also offers novel memory safety guarantees that cater well to low-level
+system programming needs, as memory safety errors have historically been
+the main cause of security exploits. In this seminar, we will be discussing
+the \textit{pragmatics} of Rust and \cpp. A language's pragmatics pertains
+to the \textit{purpose} of its language constructs, and the usability of
+those constructs to achieve certain objectives. In general, the pragmatics
+of a language construct can be boundless. Take, for instance, the assignment
+statement. Its common purposes could be modifying part of a compound data
+structure, or using a temporary variable to swap two values. To properly
+compare the pragmatics of Rust and \cpp, instead of scrutinizing the purpose
+of \textit{all} language constructs in turn, we will be evaluating both
+languages in their ability to specifically achieve a \textit{single, common
+objective}: the implementation of a window manager. In particular, we identify
+four core phases in the design of such software. In section \ref{extdepman}, we
+will discuss each language's capacity in dealing with external dependencies.
+Particularly, we will look at which language features aid the programmer in
+managing external bodies of code, and how these dependencies can be abstracted
+upon and decoupled from. In section \ref{maineventloop}, we will compare the
+languages' capabilities in wrapping external events, and in delegating work
+based on the specific kind of events generated. Section \ref{inputbindings} will
+cover language constructs that facilitate the storage and retrieval of callable
+objects, such as to allow for input bindings and event dispatch. Finally, in
+section \ref{clients}, each language's ability to allow for the mutation of
+distributed state is discussed.
 
 % achieve the same with the same approach
 % -> same that affords ... a different approach
