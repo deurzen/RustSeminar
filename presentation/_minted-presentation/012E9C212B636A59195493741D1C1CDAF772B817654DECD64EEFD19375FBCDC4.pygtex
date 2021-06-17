@@ -4,9 +4,10 @@
 \PYG{+w}{   }\PYG{n}{version}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}0.1.0\PYGZdq{}}
 \PYG{+w}{   }\PYG{n}{edition}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}2018\PYGZdq{}}
 \PYG{+w}{   }\PYG{n}{license}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}BSD3\PYGZdq{}}
-\PYG{+w}{   }\PYG{n}{default}\PYG{o}{\PYGZhy{}}\PYG{n}{run}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}wmRS\PYGZdq{}}
+\PYG{+w}{   }\PYG{n}{default}\PYG{o}{\PYGZhy{}}\PYG{n}{run}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}core\PYGZdq{}}
 \PYG{+w}{   }\PYG{n}{description}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}\PYGZdq{}\PYGZdq{}}
-\PYG{l+s}{   An ICCCM \PYGZam{} EWMH compliant X11 reparenting,}
-\PYG{l+s}{   tiling window manager, written in Rust}
+\PYG{l+s}{   An ICCCM \PYGZam{} EWMH compliant X11}
+\PYG{l+s}{   reparenting, tiling window manager,}
+\PYG{l+s}{   written in Rust}
 \PYG{l+s}{   \PYGZdq{}\PYGZdq{}\PYGZdq{}}
 \end{Verbatim}

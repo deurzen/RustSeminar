@@ -29,11 +29,13 @@
 
 \begin{secframe}{Package Management}
 
+    \tbf{Managing the \underline{availability} of external code}
+
     \begin{itemize}
 
-        \item The ability to \textit{aid} the programmer in managing external code\\
+        \item The ability to \textit{aid} the programmer in assuring availability\\
             \begin{itemize}
-                \item Automatically downloading a dependency's source code
+                \item Automatically download and compile source code
                 \item Built-in version control
                 \item Conflict detection
             \end{itemize}
@@ -51,7 +53,7 @@
 
 \end{secframe}
 
-\begin{frame}[fragile]{\underline{\cpp}: Package Management \hfill {\footnotesize \currentname}}
+\begin{frame}[c,fragile]{\underline{\cpp}: Package Management \hfill {\footnotesize \currentname}}
 
     \begin{itemize}
 
@@ -60,6 +62,11 @@
         \item \textit{Ad hoc} package management\\
             \begin{itemize}
                 \item Third-party package management tools
+                    \begin{itemize}
+                        \item \textit{Conan}
+                        \item \textit{Vcpkg}
+                        \item \textit{build2}
+                    \end{itemize}
                 \item Custom configure and build scripts
                 \item Let the user manage the dependencies themselves (e.g. through
                 their distribution's package manager)
@@ -67,13 +74,20 @@
 
         \item Example: \texttt{Make} script\\
 \begin{minted}[fontsize=\scriptsize]{make}
-   CXXFLAGS = -std=c++17 -march=native -O3
-   LDFLAGS = `pkg-config --libs x11 xrandr` -flto
-
-   obj/%.o: src/%.cc
-     g++ ${CXXFLAGS} -MMD -c $< -o $@
-   all: obj/%.o
-     g++ $< ${LDFLAGS} -o bin/wmCPP
+  CXXFLAGS  := -std=c++20 -march=native -O3
+  LDFLAGS   := `pkg-config --libs x11 xrandr` -flto
+\end{minted}
+\begin{minted}[fontsize=\scriptsize]{make}
+  SRC_FILES := $(wildcard src/*.cc)
+  OBJ_FILES := $(patsubst src/%.cc,obj/%.o,${SRC_FILES})
+\end{minted}
+\begin{minted}[fontsize=\scriptsize]{make}
+  all: ${OBJ_FILES}
+      g++ ${OBJ_FILES} ${LDFLAGS} -o bin/wmCPP
+\end{minted}
+\begin{minted}[fontsize=\scriptsize]{make}
+  obj/%.o: src/%.cc
+      g++ ${CXXFLAGS} -MMD -c $< -o $@
 \end{minted}
 
     \end{itemize}
@@ -87,59 +101,137 @@
         \item \textit{Cargo}, Rust's official package manager\\
             \begin{itemize}
                 \item Automatically downloads and compiles dependencies
-                \item A Rust project is a Cargo \textit{package}
-                \item A package is a collection of \textit{source files} plus a \textit{manifest file}
-                \item The manifest file describes the package's \textit{meta-information}, \textit{dependencies}, and a set of \textit{target crates}
-                \item A crate represents a \textit{library} or \textit{binary executable} program
+                \item A Rust project is a Cargo \textcolor{red}{\textit{package}}
+                \item A \textcolor{red}{package} is a collection of \textit{source files} plus a \textcolor{orange}{\textit{manifest}} file
+                \item The \textcolor{orange}{manifest} file describes the package's \textit{meta-information}, \textit{dependencies}, and a set of \textit{target \textcolor{ForestGreen}{crates}}
+                \item A \textcolor{ForestGreen}{crate} represents a \textit{library} or \textit{binary executable} program
             \end{itemize}
 
         \item Example: \texttt{Cargo.toml} manifest file\\
+\begin{minipage}{.55\linewidth}
 \begin{minted}[fontsize=\scriptsize]{rust}
    [package]
    name = "wmRS"
    version = "0.1.0"
    edition = "2018"
    license = "BSD3"
-   default-run = "wmRS"
+   default-run = "core"
    description = """
-   An ICCCM & EWMH compliant X11 reparenting,
-   tiling window manager, written in Rust
+   An ICCCM & EWMH compliant X11
+   reparenting, tiling window manager,
+   written in Rust
    """
 \end{minted}
+\end{minipage}%
+\begin{minipage}{.35\linewidth}
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+  [lib]
+  name = "winsys"
+  path = "src/winsys/mod.rs"
+  [[bin]]
+  name = "core"
+  path = "src/core/main.rs"
+  [[bin]]
+  name = "client"
+  path = "src/client/main.rs"
+  [dependencies]
+  x11rb = "0.8.0"
+\end{minted}
+\end{minipage}
 
     \end{itemize}
 
+    \vfill
+
 \end{frame}
 
-\begin{csecframe}{Decoupling Dependencies}
+\begin{secframe}{Decoupling Dependencies}
+
+    \tbf{Managing the \underline{maintainability} of external code}
 
     \begin{itemize}
 
-        \item What is a \textit{Windowing System}?\\
+        \item The ability to \textit{decouple} own code from external code\\
             \begin{itemize}
-                \item System software
-                \item Responsible for providing graphical primitives to construct and present GUIs
-                \item Render applications' windows' contents
-                \item Main dependency of the window manager
+                \item Changes to own code don't affect interface with external code
+                \item Changes to external code \textit{only} affect inerface with external code
             \end{itemize}
 
-        \item The window manager's implementation is made \textit{agnostic} to that of the windowing system\\
+        \item When external code changes:\\
             \begin{itemize}
-                \item We create a \textit{library}, \texttt{winsys}, that represents an abstraction above and wrapper around the API into the windowing system
-                \begin{itemize}
-                    \item The library defines an \textit{interface} that outlines desired behavior
-                    \item The interface is \textit{implemented} for each supported windowing system
-                \end{itemize}
-                \item The connection with windowing system is \textit{decoupled} from the implementation of the window manager
+                \item Only interface with external code needs to be recompiled
+            \end{itemize}
+
+        \item When own code changes:\\
+            \begin{itemize}
+                \item Only own code needs to be recompiled
             \end{itemize}
 
     \end{itemize}
 
     \vfill
 
-\end{csecframe}
+\end{secframe}
 
-\begin{frame}[c,fragile]{\underline{Rust}: Decoupling using Traits \hfill {\footnotesize \currentname}}
+\begin{secframe}{Decoupling Dependencies}
+
+
+    \tbf{Decouple \underline{window manager} from \underline{windowing system}}
+
+    \begin{enumerate}
+
+        \item Hide the connection with the windowing system behind an \textit{interface}\\
+            \begin{itemize}
+                \item Provide \textit{abstraction} and \textit{encapsulation}
+                \item Describe \textit{common behavior}
+                \item \textit{Usage} is \textit{agnostic} of concrete implementation
+            \end{itemize}
+
+        \item Implement the interface for \textit{each} targeted windowing system\\
+            \begin{itemize}
+                \item Implement the interface to target the \textit{X Window System}
+                \item Implement the interface to target \textit{Wayland}
+                \item Implement the interface to target the \textit{Desktop Window Manager} (Windows)
+                \item Implement the interface to target the \textit{Quartz Compositor} (macOS)
+            \end{itemize}
+
+        \item Have the window management logic call into the interface\\
+
+    \end{enumerate}
+
+    \vfill
+
+\end{secframe}
+
+\begin{rssecframe}{Decoupling with Traits}
+
+    \tbf{Decouple \underline{window manager} from \underline{windowing system}}
+
+    \begin{enumerate}
+
+        \item Hide the connection with the windowing system behind an \textit{interface}\\
+            \begin{itemize}
+                \item Provide \textit{abstraction} and \textit{encapsulation}
+                \item Changes to external code \textit{only} affect inerface with external code
+            \end{itemize}
+
+        \item When external code changes:\\
+            \begin{itemize}
+                \item Only interface with external code needs to be recompiled
+            \end{itemize}
+
+        \item When own code changes:\\
+            \begin{itemize}
+                \item Only own code needs to be recompiled
+            \end{itemize}
+
+    \end{enumerate}
+
+    \vfill
+
+\end{rssecframe}
+
+\begin{frame}[c,fragile]{\underline{Rust}: Decoupling with Traits \hfill {\footnotesize \currentname}}
     To define an interface that represents the connection with the windowing system, we use a Rust \textit{trait}
     \begin{itemize}
 
@@ -168,7 +260,7 @@
 
 \end{frame}
 
-\begin{frame}[c,fragile]{\underline{Rust}: Decoupling using Traits \hfill {\footnotesize \currentname}}
+\begin{frame}[c,fragile]{\underline{Rust}: Decoupling with Traits \hfill {\footnotesize \currentname}}
     We implement the \texttt{Connection} trait to target a \textit{specific} windowing system
     \begin{itemize}
 

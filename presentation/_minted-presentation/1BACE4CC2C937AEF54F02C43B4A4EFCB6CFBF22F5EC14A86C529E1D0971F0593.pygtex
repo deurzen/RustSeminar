@@ -1,0 +1,4 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+  all: \PYG{l+s+si}{\PYGZdl{}\PYGZob{}}\PYG{n+nv}{OBJ\PYGZus{}FILES}\PYG{l+s+si}{\PYGZcb{}}
+      g++ \PYG{l+s+si}{\PYGZdl{}\PYGZob{}}\PYG{n+nv}{OBJ\PYGZus{}FILES}\PYG{l+s+si}{\PYGZcb{}} \PYG{l+s+si}{\PYGZdl{}\PYGZob{}}\PYG{n+nv}{LDFLAGS}\PYG{l+s+si}{\PYGZcb{}} \PYGZhy{}o bin/wmCPP
+\end{Verbatim}

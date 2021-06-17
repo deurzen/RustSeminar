@@ -1,0 +1,4 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+  obj/\PYGZpc{}.o: src/\PYGZpc{}.cc
+      g++ \PYG{l+s+si}{\PYGZdl{}\PYGZob{}}\PYG{n+nv}{CXXFLAGS}\PYG{l+s+si}{\PYGZcb{}} \PYGZhy{}MMD \PYGZhy{}c \PYGZdl{}\PYGZlt{} \PYGZhy{}o \PYG{n+nv}{\PYGZdl{}@}
+\end{Verbatim}

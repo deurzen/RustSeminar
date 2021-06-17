@@ -1,0 +1,4 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+  SRC\PYGZus{}FILES :\PYG{o}{=} \PYG{k}{\PYGZdl{}(}wildcard src/*.cc\PYG{k}{)}
+  OBJ\PYGZus{}FILES :\PYG{o}{=} \PYG{k}{\PYGZdl{}(}patsubst src/\PYGZpc{}.cc,obj/\PYGZpc{}.o,\PYG{l+s+si}{\PYGZdl{}\PYGZob{}}\PYG{n+nv}{SRC\PYGZus{}FILES}\PYG{l+s+si}{\PYGZcb{}}\PYG{k}{)}
+\end{Verbatim}

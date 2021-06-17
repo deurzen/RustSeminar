@@ -1,4 +1,4 @@
-\frametitle{\underline {Rust}: Decoupling using Traits \hfill {\footnotesize \currentname }}
+\frametitle{\underline {Rust}: Decoupling with Traits \hfill {\footnotesize \currentname }}
 We implement the \texttt{Connection} trait to target a \textit{specific} windowing system
     \begin{itemize}
 

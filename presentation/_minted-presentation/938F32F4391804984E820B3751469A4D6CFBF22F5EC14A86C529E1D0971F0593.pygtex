@@ -1,0 +1,4 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+  CXXFLAGS  :\PYG{o}{=} \PYGZhy{}std\PYG{o}{=}c++20 \PYGZhy{}march\PYG{o}{=}native \PYGZhy{}O3
+  LDFLAGS   :\PYG{o}{=} \PYG{l+s+sb}{`}pkg\PYGZhy{}config \PYGZhy{}\PYGZhy{}libs x11 xrandr\PYG{l+s+sb}{`} \PYGZhy{}flto
+\end{Verbatim}
