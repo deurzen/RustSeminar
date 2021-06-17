@@ -70,17 +70,22 @@
 
 \begin{secframe}{A Bounded Comparison}
 
-    \textit{Case Study}: The implementation of a \underline{window manager}
+    \textit{Case Study}: The implementation of \textbf{two} \underline{window managers}
 
     \begin{itemize}
-        \item \tbf{Implemented in \cpp}:
+        \item \tbf{Same structure}
             \begin{itemize}
-                \item \textsc{wmCPP}
+                \item Built on top of the X Window System
             \end{itemize}
-
-        \item \tbf{Implemented in Rust}:
+        \item \tbf{Same behavior}
             \begin{itemize}
-                \item \textsc{wmCPP}
+                \item ICCCM and EWMH compliant
+                \item Reparenting, tiling
+            \end{itemize}
+        \item \tbf{Different languages}
+            \begin{itemize}
+                \item One implemented in \cpp: \textsc{wmCPP}
+                \item One implemented in Rust: \textsc{wmRS}
             \end{itemize}
     \end{itemize}
 
