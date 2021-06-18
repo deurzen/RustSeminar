@@ -73,6 +73,7 @@
             \end{itemize}
 
         \item Example: \texttt{Make} script\\
+\usemintedstyle{default}
 \begin{minted}[fontsize=\scriptsize]{make}
   CXXFLAGS  := -std=c++20 -march=native -O3
   LDFLAGS   := `pkg-config --libs x11 xrandr` -flto
@@ -89,6 +90,7 @@
   obj/%.o: src/%.cc
       g++ ${CXXFLAGS} -MMD -c $< -o $@
 \end{minted}
+\usemintedstyle{igor}
 
     \end{itemize}
 
@@ -108,6 +110,7 @@
             \end{itemize}
 
         \item Example: \texttt{Cargo.toml} manifest file\\
+\usemintedstyle{default}
 \begin{minipage}{.55\linewidth}
 \begin{minted}[fontsize=\scriptsize]{rust}
    [package]
@@ -125,19 +128,20 @@
 \end{minipage}%
 \begin{minipage}{.35\linewidth}
 \begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
-  [lib]
+  |\bfseries{\textcolor{ForestGreen}{[lib]}}|
   name = "winsys"
   path = "src/winsys/mod.rs"
-  [[bin]]
+  |\bfseries{\textcolor{ForestGreen}{[[bin]]}}|
   name = "core"
   path = "src/core/main.rs"
-  [[bin]]
+  |\bfseries{\textcolor{ForestGreen}{[[bin]]}}|
   name = "client"
   path = "src/client/main.rs"
   [dependencies]
   x11rb = "0.8.0"
 \end{minted}
 \end{minipage}
+\usemintedstyle{igor}
 
     \end{itemize}
 
@@ -175,7 +179,6 @@
 
 \begin{secframe}{Decoupling Dependencies}
 
-
     \tbf{Decouple \underline{window manager} from \underline{windowing system}}
 
     \begin{enumerate}
@@ -203,49 +206,52 @@
 
 \end{secframe}
 
-\begin{rssecframe}{Decoupling with Traits}
+\begin{frame}[fragile]{\underline{Rust}: Decoupling with Traits \hfill {\footnotesize \currentname}}
 
-    \tbf{Decouple \underline{window manager} from \underline{windowing system}}
+    \tbf{1. Hide the connection with the windowing system behind a \underline{trait}}
 
-    \begin{enumerate}
+    \begin{itemize}
 
-        \item Hide the connection with the windowing system behind an \textit{interface}\\
+        \item Comparable to, \textit{but not the same as}, the concept of an OOP \textit{interface}\\
             \begin{itemize}
-                \item Provide \textit{abstraction} and \textit{encapsulation}
-                \item Changes to external code \textit{only} affect inerface with external code
+                \item Implementation does not require changes to the implementor
+                \begin{itemize}
+                    \item Traits can be implemented on \textit{external} code
+                    \item No ambiguity when two implemented traits share method name and prototype
+                \end{itemize}
             \end{itemize}
 
-        \item When external code changes:\\
-            \begin{itemize}
-                \item Only interface with external code needs to be recompiled
-            \end{itemize}
+        \item Can define \textit{stateless} default implementations\\
 
-        \item When own code changes:\\
-            \begin{itemize}
-                \item Only own code needs to be recompiled
-            \end{itemize}
+        \item \textit{Zero-overhead} collection of methods\\[3pt]
+            { \footnotesize
+            \begin{aquote}{\footnotesize Bjarne Stroustrup}
+                What you don't use, you don't pay for [Stroustrup, 1994]. And further: What you do use, you couldn't hand code any better.
+            \end{aquote} }
 
-    \end{enumerate}
+    \end{itemize}
 
     \vfill
 
-\end{rssecframe}
+\end{frame}
 
-\begin{frame}[c,fragile]{\underline{Rust}: Decoupling with Traits \hfill {\footnotesize \currentname}}
-    To define an interface that represents the connection with the windowing system, we use a Rust \textit{trait}
+\begin{frame}[fragile]{\underline{Rust}: Decoupling with Traits \hfill {\footnotesize \currentname}}
+
+    \tbf{1. Hide the connection with the windowing system behind a \underline{trait}}
+
     \begin{itemize}
 
-        \item Traits are \textit{zero-overhead} collections of methods that are:\\
+        \item No inheritance, only implementation\\
             \begin{itemize}
-                \item Declared for \textit{some} type \texttt{Self}
-                \item Most often used to implement \textit{shared behavior}
+                \item No downcasting or reference casting
             \end{itemize}
 
-        \item Traits most closely resemble the concept of \textit{interfaces} from other languages\\
+        \item Declared for some (at declare-time) unknown type \texttt{Self}\\
+            \begin{itemize}
+                \item When implemented \texttt{Self} becomes the implementing type
+            \end{itemize}
 
-        \item Traits can provide a \textit{default implementation} for their defined methods\\
-
-        \item Example: \texttt{wmRS}'s \texttt{Connection} trait\\
+        \item Example: \textsc{wmRS}'s \rsin{Connection} trait:\\
 \begin{minted}[fontsize=\scriptsize]{rust}
    pub trait Connection {
      fn step(&self) -> Option<Event>;
@@ -258,30 +264,77 @@
 
     \end{itemize}
 
+    \vfill
+
 \end{frame}
 
-\begin{frame}[c,fragile]{\underline{Rust}: Decoupling with Traits \hfill {\footnotesize \currentname}}
-    We implement the \texttt{Connection} trait to target a \textit{specific} windowing system
+\begin{frame}[fragile]{\underline{Rust}: Decoupling with Traits \hfill {\footnotesize \currentname}}
+
+    \tbf{2. Implement the trait for \textit{each} targeted windowing system}
+
     \begin{itemize}
 
-        \item Example: \textsc{wmRS}'s \texttt{Connection} implementation for the X Window System\\
+        \item Example: \textsc{wmRS}'s \rsin{XConnection} structure:\\
 \begin{minted}[fontsize=\scriptsize]{rust}
-   use x11rb::connection;
-
-   pub struct XConnection
-     <'conn, Conn: connection::Connection>
-   {
-     conn: &'conn Conn,
-     // ...
-   }
-   impl<'conn, Conn: connection::Connection>
-     Connection for XConnection<'conn, Conn>
-   {
-     fn step(&self) -> Option<Event> { /* ... */ }
-     // ...
-   }
+  use x11rb::connection;
+\end{minted}
+\begin{minted}[fontsize=\scriptsize]{rust}
+  pub struct XConnection<'conn, Conn: connection::Connection> {
+    conn: &'conn Conn,
+    // ...
+  }
+\end{minted}
+\begin{minted}[fontsize=\scriptsize]{rust}
+  impl<'conn, Conn: connection::Connection> Connection
+    for XConnection<'conn, Conn>
+  {
+    fn step(&self) -> Option<Event> { /* ... */ }
+    // ...
+  }
 \end{minted}
 
+        \item \rsin{x11rb}: Rust library to interact with the X Window System\\
+            \begin{itemize}
+                \item External dependency
+                \item Contains Rust bindings to interact with the X server
+            \end{itemize}
+
     \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{Rust}: Decoupling with Traits \hfill {\footnotesize \currentname}}
+
+    \tbf{3. Have the window management logic call into the interface}
+
+    \begin{itemize}
+
+        \item Example: \textsc{wmRS}'s core window manager logic:\\
+\begin{minted}[fontsize=\scriptsize]{rust}
+  pub struct Model<'model> {
+    conn: &'model mut dyn Connection,
+    // ...
+  }
+\end{minted}
+
+        \item \rsin{Model} \textit{contains} a reference to \textit{some} \rsin{Connection} implementor\\
+
+        \item The trait methods of this implementor are called where needed\\
+            \begin{itemize}
+                \item Dynamic dispatch
+                    \begin{itemize}
+                        \item Concrete method to call is looked up at \textit{runtime}
+                    \end{itemize}
+                \item Static dispatch
+                    \begin{itemize}
+                        \item Concrete method to call is baked into the binary
+                    \end{itemize}
+            \end{itemize}
+
+    \end{itemize}
+
+    \vfill
 
 \end{frame}

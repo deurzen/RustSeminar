@@ -1,11 +1,11 @@
 \begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
-\PYG{+w}{  }\PYG{p}{[}\PYG{n}{lib}\PYG{p}{]}
+\PYG{+w}{  }\PYG{esc}{\bfseries{\textcolor{ForestGreen}{[lib]}}}
 \PYG{+w}{  }\PYG{n}{name}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{winsys}\PYG{l+s}{\PYGZdq{}}
 \PYG{+w}{  }\PYG{n}{path}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{src/winsys/mod.rs}\PYG{l+s}{\PYGZdq{}}
-\PYG{+w}{  }\PYG{p}{[}\PYG{p}{[}\PYG{n}{bin}\PYG{p}{]}\PYG{p}{]}
+\PYG{+w}{  }\PYG{esc}{\bfseries{\textcolor{ForestGreen}{[[bin]]}}}
 \PYG{+w}{  }\PYG{n}{name}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{core}\PYG{l+s}{\PYGZdq{}}
 \PYG{+w}{  }\PYG{n}{path}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{src/core/main.rs}\PYG{l+s}{\PYGZdq{}}
-\PYG{+w}{  }\PYG{p}{[}\PYG{p}{[}\PYG{n}{bin}\PYG{p}{]}\PYG{p}{]}
+\PYG{+w}{  }\PYG{esc}{\bfseries{\textcolor{ForestGreen}{[[bin]]}}}
 \PYG{+w}{  }\PYG{n}{name}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{client}\PYG{l+s}{\PYGZdq{}}
 \PYG{+w}{  }\PYG{n}{path}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{src/client/main.rs}\PYG{l+s}{\PYGZdq{}}
 \PYG{+w}{  }\PYG{p}{[}\PYG{n}{dependencies}\PYG{p}{]}
