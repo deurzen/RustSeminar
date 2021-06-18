@@ -174,15 +174,15 @@ Window System, is partly given as follows:
 \end{rustblock}
 \begin{rustblock}
   pub struct XConnection
-    <'conn, Conn: connection::Connection>
+    <'xconn, XConn: connection::Connection>
   {
-    conn: &'conn Conn,
+    xconn: &'xconn XConn,
     // ...
   }
 \end{rustblock}
 \begin{rustblock}
-  impl<'conn, Conn: connection::Connection>
-    Connection for XConnection<'conn, Conn>
+  impl<'xconn, XConn: connection::Connection>
+    Connection for XConnection<'xconn, XConn>
   {
     fn step(&self) -> Option<Event> { /* ... */ }
     // ...
@@ -190,8 +190,8 @@ Window System, is partly given as follows:
 \end{rustblock}
 
 The \rsin{XConnection} structure introduces two generic type arguments,
-one being a lifetype parameter (\rsin{'conn}), and the other being
-the type of the structure's \rsin{conn} field (\rsin{Conn}), which
+one being a lifetype parameter (\rsin{'xconn}), and the other being
+the type of the structure's \rsin{xconn} field (\rsin{XConn}), which
 \textit{requires} the \rsin{connection::Connection} trait to be implemented.
 This \rsin{connection::Connection} trait is imported from the external package
 \ttt{x11rb}, which we supplied as a project dependency in our manifest file. The
@@ -328,9 +328,9 @@ part of \cppin{Connection}'s implementation:
 \begin{cppblock}
   // ...
   void
-  Connection::focus_window(Window window)
+  Connection::close_window(Window window)
   {
-    Logger::log_info("Focusing 0x%#08x.", window);
+    Logger::log_info("Closing 0x%#08x.", window);
   }
   // ...
 \end{cppblock}
@@ -352,9 +352,9 @@ follows:
   {
   public:
     // ...
-    void focus_window(Window window) override {
+    void close_window(Window window) override {
       // non-virtual call
-      Connection::focus_window(window);
+      Connection::close_window(window);
       // ...
     }
     // ...
@@ -379,9 +379,7 @@ abstract class, providing an implementation specific to that windowing system.
   class Model final
   {
   public:
-    Model(Connection& conn): conn(conn) {
-      // ...
-    }
+    Model(Connection& conn): conn(conn) { /* ... */ }
     // ...
   private:
     Connection& conn;

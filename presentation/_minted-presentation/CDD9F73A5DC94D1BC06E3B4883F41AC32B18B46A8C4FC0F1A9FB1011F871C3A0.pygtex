@@ -1,0 +1,8 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+    \PYG{esc}{\textcolor{blue}{\bfseries{virtual}}} \PYG{n}{Event} \PYG{n+nf}{step}\PYG{p}{(}\PYG{p}{)} \PYG{esc}{\bfseries{= 0}}\PYG{p}{;}
+    \PYG{esc}{\textcolor{blue}{\bfseries{virtual}}} \PYG{k+kt}{void} \PYG{n+nf}{move\PYGZus{}window}\PYG{p}{(}\PYG{n}{Window}\PYG{p}{,} \PYG{n}{Pos}\PYG{p}{)} \PYG{esc}{\bfseries{= 0}}\PYG{p}{;}
+    \PYG{esc}{\textcolor{blue}{\bfseries{virtual}}} \PYG{k+kt}{void} \PYG{n+nf}{resize\PYGZus{}window}\PYG{p}{(}\PYG{n}{Window}\PYG{p}{,} \PYG{n}{Dim}\PYG{p}{)} \PYG{esc}{\bfseries{= 0}}\PYG{p}{;}
+    \PYG{esc}{\textcolor{blue}{\bfseries{virtual}}} \PYG{k+kt}{void} \PYG{n+nf}{close\PYGZus{}window}\PYG{p}{(}\PYG{n}{Window}\PYG{p}{)} \PYG{esc}{\bfseries{= 0}}\PYG{p}{;}
+    \PYG{c+c1}{// ...}
+  \PYG{p}{\PYGZcb{}}\PYG{p}{;}
+\end{Verbatim}

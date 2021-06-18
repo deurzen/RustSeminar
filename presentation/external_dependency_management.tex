@@ -279,14 +279,14 @@
   use x11rb::connection;
 \end{minted}
 \begin{minted}[fontsize=\scriptsize]{rust}
-  pub struct XConnection<'conn, Conn: connection::Connection> {
-    conn: &'conn Conn,
+  pub struct XConnection<'xconn, XConn: connection::Connection> {
+    xconn: &'xconn XConn,
     // ...
   }
 \end{minted}
 \begin{minted}[fontsize=\scriptsize]{rust}
-  impl<'conn, Conn: connection::Connection> Connection
-    for XConnection<'conn, Conn>
+  impl<'xconn, XConn: connection::Connection> Connection
+    for XConnection<'xconn, XConn>
   {
     fn step(&self) -> Option<Event> { /* ... */ }
     // ...
@@ -429,35 +429,185 @@
 
     \begin{itemize}
 
-        \item Example: \textsc{wmRS}'s \rsin{conn} trait object:\\[3pt]
-\begin{minipage}{.45\linewidth}
+        \item Example: \textsc{wmRS}'s \rsin{xconn} and \rsin{conn} trait objects:\\[3pt]
 \begin{minted}[fontsize=\scriptsize]{rust}
-  pub struct Cycle<T>
-  where
-    T: Identify + Debug,
-  { /* ... */ }
+  use x11rb::connection;
 \end{minted}
-\begin{minted}[fontsize=\scriptsize]{rust}
-  impl<T> Cycle<T>
-  where
-      T: Identify + Debug,
-  { /* ... */ }
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+  pub struct XConnection<'xconn, |\bfseries{XConn: connection::Connection}|> {
+    xconn: &'xconn |\bfseries{XConn}|,
+    // ...
+  }
 \end{minted}
-\end{minipage}%
-\begin{minipage}{.40\linewidth}
+
 \begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
   pub struct Model<'model> {
-    // ...
-    workspaces: |\bfseries{Cycle<Workspace>}|,
+    conn: &'model mut |\bfseries{dyn Connection}|,
     // ...
   }
 \end{minted}
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
-  pub struct Workspace {
-    clients: |\bfseries{Cycle<Window>}|,
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{\cpp}: Abstract Classes \hfill {\footnotesize \currentname}}
+
+    \tbf{1. Hide the connection with the windowing system behind an \underline{abstract class}}
+
+    \begin{itemize}
+
+        \item Abstract type that cannot be implemented, only \textit{derived}
+
+        \item Establish common denominator between types
+
+        \item Can define \textit{stateful} default implementations
+
+        \item Same as OOP interface when it \textit{only} contains \textit{pure virtual} methods
+            \begin{itemize}
+                \item No associated inline logic
+                \item \textit{Must} be implemented by inheriting subclasses
+            \end{itemize}
+
+        \item Derived class concrete method invocation \textit{only} through dynamic dispatch
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{\cpp}: Abstract Classes \hfill {\footnotesize \currentname}}
+
+    \tbf{1. Hide the connection with the windowing system behind an \underline{abstract class}}
+
+    \begin{itemize}
+
+        \item Example: \textsc{wmCPP}'s \cppin{Connection} abstract class interface:\\[3pt]
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+  class Connection
+  {
+  public:
+    |\textcolor{blue}{\bfseries{virtual}}| ~Connection() {}
+\end{minted}
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+    |\textcolor{blue}{\bfseries{virtual}}| Event step() |\bfseries{= 0}|;
+    |\textcolor{blue}{\bfseries{virtual}}| void move_window(Window, Pos) |\bfseries{= 0}|;
+    |\textcolor{blue}{\bfseries{virtual}}| void resize_window(Window, Dim) |\bfseries{= 0}|;
+    |\textcolor{blue}{\bfseries{virtual}}| void close_window(Window) |\bfseries{= 0}|;
+    // ...
+  };
+\end{minted}
+
+        \item \cppin{Connection} contains \textit{at least} 1 virtual method
+            \begin{itemize}
+                \item \cppin{Connection} is an abstract class
+            \end{itemize}
+
+        \item \cppin{Connection} has 0 inline method implementations
+            \begin{itemize}
+                \item \cppin{Connection} is a proper OOP interface
+            \end{itemize}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{\cpp}: Abstract Classes \hfill {\footnotesize \currentname}}
+
+    \tbf{1. Hide the connection with the windowing system behind an \underline{abstract class}}
+
+    \begin{itemize}
+
+        \item Pure virtual methods \textit{can} be defined to be called \textit{statically}
+
+        \item Example: \textsc{wmCPP}'s \cppin{Connection}'s implementation:\\[3pt]
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+  #include "connection.hh"
+  #include "log.hh"
+\end{minted}
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+  void
+  Connection::close_window(Window window)
+  {
+    Logger::log_info("Closing 0x%#08x.", window);
   }
 \end{minted}
-\end{minipage}
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+  // ...
+\end{minted}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[c,fragile]{\underline{\cpp}: Abstract Classes \hfill {\footnotesize \currentname}}
+
+    \tbf{2. Derive the abstract class for \textit{each} targeted windowing system}
+
+    \vspace*{-5pt}\begin{itemize}
+
+        \item Example: \textsc{wmCPP}'s \rsin{XConnection} derived class:\\
+\begin{minted}[fontsize=\scriptsize]{cpp}
+  #include "connection.hh"
+  extern "C" {
+    #include <X11/Xlib.h>
+    // ...
+  }
+  class XConnection final: public Connection
+  {
+  public:
+    void close_window(Window window) override {
+      Connection::close_window(window); // non-virtual call
+      // ...
+    }
+    // ...
+  };
+\end{minted}
+
+        \item \rsin{<X11/...>}: Xlib library to interact with the X Window System\\
+            \begin{itemize}
+                \item External dependency
+            \end{itemize}
+
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[c,fragile]{\underline{Rust}: Decoupling with Traits \hfill {\footnotesize \currentname}}
+
+    \tbf{3. Have the window management logic call into the interface}
+
+    \begin{itemize}
+
+        \item Example: \textsc{wmCPP}'s core window manager logic:\\
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+  #include "connection.hh"
+  class Model final
+  {
+  public:
+    Model(|\bfseries{Connection& conn}|): conn(|\bfseries{conn}|) { /* ... */  }
+    // ...
+  private:
+    |\bfseries{Connection&}| conn;
+    // ...
+  };
+\end{minted}
+
+        \item \textit{Polymorphism} to abstract away from the concrete implementation\\
+
+        \item \rsin{Model} \textit{contains} a reference to \textit{some} \rsin{Connection} implementor\\
+
+        \item The overridden methods of this implementor are dynamically called where needed\\
 
     \end{itemize}
 

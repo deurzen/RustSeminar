@@ -1,0 +1,16 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+  \PYG{c+cp}{\PYGZsh{}include} \PYG{c+cpf}{\PYGZdq{}connection.hh\PYGZdq{}}
+  \PYG{k}{extern} \PYG{l+s}{\PYGZdq{}C\PYGZdq{}} \PYG{p}{\PYGZob{}}
+    \PYG{c+cp}{\PYGZsh{}include} \PYG{c+cpf}{\PYGZlt{}X11/Xlib.h\PYGZgt{}}
+    \PYG{c+c1}{// ...}
+  \PYG{p}{\PYGZcb{}}
+  \PYG{k}{class} \PYG{n+nc}{XConnection} \PYG{k}{final}\PYG{o}{:} \PYG{k}{public} \PYG{n}{Connection}
+  \PYG{p}{\PYGZob{}}
+  \PYG{k}{public}\PYG{o}{:}
+    \PYG{k+kt}{void} \PYG{n}{close\PYGZus{}window}\PYG{p}{(}\PYG{n}{Window} \PYG{n}{window}\PYG{p}{)} \PYG{k}{override} \PYG{p}{\PYGZob{}}
+      \PYG{n}{Connection}\PYG{o}{::}\PYG{n}{close\PYGZus{}window}\PYG{p}{(}\PYG{n}{window}\PYG{p}{);} \PYG{c+c1}{// non\PYGZhy{}virtual call}
+      \PYG{c+c1}{// ...}
+    \PYG{p}{\PYGZcb{}}
+    \PYG{c+c1}{// ...}
+  \PYG{p}{\PYGZcb{};}
+\end{Verbatim}

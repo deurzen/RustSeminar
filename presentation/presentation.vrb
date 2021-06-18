@@ -1,38 +1,28 @@
 \frametitle{\underline {Rust}: Decoupling with Traits \hfill {\footnotesize \currentname }}
 
-    \tbf{Dynamic dispatch}
+    \tbf{3. Have the window management logic call into the interface}
 
     \begin{itemize}
 
-        \item Example: \textsc{wmRS}'s \rsin{conn} trait object:\\[3pt]
-\begin{minipage}{.45\linewidth}
-\begin{minted}[fontsize=\scriptsize]{rust}
-  pub struct Cycle<T>
-  where
-    T: Identify + Debug,
-  { /* ... */ }
-\end{minted}
-\begin{minted}[fontsize=\scriptsize]{rust}
-  impl<T> Cycle<T>
-  where
-      T: Identify + Debug,
-  { /* ... */ }
-\end{minted}
-\end{minipage}%
-\begin{minipage}{.40\linewidth}
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
-  pub struct Model<'model> {
+        \item Example: \textsc{wmCPP}'s core window manager logic:\\
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+  #include "connection.hh"
+  class Model final
+  {
+  public:
+    Model(|\bfseries{Connection& conn}|): conn(|\bfseries{conn}|) { /* ... */  }
     // ...
-    workspaces: |\bfseries{Cycle<Workspace>}|,
+  private:
+    |\bfseries{Connection&}| conn;
     // ...
-  }
+  };
 \end{minted}
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
-  pub struct Workspace {
-    clients: |\bfseries{Cycle<Window>}|,
-  }
-\end{minted}
-\end{minipage}
+
+        \item \textit{Polymorphism} to abstract away from the concrete implementation\\
+
+        \item \rsin{Model} \textit{contains} a reference to \textit{some} \rsin{Connection} implementor\\
+
+        \item The overridden methods of this implementor are dynamically called where needed\\
 
     \end{itemize}
 
