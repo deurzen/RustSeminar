@@ -1,0 +1,5 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{+w}{  }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct} \PYG{n+nc}{Workspace}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{clients}: \PYG{esc}{\bfseries{Cycle<Window>}}\PYG{p}{,}
+\PYG{+w}{  }\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

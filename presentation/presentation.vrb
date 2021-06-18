@@ -1,30 +1,38 @@
 \frametitle{\underline {Rust}: Decoupling with Traits \hfill {\footnotesize \currentname }}
 
-    \tbf{3. Have the window management logic call into the interface}
+    \tbf{Dynamic dispatch}
 
     \begin{itemize}
 
-        \item Example: \textsc{wmRS}'s core window manager logic:\\
+        \item Example: \textsc{wmRS}'s \rsin{conn} trait object:\\[3pt]
+\begin{minipage}{.45\linewidth}
 \begin{minted}[fontsize=\scriptsize]{rust}
+  pub struct Cycle<T>
+  where
+    T: Identify + Debug,
+  { /* ... */ }
+\end{minted}
+\begin{minted}[fontsize=\scriptsize]{rust}
+  impl<T> Cycle<T>
+  where
+      T: Identify + Debug,
+  { /* ... */ }
+\end{minted}
+\end{minipage}%
+\begin{minipage}{.40\linewidth}
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
   pub struct Model<'model> {
-    conn: &'model mut dyn Connection,
+    // ...
+    workspaces: |\bfseries{Cycle<Workspace>}|,
     // ...
   }
 \end{minted}
-
-        \item \rsin{Model} \textit{contains} a reference to \textit{some} \rsin{Connection} implementor\\
-
-        \item The trait methods of this implementor are called where needed\\
-            \begin{itemize}
-                \item Dynamic dispatch
-                    \begin{itemize}
-                        \item Concrete method to call is looked up at \textit{runtime}
-                    \end{itemize}
-                \item Static dispatch
-                    \begin{itemize}
-                        \item Concrete method to call is baked into the binary
-                    \end{itemize}
-            \end{itemize}
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+  pub struct Workspace {
+    clients: |\bfseries{Cycle<Window>}|,
+  }
+\end{minted}
+\end{minipage}
 
     \end{itemize}
 

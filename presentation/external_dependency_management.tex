@@ -212,6 +212,12 @@
 
     \begin{itemize}
 
+        \item \textit{Zero-overhead} collection of methods\\[3pt]
+            { \footnotesize
+            \begin{aquote}{\footnotesize Bjarne Stroustrup}
+                What you don't use, you don't pay for [Stroustrup, 1994]. And further: What you do use, you couldn't hand code any better.
+            \end{aquote} }
+
         \item Comparable to, \textit{but not the same as}, the concept of an OOP \textit{interface}\\
             \begin{itemize}
                 \item Implementation does not require changes to the implementor
@@ -222,12 +228,6 @@
             \end{itemize}
 
         \item Can define \textit{stateless} default implementations\\
-
-        \item \textit{Zero-overhead} collection of methods\\[3pt]
-            { \footnotesize
-            \begin{aquote}{\footnotesize Bjarne Stroustrup}
-                What you don't use, you don't pay for [Stroustrup, 1994]. And further: What you do use, you couldn't hand code any better.
-            \end{aquote} }
 
     \end{itemize}
 
@@ -319,19 +319,145 @@
   }
 \end{minted}
 
+        \item \textit{Polymorphism} to abstract away from the concrete implementation\\
+
         \item \rsin{Model} \textit{contains} a reference to \textit{some} \rsin{Connection} implementor\\
 
         \item The trait methods of this implementor are called where needed\\
             \begin{itemize}
-                \item Dynamic dispatch
-                    \begin{itemize}
-                        \item Concrete method to call is looked up at \textit{runtime}
-                    \end{itemize}
                 \item Static dispatch
                     \begin{itemize}
                         \item Concrete method to call is baked into the binary
                     \end{itemize}
+                \item Dynamic dispatch
+                    \begin{itemize}
+                        \item Concrete method to call is looked up \textit{at runtime}
+                    \end{itemize}
             \end{itemize}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+
+\begin{frame}[fragile]{\underline{Rust}: Decoupling with Traits \hfill {\footnotesize \currentname}}
+
+    \tbf{Static dispatch}
+
+    \begin{itemize}
+
+        \item Concrete method to call is baked into the binary
+            \begin{itemize}
+                \item \textit{Monomorphization} at compile time
+                \item Generic code is converted into ``specific'' code
+                \item One version for each concrete type used as generic argument
+                \item Size of concrete type is always known
+            \end{itemize}
+
+        \item No additional time overhead at runtime
+
+        \item Example: \textsc{wmRS}'s \rsin{Cycle} structure:\\[3pt]
+\begin{minipage}{.45\linewidth}
+\begin{minted}[fontsize=\scriptsize]{rust}
+  pub struct Cycle<T>
+  where
+    T: Identify + Debug,
+  { /* ... */ }
+\end{minted}
+\begin{minted}[fontsize=\scriptsize]{rust}
+  impl<T> Cycle<T>
+  where
+      T: Identify + Debug,
+  { /* ... */ }
+\end{minted}
+\end{minipage}%
+\begin{minipage}{.40\linewidth}
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+  pub struct Model<'model> {
+    // ...
+    workspaces: |\bfseries{Cycle<Workspace>}|,
+    // ...
+  }
+\end{minted}
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+  pub struct Workspace {
+    clients: |\bfseries{Cycle<Window>}|,
+  }
+\end{minted}
+\end{minipage}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{Rust}: Decoupling with Traits \hfill {\footnotesize \currentname}}
+
+    \tbf{Dynamic dispatch}
+
+    \begin{itemize}
+
+        \item Concrete method to call is looked up \textit{at runtime}
+
+        \item \textit{Trait objects} keep instances abstract until concretization is required
+            \begin{itemize}
+                \item Opaque value of a type that implements some set of traits
+                \item Until further inspection, concrete type is unknown
+                \item \textit{Dynamically sized}: size of underlying concrete type is not known up front
+            \end{itemize}
+
+        \item Under the hood, 2 pointers:
+            \begin{itemize}
+                \item 1 pointer to data
+                \item 1 pointer to \textit{virtual method table} (\textit{vtable})
+            \end{itemize}
+
+        \item Virtual method table points to that object's concrete method implementations
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{Rust}: Decoupling with Traits \hfill {\footnotesize \currentname}}
+
+    \tbf{Dynamic dispatch}
+
+    \begin{itemize}
+
+        \item Example: \textsc{wmRS}'s \rsin{conn} trait object:\\[3pt]
+\begin{minipage}{.45\linewidth}
+\begin{minted}[fontsize=\scriptsize]{rust}
+  pub struct Cycle<T>
+  where
+    T: Identify + Debug,
+  { /* ... */ }
+\end{minted}
+\begin{minted}[fontsize=\scriptsize]{rust}
+  impl<T> Cycle<T>
+  where
+      T: Identify + Debug,
+  { /* ... */ }
+\end{minted}
+\end{minipage}%
+\begin{minipage}{.40\linewidth}
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+  pub struct Model<'model> {
+    // ...
+    workspaces: |\bfseries{Cycle<Workspace>}|,
+    // ...
+  }
+\end{minted}
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+  pub struct Workspace {
+    clients: |\bfseries{Cycle<Window>}|,
+  }
+\end{minted}
+\end{minipage}
 
     \end{itemize}
 
