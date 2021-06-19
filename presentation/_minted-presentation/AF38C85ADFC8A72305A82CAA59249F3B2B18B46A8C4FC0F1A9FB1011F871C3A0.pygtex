@@ -1,0 +1,10 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{typedef} \PYG{n}{std}\PYG{o}{:}\PYG{o}{:}\PYG{n}{variant}\PYG{o}{\PYGZlt{}}
+    \PYG{esc}{\underline{std::monostate}}\PYG{p}{,}
+    \PYG{n}{Mouse}\PYG{p}{,}
+    \PYG{n}{Key}\PYG{p}{,}
+    \PYG{n}{CloseRequest}\PYG{p}{,}
+    \PYG{n}{ScreenChange}\PYG{p}{,}
+    \PYG{c+c1}{// ...}
+\PYG{o}{\PYGZgt{}} \PYG{n}{Event}\PYG{p}{;}
+\end{Verbatim}

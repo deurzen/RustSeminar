@@ -154,3 +154,114 @@
     \vfill
 
 \end{frame}
+
+\begin{frame}[fragile]{Event Abstraction: Remarks \hfill {\footnotesize \currentname}}
+
+\begin{minipage}[t]{.64\linewidth}
+\textsc{wmRS}:\\[3pt]
+\rsin{fn step(&self) -> |\bfseries{\underline{Option}<Event>}|;}
+\end{minipage}%
+\begin{minipage}[t]{.36\linewidth}
+\textsc{wmCPP}:\\[3pt]
+\cppin{|\bfseries{Event}| step();}
+\end{minipage}
+
+\pause
+
+\vspace*{8pt}\begin{minipage}[t]{.64\linewidth}
+\begin{minted}[fontsize=\scriptsize]{cpp}
+pub enum Event {
+    Mouse { event: MouseEvent },
+    Key { event: KeyEvent },
+    CloseRequest { window: Window },
+    ScreenChange,
+    // ...
+}
+\end{minted}
+\end{minipage}%
+\begin{minipage}[t]{.36\linewidth}
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+typedef std::variant<
+    |\underline{std::monostate}|,
+    Mouse,
+    Key,
+    CloseRequest,
+    ScreenChange,
+    // ...
+> Event;
+\end{minted}
+\end{minipage}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{Rust}: Event Dispatch by Pattern Matching \hfill {\footnotesize \currentname}}
+
+    \tbf{3. Delegate work to different parts of the program}
+
+    \begin{itemize}
+
+        \item \rsin{match} on specific \textit{type} of event
+            \begin{itemize}
+                \item Call appropriate \textit{handler}
+                \item Pass encoded information to handler
+            \end{itemize}
+
+        \item Example: \textsc{wmRS}'s main event loop:\\
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+  while self.running {
+      if let Some(event) = self.conn.step() {
+          match event {
+              Event::Mouse { event, }
+                  => self.|\bfseries{handle\_mouse}|(event, /*...*/),
+              Event::Key { keycode, }
+                  => self.|\bfseries{handle\_key}|(keycode, /*...*/),
+              Event::CloseRequest { window, }
+                  => self.|\bfseries{handle\_close\_request}|(window),
+              Event::ScreenChange
+                  => self.|\bfseries{handle\_screen\_change}|(),
+              // ...
+          }
+      }
+  }
+\end{minted}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{Rust}: Event Dispatch by Pattern Matching \hfill {\footnotesize \currentname}}
+
+    \tbf{3. Delegate work to different parts of the program}
+
+    \begin{itemize}
+
+        \item Example: \textsc{wmRS}'s main event loop:\\
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+  while self.running {
+      |\textcolor{blue}{\bfseries{if let}}| Some(event) = self.conn.step() {
+          // ...
+      }
+  }
+\end{minted}
+
+        \item Equivalent to:\\
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+  while self.running {
+      |\textcolor{blue}{\bfseries{match}}| self.conn.step() {
+          Some(event) => {
+              // ...
+          },
+          _ => {}
+      }
+  }
+\end{minted}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}

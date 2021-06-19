@@ -192,10 +192,11 @@
 
         \item Implement the interface for \textit{each} targeted windowing system\\
             \begin{itemize}
-                \item Implement the interface to target the \textit{X Window System}
-                \item Implement the interface to target \textit{Wayland}
-                \item Implement the interface to target the \textit{Desktop Window Manager} (Windows)
-                \item Implement the interface to target the \textit{Quartz Compositor} (macOS)
+                \item \textit{X Window System}
+                \item \textit{Wayland}
+                \item \textit{Desktop Window Manager} (Windows)
+                \item \textit{Quartz Compositor} (macOS)
+                \item ...
             \end{itemize}
 
         \item Have the window management logic call into the interface\\
@@ -296,7 +297,7 @@
         \item \rsin{x11rb}: Rust library to interact with the X Window System\\
             \begin{itemize}
                 \item External dependency
-                \item Contains Rust bindings to interact with the X server
+                \item Rust bindings to interact with the X server
             \end{itemize}
 
     \end{itemize}
@@ -429,7 +430,9 @@
 
     \begin{itemize}
 
-        \item Example: \textsc{wmRS}'s \rsin{xconn} and \rsin{conn} trait objects:\\[3pt]
+        \item \sout<2>{Example: \textsc{wmRS}'s \rsin{XConnection}'s \rsin{xconn} reference:}\\[3pt]
+\begin{overprint}
+\onslide<1>
 \begin{minted}[fontsize=\scriptsize]{rust}
   use x11rb::connection;
 \end{minted}
@@ -439,7 +442,19 @@
       // ...
   }
 \end{minted}
+\onslide<2>
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+  |\sout{use x11rb::connection;}|
+\end{minted}
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+  |\sout{pub struct XConnection<'xconn, XConn: connection::Connection> \texttt{\{}}|
+      |\sout{xconn: &'xconn XConn,}|
+      |\sout{\texttt{/}\texttt{/}...}|
+  |\sout{\}}|
+\end{minted}
+\end{overprint}
 
+        \item Example: \textsc{wmRS}'s \rsin{conn} trait object:\\[3pt]
 \begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
   pub struct Model<'model> {
       conn: &'model mut |\bfseries{dyn Connection}|,

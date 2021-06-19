@@ -1,53 +1,29 @@
-\frametitle{\underline {\cpp }: Event Abstraction with std::variant \hfill {\footnotesize \currentname }}
+\frametitle{\underline {Rust}: Event Dispatch by Pattern Matching \hfill {\footnotesize \currentname }}
 
-    \tbf{2. Create windowing system agnostic event \underline{\texttt{std::variant}}}
+    \tbf{3. Delegate work to different parts of the program}
 
     \begin{itemize}
 
-        \item Definition of a type by \textit{enumerating} its \textit{alternatives}
+        \item Example: \textsc{wmRS}'s main event loop:\\
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+  while self.running {
+      |\textcolor{blue}{\bfseries{if let}}| Some(event) = self.conn.step() {
+          // ...
+      }
+  }
+\end{minted}
 
-        \item Type-safe tagged union class template
-
-        \item Encodes \textit{meaning}
-
-        \item Contains \textit{data}
-            \begin{itemize}
-                \item Data can only \textit{indirectly} be associated with an alternative
-                \item Strong type alias required for same-type alternatives
-            \end{itemize}
-
-        \item Size as large as its largest variant
-
-        \item Example: \textsc{wmRS}'s \rsin{Event} enumeration:\\
-\begin{minipage}[t]{.45\linewidth}
-\begin{minted}[fontsize=\scriptsize]{cpp}
-  typedef std::variant<
-      std::monostate,
-      Mouse,
-      Key,
-      CloseRequest,
-      ScreenChange,
-      // ...
-  > Event;
+        \item Equivalent to:\\
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+  while self.running {
+      |\textcolor{blue}{\bfseries{match}}| self.conn.step() {
+          Some(event) => {
+              // ...
+          },
+          _ => {}
+      }
+  }
 \end{minted}
-\end{minipage}%
-\begin{minipage}[t]{.45\linewidth}
-\begin{minted}[fontsize=\scriptsize]{cpp}
-  struct Mouse { MouseEvent event; };
-\end{minted}
-\begin{minted}[fontsize=\scriptsize]{cpp}
-  struct Key { KeyEvent event; };
-\end{minted}
-\begin{minted}[fontsize=\scriptsize]{cpp}
-  struct CloseRequest { Window window; };
-\end{minted}
-\begin{minted}[fontsize=\scriptsize]{cpp}
-  struct ScreenChange {};
-\end{minted}
-\begin{minted}[fontsize=\scriptsize]{cpp}
-  // ...
-\end{minted}
-\end{minipage}
 
     \end{itemize}
 

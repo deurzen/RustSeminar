@@ -4,11 +4,14 @@
 \usepackage{nameref}
 \usepackage{xspace}
 \usepackage{minted}
+\usepackage{listings}
 \usepackage{inconsolata}
 \usepackage{csquotes}
 \usepackage[normalem]{ulem}
 
 \usemintedstyle{igor}
+
+\renewcommand<>{\sout}[1]{\alt#2{\beameroriginal{\sout}{#1}}{#1}}
 
 \def\signed #1{{\leavevmode\unskip\nobreak\hfil\penalty50\hskip1em
   \hbox{}\nobreak\hfill #1%
