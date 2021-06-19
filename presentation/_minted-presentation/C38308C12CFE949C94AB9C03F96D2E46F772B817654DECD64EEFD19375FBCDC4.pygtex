@@ -1,6 +1,6 @@
 \begin{Verbatim}[commandchars=\\\{\}]
 \PYG{+w}{  }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct} \PYG{n+nc}{XConnection}\PYG{o}{\PYGZlt{}\PYGZsq{}}\PYG{n+na}{xconn}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{XConn}: \PYG{n+nc}{connection}::\PYG{n}{Connection}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
-\PYG{+w}{    }\PYG{n}{xconn}: \PYG{k+kp}{\PYGZam{}}\PYG{o}{\PYGZsq{}}\PYG{n+na}{xconn} \PYG{n+nc}{XConn}\PYG{p}{,}
-\PYG{+w}{    }\PYG{c+c1}{// ...}
+\PYG{+w}{      }\PYG{n}{xconn}: \PYG{k+kp}{\PYGZam{}}\PYG{o}{\PYGZsq{}}\PYG{n+na}{xconn} \PYG{n+nc}{XConn}\PYG{p}{,}
+\PYG{+w}{      }\PYG{c+c1}{// ...}
 \PYG{+w}{  }\PYG{p}{\PYGZcb{}}
 \end{Verbatim}

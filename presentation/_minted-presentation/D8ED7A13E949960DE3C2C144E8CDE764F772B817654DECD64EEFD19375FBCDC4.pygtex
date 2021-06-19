@@ -1,9 +1,0 @@
-\begin{Verbatim}[commandchars=\\\{\}]
-\PYG{+w}{   }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{trait}\PYG{+w}{ }\PYG{n}{Connection}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
-\PYG{+w}{     }\PYG{k}{fn} \PYG{n+nf}{step}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Option}\PYG{o}{\PYGZlt{}}\PYG{n}{Event}\PYG{o}{\PYGZgt{}}\PYG{p}{;}
-\PYG{+w}{     }\PYG{k}{fn} \PYG{n+nf}{move\PYGZus{}window}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{window}: \PYG{n+nc}{Window}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{pos}: \PYG{n+nc}{Pos}\PYG{p}{);}
-\PYG{+w}{     }\PYG{k}{fn} \PYG{n+nf}{resize\PYGZus{}window}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{window}: \PYG{n+nc}{Window}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{dim}: \PYG{n+nc}{Dim}\PYG{p}{);}
-\PYG{+w}{     }\PYG{k}{fn} \PYG{n+nf}{close\PYGZus{}window}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{window}: \PYG{n+nc}{Window}\PYG{p}{);}
-\PYG{+w}{     }\PYG{c+c1}{// ...}
-\PYG{+w}{   }\PYG{p}{\PYGZcb{}}
-\end{Verbatim}

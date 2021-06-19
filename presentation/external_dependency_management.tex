@@ -254,11 +254,11 @@
         \item Example: \textsc{wmRS}'s \rsin{Connection} trait:\\
 \begin{minted}[fontsize=\scriptsize]{rust}
    pub trait Connection {
-     fn step(&self) -> Option<Event>;
-     fn move_window(&self, window: Window, pos: Pos);
-     fn resize_window(&self, window: Window, dim: Dim);
-     fn close_window(&self, window: Window);
-     // ...
+       fn step(&self) -> Option<Event>;
+       fn move_window(&self, window: Window, pos: Pos);
+       fn resize_window(&self, window: Window, dim: Dim);
+       fn close_window(&self, window: Window);
+       // ...
    }
 \end{minted}
 
@@ -280,16 +280,16 @@
 \end{minted}
 \begin{minted}[fontsize=\scriptsize]{rust}
   pub struct XConnection<'xconn, XConn: connection::Connection> {
-    xconn: &'xconn XConn,
-    // ...
+      xconn: &'xconn XConn,
+      // ...
   }
 \end{minted}
 \begin{minted}[fontsize=\scriptsize]{rust}
   impl<'xconn, XConn: connection::Connection> Connection
-    for XConnection<'xconn, XConn>
+      for XConnection<'xconn, XConn>
   {
-    fn step(&self) -> Option<Event> { /* ... */ }
-    // ...
+      fn step(&self) -> Option<Event> { /* ... */ }
+      // ...
   }
 \end{minted}
 
@@ -363,7 +363,7 @@
 \begin{minted}[fontsize=\scriptsize]{rust}
   pub struct Cycle<T>
   where
-    T: Identify + Debug,
+      T: Identify + Debug,
   { /* ... */ }
 \end{minted}
 \begin{minted}[fontsize=\scriptsize]{rust}
@@ -376,14 +376,14 @@
 \begin{minipage}{.40\linewidth}
 \begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
   pub struct Model<'model> {
-    // ...
-    workspaces: |\bfseries{Cycle<Workspace>}|,
-    // ...
+      // ...
+      workspaces: |\bfseries{Cycle<Workspace>}|,
+      // ...
   }
 \end{minted}
 \begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
   pub struct Workspace {
-    clients: |\bfseries{Cycle<Window>}|,
+      clients: |\bfseries{Cycle<Window>}|,
   }
 \end{minted}
 \end{minipage}
@@ -435,15 +435,15 @@
 \end{minted}
 \begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
   pub struct XConnection<'xconn, |\bfseries{XConn: connection::Connection}|> {
-    xconn: &'xconn |\bfseries{XConn}|,
-    // ...
+      xconn: &'xconn |\bfseries{XConn}|,
+      // ...
   }
 \end{minted}
 
 \begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
   pub struct Model<'model> {
-    conn: &'model mut |\bfseries{dyn Connection}|,
-    // ...
+      conn: &'model mut |\bfseries{dyn Connection}|,
+      // ...
   }
 \end{minted}
 
@@ -490,14 +490,14 @@
   class Connection
   {
   public:
-    |\textcolor{blue}{\bfseries{virtual}}| ~Connection() {}
+      |\textcolor{blue}{\bfseries{virtual}}| ~Connection() {}
 \end{minted}
 \begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
-    |\textcolor{blue}{\bfseries{virtual}}| Event step() |\bfseries{= 0}|;
-    |\textcolor{blue}{\bfseries{virtual}}| void move_window(Window, Pos) |\bfseries{= 0}|;
-    |\textcolor{blue}{\bfseries{virtual}}| void resize_window(Window, Dim) |\bfseries{= 0}|;
-    |\textcolor{blue}{\bfseries{virtual}}| void close_window(Window) |\bfseries{= 0}|;
-    // ...
+      |\textcolor{blue}{\bfseries{virtual}}| Event step() |\bfseries{= 0}|;
+      |\textcolor{blue}{\bfseries{virtual}}| void move_window(Window, Pos) |\bfseries{= 0}|;
+      |\textcolor{blue}{\bfseries{virtual}}| void resize_window(Window, Dim) |\bfseries{= 0}|;
+      |\textcolor{blue}{\bfseries{virtual}}| void close_window(Window) |\bfseries{= 0}|;
+      // ...
   };
 \end{minted}
 
@@ -534,7 +534,7 @@
   void
   Connection::close_window(Window window)
   {
-    Logger::log_info("Closing 0x%#08x.", window);
+      Logger::log_info("Closing 0x%#08x.", window);
   }
 \end{minted}
 \begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
@@ -557,17 +557,17 @@
 \begin{minted}[fontsize=\scriptsize]{cpp}
   #include "connection.hh"
   extern "C" {
-    #include <X11/Xlib.h>
-    // ...
+  #include <X11/Xlib.h>
+  // ...
   }
   class XConnection final: public Connection
   {
   public:
-    void close_window(Window window) override {
-      Connection::close_window(window); // non-virtual call
+      void close_window(Window window) override {
+          Connection::close_window(window); // non-virtual call
+          // ...
+      }
       // ...
-    }
-    // ...
   };
 \end{minted}
 
@@ -583,7 +583,7 @@
 
 \end{frame}
 
-\begin{frame}[c,fragile]{\underline{Rust}: Decoupling with Traits \hfill {\footnotesize \currentname}}
+\begin{frame}[c,fragile]{\underline{\cpp}: Abstract Classes \hfill {\footnotesize \currentname}}
 
     \tbf{3. Have the window management logic call into the interface}
 
@@ -595,11 +595,11 @@
   class Model final
   {
   public:
-    Model(|\bfseries{Connection& conn}|): conn(|\bfseries{conn}|) { /* ... */  }
-    // ...
+      Model(|\bfseries{Connection& conn}|): conn(|\bfseries{conn}|) { /* ... */  }
+      // ...
   private:
-    |\bfseries{Connection&}| conn;
-    // ...
+      |\bfseries{Connection&}| conn;
+      // ...
   };
 \end{minted}
 
@@ -608,6 +608,60 @@
         \item \rsin{Model} \textit{contains} a reference to \textit{some} \rsin{Connection} implementor\\
 
         \item The overridden methods of this implementor are dynamically called where needed\\
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{Remarks \hfill {\footnotesize \currentname}}
+
+    \tbf{Additional \cpp external dependency management difficulties:}
+
+    \begin{itemize}
+
+        \item Problem: \textit{\textcolor{orange}{double inclusion}}
+
+        \item Possible solution: \textbf{header guards}
+            \begin{itemize}
+                \item Preprocessor directives
+                \item Include idempotence
+                \item Not fail-safe
+                \item Hard-to-trace symbol collision errors
+                \item \cppin{#pragma once} as unofficial solution
+            \end{itemize}
+
+        \vspace*{8pt}\item Problem: \textit{\textcolor{orange}{includes are non-commutative}}
+        \item Possible solution: none
+
+        \vspace*{8pt}\item Rust's \textit{module} system does not have these issues
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{Remarks \hfill {\footnotesize \currentname}}
+
+    \tbf{Rust \underline{traits} vs \cpp{} \underline{abstract classes}}
+
+    \begin{itemize}
+
+        \item Abstract classes: \textit{inheritance}
+            \begin{enumerate}
+                \item Describe common behavior
+                \item Code reuse
+                \item Polymorphism
+            \end{enumerate}
+
+        \item Traits: \textit{implementation}
+            \begin{enumerate}
+                \item Describe common behavior
+                \item Code reuse with \textbf{generics}: \textit{abstraction} over different types
+                \item Polymorphism with \textbf{trait bounds}: \textit{constraints} on these type abstractions
+            \end{enumerate}
 
     \end{itemize}
 

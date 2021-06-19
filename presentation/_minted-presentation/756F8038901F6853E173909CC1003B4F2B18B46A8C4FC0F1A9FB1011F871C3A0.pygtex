@@ -2,6 +2,6 @@
   \PYG{k+kt}{void}
   \PYG{n}{Connection}\PYG{o}{:}\PYG{o}{:}\PYG{n}{close\PYGZus{}window}\PYG{p}{(}\PYG{n}{Window} \PYG{n}{window}\PYG{p}{)}
   \PYG{p}{\PYGZob{}}
-    \PYG{n}{Logger}\PYG{o}{:}\PYG{o}{:}\PYG{n}{log\PYGZus{}info}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Closing 0x\PYGZpc{}\PYGZsh{}08x.}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,} \PYG{n}{window}\PYG{p}{)}\PYG{p}{;}
+      \PYG{n}{Logger}\PYG{o}{:}\PYG{o}{:}\PYG{n}{log\PYGZus{}info}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Closing 0x\PYGZpc{}\PYGZsh{}08x.}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,} \PYG{n}{window}\PYG{p}{)}\PYG{p}{;}
   \PYG{p}{\PYGZcb{}}
 \end{Verbatim}

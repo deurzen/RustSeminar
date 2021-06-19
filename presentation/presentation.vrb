@@ -1,28 +1,53 @@
-\frametitle{\underline {Rust}: Decoupling with Traits \hfill {\footnotesize \currentname }}
+\frametitle{\underline {\cpp }: Event Abstraction with std::variant \hfill {\footnotesize \currentname }}
 
-    \tbf{3. Have the window management logic call into the interface}
+    \tbf{2. Create windowing system agnostic event \underline{\texttt{std::variant}}}
 
     \begin{itemize}
 
-        \item Example: \textsc{wmCPP}'s core window manager logic:\\
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
-  #include "connection.hh"
-  class Model final
-  {
-  public:
-    Model(|\bfseries{Connection& conn}|): conn(|\bfseries{conn}|) { /* ... */  }
-    // ...
-  private:
-    |\bfseries{Connection&}| conn;
-    // ...
-  };
+        \item Definition of a type by \textit{enumerating} its \textit{alternatives}
+
+        \item Type-safe tagged union class template
+
+        \item Encodes \textit{meaning}
+
+        \item Contains \textit{data}
+            \begin{itemize}
+                \item Data can only \textit{indirectly} be associated with an alternative
+                \item Strong type alias required for same-type alternatives
+            \end{itemize}
+
+        \item Size as large as its largest variant
+
+        \item Example: \textsc{wmRS}'s \rsin{Event} enumeration:\\
+\begin{minipage}[t]{.45\linewidth}
+\begin{minted}[fontsize=\scriptsize]{cpp}
+  typedef std::variant<
+      std::monostate,
+      Mouse,
+      Key,
+      CloseRequest,
+      ScreenChange,
+      // ...
+  > Event;
 \end{minted}
-
-        \item \textit{Polymorphism} to abstract away from the concrete implementation\\
-
-        \item \rsin{Model} \textit{contains} a reference to \textit{some} \rsin{Connection} implementor\\
-
-        \item The overridden methods of this implementor are dynamically called where needed\\
+\end{minipage}%
+\begin{minipage}[t]{.45\linewidth}
+\begin{minted}[fontsize=\scriptsize]{cpp}
+  struct Mouse { MouseEvent event; };
+\end{minted}
+\begin{minted}[fontsize=\scriptsize]{cpp}
+  struct Key { KeyEvent event; };
+\end{minted}
+\begin{minted}[fontsize=\scriptsize]{cpp}
+  struct CloseRequest { Window window; };
+\end{minted}
+\begin{minted}[fontsize=\scriptsize]{cpp}
+  struct ScreenChange {};
+\end{minted}
+\begin{minted}[fontsize=\scriptsize]{cpp}
+  // ...
+\end{minted}
+\end{minipage}
 
     \end{itemize}
 

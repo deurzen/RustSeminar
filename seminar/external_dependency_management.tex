@@ -419,7 +419,8 @@ ordering of included files relative to one another can significantly influence
 the outcome of the compilation stage, possibly causing errors, one of which
 being the introduction of circular dependencies while there actually aren't any
 there (e.g. a forward declaration that was included only after the circular
-dependency was already introduced).
+dependency was already introduced). Rust's \textit{module} system has neither of
+the issues \cpp has with its include directives.
 
 While in our window manager implementations both Rust's traits and \cpp's
 abstract classes appear to achieve the same objective in similar fashion, the
