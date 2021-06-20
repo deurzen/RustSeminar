@@ -840,3 +840,33 @@
     \vfill
 
 \end{frame}
+
+\begin{frame}[t,fragile]{Input Bindings: Remarks}
+
+    \begin{itemize}
+        \itemsep.3em
+
+        \item Rust: \textit{verbose} \rsin{HashMap} construction
+            \begin{itemize}
+                \item \textit{Macro metaprogramming}
+            \end{itemize}
+
+        \item Example: Constructing mouse bindings in \textsc{wmRS}'s using \textit{declarative macros}:\\[3pt]
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{rust}
+  let mouse_bindings = |\bfseries{init\_mouse\_bindings!}|(
+      "A-C-S-Middle" => |\bfseries{execute\_model\_window!}|(model, win,
+          if let Some(window) = win {
+              model.set_fullscreen_window(window);
+          }
+      ),
+      // more mouse bindings
+  );
+\end{minted}
+
+        \item \cpp: no similarly powerful metaprogramming feature
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}

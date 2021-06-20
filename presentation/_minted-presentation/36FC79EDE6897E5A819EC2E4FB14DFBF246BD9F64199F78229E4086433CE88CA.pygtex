@@ -1,0 +1,10 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{+w}{  }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{mouse\PYGZus{}bindings}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{esc}{\bfseries{init\_mouse\_bindings!}}\PYG{p}{(}
+\PYG{+w}{      }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{A\PYGZhy{}C\PYGZhy{}S\PYGZhy{}Middle}\PYG{l+s}{\PYGZdq{}}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{esc}{\bfseries{execute\_model\_window!}}\PYG{p}{(}\PYG{n}{model}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{win}\PYG{p}{,}
+\PYG{+w}{          }\PYG{k}{if}\PYG{+w}{ }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n+nb}{Some}\PYG{p}{(}\PYG{n}{window}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{win}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{              }\PYG{n}{model}\PYG{p}{.}\PYG{n}{set\PYGZus{}fullscreen\PYGZus{}window}\PYG{p}{(}\PYG{n}{window}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{          }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{      }\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{      }\PYG{c+c1}{// more mouse bindings}
+\PYG{+w}{  }\PYG{p}{)}\PYG{p}{;}
+\end{Verbatim}

@@ -1,38 +1,26 @@
-\frametitle{\underline {\cpp }: Retrieving Window Management Actions \hfill {\footnotesize \currentname }}
-
-    \tbf{3. Retrieve and perform window management actions}
+\frametitle{Input Bindings: Remarks}
 
     \begin{itemize}
+        \itemsep.3em
 
-        \item Example: \textsc{wmCPP}'s mouse event handler:\\[3pt]
-\begin{minipage}[t]{.39\linewidth}
-\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
-  struct MouseEvent final {
-      MouseEventKind kind;
-      MouseInput input;
-      Option<Window> window;
-  };
-\end{minted}
-\end{minipage}%
-\begin{minipage}[t]{.61\linewidth}
-\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
-   typedef
-     std::unordered_map<MouseInput, MouseAction>
-     MouseBindings;
-\end{minted}
-\end{minipage}
+        \item Rust: \textit{verbose} \rsin{HashMap} construction
+            \begin{itemize}
+                \item \textit{Macro metaprogramming}
+            \end{itemize}
 
-\vspace*{10pt}\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
-  void
-  Model::handle_mouse(MouseEvent& event)
-  {
-      MouseBindings& mb = this->mouse_bindings;
+        \item Example: Constructing mouse bindings in \textsc{wmRS}'s using \textit{declarative macros}:\\[3pt]
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{rust}
+  let mouse_bindings = |\bfseries{init\_mouse\_bindings!}|(
+      "A-C-S-Middle" => |\bfseries{execute\_model\_window!}|(model, win,
+          if let Some(window) = win {
+              model.set_fullscreen_window(window);
+          }
+      ),
+      // more mouse bindings
+  );
 \end{minted}
-\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
-      if (mb.count(event.input) > 0)
-          mb.at(event.input)(*this, event.window);
-  }
-\end{minted}
+
+        \item \cpp: no similarly powerful metaprogramming feature
 
     \end{itemize}
 

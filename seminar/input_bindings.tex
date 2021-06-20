@@ -434,7 +434,7 @@ above into the following:
 
 \begin{rustblock}
   let mouse_bindings = init_mouse_bindings!(
-    1-C-S-Middle => execute_model_window!(model, win,
+    "1-C-S-Middle" => execute_model_window!(model, win,
       if let Some(window) = win {
         model.set_fullscreen_window(window);
       }
