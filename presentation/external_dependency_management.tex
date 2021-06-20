@@ -224,7 +224,7 @@
                 \item Implementation does not require changes to the implementor
                 \begin{itemize}
                     \item Traits can be implemented on \textit{external} code
-                    \item No ambiguity when two implemented traits share method name and prototype
+                    \item No ambiguity when two implemented traits share method name and signature
                 \end{itemize}
             \end{itemize}
 
@@ -429,12 +429,13 @@
     \tbf{Dynamic dispatch}
 
     \begin{itemize}
+        \itemsep1.4em
 
-        \item \sout<2>{Example: \textsc{wmRS}'s \rsin{XConnection}'s \rsin{xconn} reference:}\\[3pt]
+        \item \sout<2>{Example: \textsc{wmRS}'s \rsin{XConnection}'s \rsin{xconn} reference:}
 \begin{overprint}
 \onslide<1>
 \begin{minted}[baselinestretch=1,fontsize=\scriptsize]{rust}
-  use x11rb::connection;
+  x11rb::connection;
 \end{minted}
 \begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{rust}
   pub struct XConnection<'xconn, |\bfseries{XConn: connection::Connection}|> {

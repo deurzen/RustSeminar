@@ -1,0 +1,13 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+  \PYG{k+kt}{size\PYGZus{}t}
+  \PYG{n+nf}{operator}\PYG{p}{(}\PYG{p}{)}\PYG{p}{(}\PYG{k}{const} \PYG{n}{MouseInput}\PYG{o}{\PYGZam{}} \PYG{n}{input}\PYG{p}{)} \PYG{k}{const}
+  \PYG{p}{\PYGZob{}}
+      \PYG{k+kt}{size\PYGZus{}t} \PYG{n}{button\PYGZus{}hash} \PYG{o}{=} \PYG{n}{hash}\PYG{o}{\PYGZlt{}}\PYG{n}{Button}\PYG{o}{\PYGZgt{}}\PYG{p}{(}\PYG{p}{)}\PYG{p}{(}\PYG{n}{input}\PYG{p}{.}\PYG{n}{button}\PYG{p}{)}\PYG{p}{;}
+      \PYG{k+kt}{size\PYGZus{}t} \PYG{n}{modifiers\PYGZus{}hash} \PYG{o}{=} \PYG{n}{hash}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{size\PYGZus{}t}\PYG{o}{\PYGZgt{}}\PYG{p}{(}\PYG{p}{)}\PYG{p}{(}
+          \PYG{n}{accumulate}\PYG{p}{(}\PYG{n}{input}\PYG{p}{.}\PYG{n}{modifiers}\PYG{p}{.}\PYG{n}{begin}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,} \PYG{n}{input}\PYG{p}{.}\PYG{n}{modifiers}\PYG{p}{.}\PYG{n}{end}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+              \PYG{k}{static\PYGZus{}cast}\PYG{o}{\PYGZlt{}}\PYG{n}{Modifier}\PYG{o}{\PYGZgt{}}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{p}{,} \PYG{n}{bit\PYGZus{}or}\PYG{o}{\PYGZlt{}}\PYG{n}{Modifier}\PYG{o}{\PYGZgt{}}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+      \PYG{p}{)}\PYG{p}{;}
+
+      \PYG{k}{return} \PYG{n}{button\PYGZus{}hash} \PYG{o}{\PYGZca{}} \PYG{n}{modifiers\PYGZus{}hash}\PYG{p}{;}
+  \PYG{p}{\PYGZcb{}}
+\end{Verbatim}

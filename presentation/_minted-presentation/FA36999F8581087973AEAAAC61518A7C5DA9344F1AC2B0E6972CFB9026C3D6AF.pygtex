@@ -1,0 +1,10 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+  \PYG{k+kr}{inline} \PYG{n}{Modifier}
+  \PYG{k}{operator}\PYG{o}{|}\PYG{p}{(}\PYG{n}{Modifier} \PYG{n}{lhs}\PYG{p}{,} \PYG{n}{Modifier} \PYG{n}{rhs}\PYG{p}{)}
+  \PYG{p}{\PYGZob{}}
+    \PYG{k}{return} \PYG{k}{static\PYGZus{}cast}\PYG{o}{\PYGZlt{}}\PYG{n}{Modifier}\PYG{o}{\PYGZgt{}}\PYG{p}{(}
+      \PYG{k}{static\PYGZus{}cast}\PYG{o}{\PYGZlt{}}\PYG{n}{std}\PYG{o}{::}\PYG{k+kt}{size\PYGZus{}t}\PYG{o}{\PYGZgt{}}\PYG{p}{(}\PYG{n}{lhs}\PYG{p}{)}
+        \PYG{o}{|} \PYG{k}{static\PYGZus{}cast}\PYG{o}{\PYGZlt{}}\PYG{n}{std}\PYG{o}{::}\PYG{k+kt}{size\PYGZus{}t}\PYG{o}{\PYGZgt{}}\PYG{p}{(}\PYG{n}{rhs}\PYG{p}{)}
+    \PYG{p}{);}
+  \PYG{p}{\PYGZcb{}}
+\end{Verbatim}

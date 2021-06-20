@@ -338,8 +338,7 @@ Particularly, as in \textsc{wmRS}, \cppin{MouseAction} is simply a type alias:
     MouseAction;
 \end{cppblock}
 
-Unlike Rust's \rsin{FnMut}, which relies on dynamic dispatch, a
-\cppin{std::function} instance will make use of \textit{type erasure}
+A \cppin{std::function} instance will make use of \textit{type erasure}
 to abstract over the underlying logic\cite{cppstd, typeerasure}. Type
 erasure allows us to use different concrete types through a single
 generic interface\cite{typeerasure}. Generally, as is happening here for
@@ -348,14 +347,13 @@ template}, making it convenient to wrap any concrete types that adhere to the
 interface's API\cite{typeerasure}. Specifically, the \cppin{std::function}
 interface requires the function call operator (\cppin{operator()}) to be
 overloaded for the concrete type being type-erased\cite{cppstd, typeerasure}.
-A benefit to \cpp{}'s \cppin{std::function} over Rust's \rsin{FnMut} is
-that no virtual method lookup is required at runtime, making it the more
-runtime efficient construct. Another benefit to \cppin{std::function} is
-that memory will not be dynamically allocated when storing lambda functions
-without any bound parameters, thanks to \cpp{}'s \textit{Small Buffer
-Optimization}\cite{commonoptimizations, underhoodfunction}. That implies that
-retrieving such instances from a growable collection, such as a hash map, saves
-us yet another level of indirection.
+Just like Rust's \rsin{FnMut}, \cpp{}'s \cppin{std::function} then makes use
+of dynamic dispatch to retrieve the logic to execute at runtime. A benefit to
+\cppin{std::function} is that memory will not be dynamically allocated when
+storing lambda functions without any bound parameters, thanks to \cpp{}'s
+\textit{Small Buffer Optimization}\cite{commonoptimizations, underhoodfunction}.
+That implies that retrieving such instances from a growable collection, such as
+a hash map, saves us a level of indirection.
 
 The \cppin{MouseBindings} type that represents the map between input
 abstractions and actions is also a simple type alias:
@@ -395,7 +393,7 @@ comprises the following:
     MouseBindings& mb = this->mouse_bindings;
 \end{cppblock}
 \begin{cppblock}
-    if (mb.find(event.input) != mb.end())
+    if (mb.cound(event.input) > 0)
       mb.at(event.input)(*this, event.window);
   }
 \end{cppblock}

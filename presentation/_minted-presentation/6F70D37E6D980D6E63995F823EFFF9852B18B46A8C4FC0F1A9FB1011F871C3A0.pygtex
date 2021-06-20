@@ -1,0 +1,8 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+  \PYG{k+kr}{inline} \PYG{k+kt}{bool}
+  \PYG{k}{operator}\PYG{o}{=}\PYG{o}{=}\PYG{p}{(}\PYG{k}{const} \PYG{n}{MouseInput}\PYG{o}{\PYGZam{}} \PYG{n}{lhs}\PYG{p}{,} \PYG{k}{const} \PYG{n}{MouseInput}\PYG{o}{\PYGZam{}} \PYG{n}{rhs}\PYG{p}{)}
+  \PYG{p}{\PYGZob{}}
+      \PYG{k}{return} \PYG{n}{lhs}\PYG{p}{.}\PYG{n}{button} \PYG{o}{=}\PYG{o}{=} \PYG{n}{rhs}\PYG{p}{.}\PYG{n}{button}
+          \PYG{o}{\PYGZam{}}\PYG{o}{\PYGZam{}} \PYG{n}{lhs}\PYG{p}{.}\PYG{n}{modifiers} \PYG{o}{=}\PYG{o}{=} \PYG{n}{rhs}\PYG{p}{.}\PYG{n}{modifiers}\PYG{p}{;}
+  \PYG{p}{\PYGZcb{}}
+\end{Verbatim}

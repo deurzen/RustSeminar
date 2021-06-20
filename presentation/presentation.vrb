@@ -1,31 +1,37 @@
-\frametitle{\underline {\cpp }: Storing Window Management Actions \hfill {\footnotesize \currentname }}
+\frametitle{\underline {\cpp }: Retrieving Window Management Actions \hfill {\footnotesize \currentname }}
 
-    \tbf{2. Map input to window management actions in a \underline{\cppin{std::unordered_map}}}
+    \tbf{3. Retrieve and perform window management actions}
 
     \begin{itemize}
 
-        \item Example: Adding a mouse binding:\\[3pt]
+        \item Example: \textsc{wmCPP}'s mouse event handler:\\[3pt]
+\begin{minipage}[t]{.39\linewidth}
 \begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
-  let mut mouse_bindings = std::unordered_map::new();
+  struct MouseEvent final {
+      MouseEventKind kind;
+      MouseInput input;
+      Option<Window> window;
+  };
 \end{minted}
-\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{cpp}
-  mouse_bindings.insert(
-      MouseInput {
-          button: Button::Middle,
-          modifiers: {
-              let mut modifiers = HashSet::with_capacity(2);
-              modifiers.insert(Modifier::Ctrl);
-              modifiers.insert(Modifier::Super);
-              modifiers
-          },
-      },
-      Box::new(|model: &mut Model, win: Option<Window>| -> bool {
-          if let Some(window) = win {
-              model.set_floating_window(window);
-              true
-          }
-      })
-  );
+\end{minipage}%
+\begin{minipage}[t]{.61\linewidth}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
+   typedef
+     std::unordered_map<MouseInput, MouseAction>
+     MouseBindings;
+\end{minted}
+\end{minipage}
+
+\vspace*{10pt}\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
+  void
+  Model::handle_mouse(MouseEvent& event)
+  {
+      MouseBindings& mb = this->mouse_bindings;
+\end{minted}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
+      if (mb.count(event.input) > 0)
+          mb.at(event.input)(*this, event.window);
+  }
 \end{minted}
 
     \end{itemize}

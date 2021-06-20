@@ -1,0 +1,3 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{n}{std}\PYG{o}{:}\PYG{o}{:}\PYG{n}{hash}\PYG{o}{\PYGZlt{}}\PYG{n}{MouseInput}\PYG{o}{\PYGZgt{}}\PYG{o}{:}\PYG{o}{:}\PYG{k}{operator}\PYG{p}{(}\PYG{p}{)}
+\end{Verbatim}

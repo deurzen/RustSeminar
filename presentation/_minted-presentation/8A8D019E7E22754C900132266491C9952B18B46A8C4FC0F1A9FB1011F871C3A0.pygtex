@@ -1,0 +1,6 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+  \PYG{k+kt}{void}
+  \PYG{n}{Model}\PYG{o}{:}\PYG{o}{:}\PYG{n}{handle\PYGZus{}mouse}\PYG{p}{(}\PYG{n}{MouseEvent}\PYG{o}{\PYGZam{}} \PYG{n}{event}\PYG{p}{)}
+  \PYG{p}{\PYGZob{}}
+      \PYG{n}{MouseBindings}\PYG{o}{\PYGZam{}} \PYG{n}{mb} \PYG{o}{=} \PYG{k}{this}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZgt{}}\PYG{n}{mouse\PYGZus{}bindings}\PYG{p}{;}
+\end{Verbatim}
