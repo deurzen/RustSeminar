@@ -1,6 +1,267 @@
 %&latex
 
 \section{Input Bindings}
-\begin{frame}{Second Frame}
-Hello, world!
+
+\begin{frame}[t]{Input Bindings}
+
+    \begin{itemize}
+        \itemsep.3em
+
+        \item \tbf{Bind functionality to sets of peripheral input states}
+            \begin{itemize}
+                \item \textit{Mouse} bindings
+                \item \textit{Keyboard} bindings
+                \item \textit{Sensors}
+                \item ...
+            \end{itemize}
+
+        \item \tbf{Hardware and platform dependent}
+            \begin{itemize}
+                \item Initiated by the connection with the windowing system
+            \end{itemize}
+
+        \item \tbf{Concrete input information to abstract window manager events}
+            \begin{itemize}
+                \item \texttt{Mouse} event variant
+                \item \texttt{Key} event variant
+                \item ...
+
+            \end{itemize}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[t]{Input Bindings}
+
+    Three-step process:
+
+    \begin{enumerate}
+        \itemsep.3em
+
+        \item \tbf{Establish abstract notion of input}
+            \begin{itemize}
+                \item Convert concrete input states to abstract input events
+                    \begin{itemize}
+                        \item \textit{Mouse} input abstractions, \textit{keyboard} input abstractions, ...
+                        \item \textit{Windowing system specifics} to \textit{window manager abstractions}
+                    \end{itemize}
+
+            \end{itemize}
+
+        \item \tbf{Map input to window management actions}
+            \begin{itemize}
+                \item Input abstractions to \textit{closures}
+            \end{itemize}
+
+        \item \tbf{Retrieve and perform window management actions}
+
+    \end{enumerate}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{Rust}: Input Abstractions \hfill {\footnotesize \currentname}}
+
+    \tbf{1. Establish abstract notion of input}
+
+    \begin{itemize}
+
+        \item Example: \textsc{wmRS}'s \textit{mouse input} abstractions:\\[3pt]
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+  #[derive(Clone, Copy, PartialEq, Eq, Hash)]
+  pub enum MouseEventKind { Press, Release, Motion, }
+\end{minted}
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+  #[derive(Clone, Copy, PartialEq, Eq, Hash)]
+  pub enum Button { Left, Middle, Right, ScrollUp, /* ... */ }
+\end{minted}
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+  #[repr(u8)]
+  #[derive(Clone, Copy, PartialEq, Eq, Hash)]
+  pub enum Modifier {
+      Ctrl  = 1 << 0,
+      Shift = 1 << 1,
+      Super = 1 << 2,
+      Alt   = 1 << 3,
+      // ...
+  }
+\end{minted}
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+  // ...
+\end{minted}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{Rust}: Input Abstractions \hfill {\footnotesize \currentname}}
+
+    \tbf{1. Establish abstract notion of input}
+
+    \begin{itemize}
+
+        \item Example: \textsc{wmRS}'s \textit{mouse input} abstractions (cont.):\\[3pt]
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+  // ...
+\end{minted}
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+  #[derive(PartialEq, Eq)]
+  pub struct MouseInput {
+      pub button: Button,
+      pub modifiers: HashSet<Modifier>,
+  }
+\end{minted}
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+  #[derive(PartialEq, Eq, Hash)]
+  pub struct MouseEvent {
+      pub kind: MouseEventKind,
+      pub input: MouseInput,
+      pub window: Option<Window>,
+  }
+\end{minted}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{\cpp}: Input Abstractions \hfill {\footnotesize \currentname}}
+
+    \tbf{1. Establish abstract notion of input}
+
+    \begin{itemize}
+
+        \item Example: \textsc{wmCPP}'s \textit{mouse input} abstractions:\\[3pt]
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+  enum class MouseEventKind { Press, Release, Motion };
+\end{minted}
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+  enum class Button { Left, Middle, Right, ScrollUp, /* ... */ };
+\end{minted}
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+  enum Modifier {
+      Ctrl  = 1 << 0,
+      Shift = 1 << 1,
+      Super = 1 << 2,
+      Alt   = 1 << 3,
+      // ...
+  };
+\end{minted}
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+  // ...
+\end{minted}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{\cpp}: Input Abstractions \hfill {\footnotesize \currentname}}
+
+    \tbf{1. Establish abstract notion of input}
+
+    \begin{itemize}
+
+        \item Example: \textsc{wmCPP}'s \textit{mouse input} abstractions (cont.):\\[3pt]
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+  // ...
+\end{minted}
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+  struct MouseInput final {
+      Button button,
+      HashSet<Modifier> modifiers,
+  };
+\end{minted}
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+  struct MouseEvent final {
+      MouseEventKind kind,
+      MouseInput input,
+      Option<Window> window,
+  };
+\end{minted}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{Rust}: Storing Window Management Actions \hfill {\footnotesize \currentname}}
+
+    \tbf{2. Map input to window management actions in a \underline{\rsin{HashMap}}}
+
+    \begin{itemize}
+
+        \item Example: \textsc{wmRS}'s mouse input \textit{mappings}:\\[3pt]
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+  pub type KeyAction = Box<
+      dyn FnMut(&mut Model<'_>)
+  >;
+\end{minted}
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+  pub type MouseAction = Box<
+      dyn FnMut(&mut Model<'_>, Option<Window>)
+  >;
+\end{minted}
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+  pub type KeyBindings = HashMap<
+      KeyInput, KeyAction
+  >;
+\end{minted}
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+  pub type MouseBindings = HashMap<
+      MouseInput, MouseAction
+  >;
+\end{minted}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{Rust}: Storing Window Management Actions \hfill {\footnotesize \currentname}}
+
+    \tbf{2. Map input to window management actions in a \underline{\rsin{HashMap}}}
+
+    \begin{itemize}
+
+        \item Example: \textsc{wmRS}'s mouse input \textit{mappings}:\\[3pt]
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+  pub type MouseAction = Box<
+      dyn FnMut(&mut Model<'_>, Option<Window>)
+  >;
+\end{minted}
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+  // ...
+\end{minted}
+
+    \vspace*{5pt}\begin{itemize}
+
+        \item \rsin{Box<T>}: store value of type T on heap
+            \begin{itemize}
+                \item Constant size: pointer to heap address
+            \end{itemize}
+
+        \item \rsin{FnMut}: closure trait that describes calling of function that mutates state
+            \begin{itemize}
+                \item \rsin{dyn FnMut(...)}: \textit{trait object} (dynamic dispatch)
+                \item Hooks into main window manager logic
+                \item Operates on clicked-on window (if any)
+            \end{itemize}
+
+    \end{itemize}
+
+    \end{itemize}
+
+    \vfill
+
 \end{frame}

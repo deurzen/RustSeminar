@@ -122,8 +122,8 @@ partly looks as follows:
       match event {
         Event::Mouse { event, }
           => self.handle_mouse(event, /*...*/),
-        Event::Key { keycode, }
-          => self.handle_key(keycode, /*...*/),
+        Event::Key { event, }
+          => self.handle_key(event, /*...*/),
         Event::CloseRequest { window, }
           => self.handle_close_request(window),
         Event::ScreenChange

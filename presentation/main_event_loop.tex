@@ -218,7 +218,7 @@ typedef std::variant<
               Event::Key { keycode, }
                   => self.|\bfseries{handle\_key}|(keycode, /*...*/),
               Event::CloseRequest { window, }
-                  => self.|\bfseries{handle\_close\_request}|(window),
+                  => self.|\bfseries{handle\_close}|(window),
               Event::ScreenChange
                   => self.|\bfseries{handle\_screen\_change}|(),
               // ...
@@ -259,6 +259,130 @@ typedef std::variant<
       }
   }
 \end{minted}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{\cpp}: Event Dispatch by Visiting Alternatives \hfill {\footnotesize \currentname}}
+
+    \tbf{3. Delegate work to different parts of the program}
+
+    \begin{itemize}
+
+        \item \textit{Visit} the alternatives in \cppin{std::variant} using \cppin{std::visit}
+    \begin{itemize}
+        \item \textit{Visitor} object implementing \textit{function-call operator} overloads
+        \item \cppin{std::variant} instance to visit
+    \end{itemize}
+
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{\cpp}: Event Dispatch by Visiting Alternatives \hfill {\footnotesize \currentname}}
+
+    \tbf{3. Delegate work to different parts of the program}
+
+    \begin{itemize}
+
+        \item Example: \textsc{wmCPP}'s visitor object:\\
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+  struct EventVisitor
+  {
+      EventVisitor(Model& model): model(model) {}
+\end{minted}
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+      void operator()(std::monostate)     {}
+      void operator()(Mouse event)        { model.handle_mouse(event); }
+      void operator()(Key event)          { model.handle_key(event); }
+      void operator()(CloseRequest event) { model.handle_close(event); }
+      void operator()(ScreenChange)       { model.handle_screen_change(); }
+      // ...
+  private:
+      Model& model;
+  } event_visitor = EventVisitor(*this);
+\end{minted}
+
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{\cpp}: Event Dispatch by Visiting Alternatives \hfill {\footnotesize \currentname}}
+
+    \tbf{3. Delegate work to different parts of the program}
+
+    \begin{itemize}
+
+        \item Example: \textsc{wmCPP}'s visitor object:\\
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+  struct EventVisitor
+  {
+      EventVisitor(Model& model): model(model) {}
+\end{minted}
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+      void operator()(|\bfseries{std::monostate}|)     {}
+      // ...
+  private:
+      Model& model;
+  } event_visitor = EventVisitor(*this);
+\end{minted}
+
+        \item \textit{Implicit} ``\textbf{no valid event}'' encoding
+
+        \item Analogous to \textit{no-op} event
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{\cpp}: Event Dispatch by Visiting Alternatives \hfill {\footnotesize \currentname}}
+
+    \tbf{3. Delegate work to different parts of the program}
+
+    \begin{itemize}
+
+        \item Example: \textsc{wmCPP}'s main event loop:\\
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+  while (running)
+      std::visit(|\bfseries{event\_visitor}|, conn.step());
+\end{minted}
+
+    \vspace*{5pt}\begin{enumerate}
+
+        \item Retrieve generated event from windowing system connection
+
+        \item Rely on visitor to deduce type of event
+
+        \item Call associated handler
+
+    \end{enumerate}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{Event Dispatch: Remarks \hfill {\footnotesize \currentname}}
+
+    \begin{itemize}
+
+        \item Rust and \cpp achieve desired behavior
+
+        \item Visiting tagged unions in \cpp is more verbose, less clear
+
+        \item Difference worsens as more complex (or pattern-reliant) situations arise
 
     \end{itemize}
 

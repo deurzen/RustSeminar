@@ -1,29 +1,34 @@
-\frametitle{\underline {Rust}: Event Dispatch by Pattern Matching \hfill {\footnotesize \currentname }}
+\frametitle{\underline {Rust}: Storing Window Management Actions \hfill {\footnotesize \currentname }}
 
-    \tbf{3. Delegate work to different parts of the program}
+    \tbf{2. Map input to window management actions in a \underline{\rsin{HashMap}}}
 
     \begin{itemize}
 
-        \item Example: \textsc{wmRS}'s main event loop:\\
+        \item Example: \textsc{wmRS}'s mouse input \textit{mappings}:\\[3pt]
 \begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
-  while self.running {
-      |\textcolor{blue}{\bfseries{if let}}| Some(event) = self.conn.step() {
-          // ...
-      }
-  }
+  pub type MouseAction = Box<
+      dyn FnMut(&mut Model<'_>, Option<Window>)
+  >;
+\end{minted}
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+  // ...
 \end{minted}
 
-        \item Equivalent to:\\
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
-  while self.running {
-      |\textcolor{blue}{\bfseries{match}}| self.conn.step() {
-          Some(event) => {
-              // ...
-          },
-          _ => {}
-      }
-  }
-\end{minted}
+    \vspace*{5pt}\begin{itemize}
+
+        \item \rsin{Box<T>}: store value of type T on heap
+            \begin{itemize}
+                \item Constant size: pointer to heap address
+            \end{itemize}
+
+        \item \rsin{FnMut}: closure trait that describes calling of function that mutates state
+            \begin{itemize}
+                \item \rsin{dyn FnMut(...)}: \textit{trait object} (dynamic dispatch)
+                \item Hooks into main window manager logic
+                \item Operates on clicked-on window (if any)
+            \end{itemize}
+
+    \end{itemize}
 
     \end{itemize}
 

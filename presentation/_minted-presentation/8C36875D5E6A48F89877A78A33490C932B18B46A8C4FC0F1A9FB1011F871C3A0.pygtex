@@ -1,0 +1,6 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+  \PYG{k}{struct} \PYG{n+nc}{MouseInput} \PYG{k}{final} \PYG{p}{\PYGZob{}}
+      \PYG{n}{Button} \PYG{n}{button}\PYG{p}{,}
+      \PYG{n}{HashSet}\PYG{o}{\PYGZlt{}}\PYG{n}{Modifier}\PYG{o}{\PYGZgt{}} \PYG{n}{modifiers}\PYG{p}{,}
+  \PYG{p}{\PYGZcb{}}\PYG{p}{;}
+\end{Verbatim}
