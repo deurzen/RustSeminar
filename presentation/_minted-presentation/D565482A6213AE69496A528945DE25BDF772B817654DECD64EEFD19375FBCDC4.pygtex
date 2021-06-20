@@ -1,6 +1,0 @@
-\begin{Verbatim}[commandchars=\\\{\}]
-\PYG{+w}{  }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct} \PYG{n+nc}{Model}\PYG{o}{\PYGZlt{}\PYGZsq{}}\PYG{n+na}{model}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
-\PYG{+w}{    }\PYG{n}{conn}: \PYG{k+kp}{\PYGZam{}}\PYG{o}{\PYGZsq{}}\PYG{n+na}{model} \PYG{n+nc}{mut}\PYG{+w}{ }\PYG{k}{dyn}\PYG{+w}{ }\PYG{n}{Connection}\PYG{p}{,}
-\PYG{+w}{    }\PYG{c+c1}{// ...}
-\PYG{+w}{  }\PYG{p}{\PYGZcb{}}
-\end{Verbatim}

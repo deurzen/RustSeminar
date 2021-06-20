@@ -1,6 +1,0 @@
-\begin{Verbatim}[commandchars=\\\{\}]
-\PYG{+w}{  }\PYG{k}{impl}\PYG{o}{\PYGZlt{}}\PYG{n}{T}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{Cycle}\PYG{o}{\PYGZlt{}}\PYG{n}{T}\PYG{o}{\PYGZgt{}}
-\PYG{+w}{  }\PYG{k}{where}
-\PYG{+w}{      }\PYG{n}{T}: \PYG{n+nc}{Identify}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{Debug}\PYG{p}{,}
-\PYG{+w}{  }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{c+cm}{/* ... */}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
-\end{Verbatim}

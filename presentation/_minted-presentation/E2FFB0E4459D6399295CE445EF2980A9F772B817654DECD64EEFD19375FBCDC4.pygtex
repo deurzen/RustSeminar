@@ -1,9 +1,0 @@
-\begin{Verbatim}[commandchars=\\\{\}]
-\PYG{+w}{   }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{enum} \PYG{n+nc}{Event}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
-\PYG{+w}{       }\PYG{n}{Mouse}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n}{event}: \PYG{n+nc}{MouseEvent}\PYG{+w}{ }\PYG{p}{\PYGZcb{},}
-\PYG{+w}{       }\PYG{n}{Key}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n}{event}: \PYG{n+nc}{KeyEvent}\PYG{+w}{ }\PYG{p}{\PYGZcb{},}
-\PYG{+w}{       }\PYG{n}{CloseRequest}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n}{window}: \PYG{n+nc}{Window}\PYG{+w}{ }\PYG{p}{\PYGZcb{},}
-\PYG{+w}{       }\PYG{n}{ScreenChange}\PYG{p}{,}
-\PYG{+w}{       }\PYG{c+c1}{// ...}
-\PYG{+w}{   }\PYG{p}{\PYGZcb{}}
-\end{Verbatim}

@@ -1,8 +1,0 @@
-\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
-\PYG{+w}{  }\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{derive(PartialEq, Eq, Hash)}\PYG{c+cp}{]}
-\PYG{+w}{  }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct} \PYG{n+nc}{MouseEvent}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
-\PYG{+w}{      }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{kind}: \PYG{n+nc}{MouseEventKind}\PYG{p}{,}
-\PYG{+w}{      }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{input}: \PYG{n+nc}{MouseInput}\PYG{p}{,}
-\PYG{+w}{      }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{window}: \PYG{n+nb}{Option}\PYG{o}{\PYGZlt{}}\PYG{n}{Window}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
-\PYG{+w}{  }\PYG{p}{\PYGZcb{}}
-\end{Verbatim}

@@ -1,3 +1,0 @@
-\begin{Verbatim}[commandchars=\\\{\}]
-  \PYG{k}{struct} \PYG{n+nc}{Key} \PYG{p}{\PYGZob{}} \PYG{n}{KeyEvent} \PYG{n}{event}\PYG{p}{;} \PYG{p}{\PYGZcb{};}
-\end{Verbatim}

@@ -239,8 +239,8 @@ represent \cppin{MouseInput} and \cppin{MouseEvent}:
 
 \begin{cppblock}
   struct MouseInput final {
-    const Button button;
-    const std::unordered_set<Modifier> modifiers;
+    Button button;
+    std::unordered_set<Modifier> modifiers;
   };
 \end{cppblock}
 \begin{cppblock}

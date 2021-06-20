@@ -1,34 +1,49 @@
-\frametitle{\underline {Rust}: Storing Window Management Actions \hfill {\footnotesize \currentname }}
-
-    \tbf{2. Map input to window management actions in a \underline{\rsin{HashMap}}}
+\frametitle{\underline {Rust}: Package Management \hfill {\footnotesize \currentname }}
 
     \begin{itemize}
 
-        \item Example: \textsc{wmRS}'s mouse input \textit{mappings}:\\[3pt]
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
-  pub type MouseAction = Box<
-      dyn FnMut(&mut Model<'_>, Option<Window>)
-  >;
-\end{minted}
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
-  // ...
-\end{minted}
-
-    \vspace*{5pt}\begin{itemize}
-
-        \item \rsin{Box<T>}: store value of type T on heap
+        \item \textit{Cargo}, Rust's official package manager\\
             \begin{itemize}
-                \item Constant size: pointer to heap address
+                \item Automatically downloads and compiles dependencies
+                \item A Rust project is a Cargo \textcolor{red}{\textit{package}}
+                \item A \textcolor{red}{package} is a collection of \textit{source files} plus a \textcolor{orange}{\textit{manifest}} file
+                \item The \textcolor{orange}{manifest} file describes the package's \textit{meta-information}, \textit{dependencies}, and a set of \textit{target \textcolor{ForestGreen}{crates}}
+                \item A \textcolor{ForestGreen}{crate} represents a \textit{library} or \textit{binary executable} program
             \end{itemize}
 
-        \item \rsin{FnMut}: closure trait that describes calling of function that mutates state
-            \begin{itemize}
-                \item \rsin{dyn FnMut(...)}: \textit{trait object} (dynamic dispatch)
-                \item Hooks into main window manager logic
-                \item Operates on clicked-on window (if any)
-            \end{itemize}
-
-    \end{itemize}
+        \item Example: \texttt{Cargo.toml} manifest file\\
+\usemintedstyle{default}
+\begin{minipage}{.55\linewidth}
+\begin{minted}[fontsize=\scriptsize]{rust}
+   [package]
+   name = "wmRS"
+   version = "0.1.0"
+   edition = "2018"
+   license = "BSD3"
+   default-run = "core"
+   description = """
+   An ICCCM & EWMH compliant X11
+   reparenting, tiling window manager,
+   written in Rust
+   """
+\end{minted}
+\end{minipage}%
+\begin{minipage}{.35\linewidth}
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+  |\bfseries{\textcolor{ForestGreen}{[lib]}}|
+  name = "winsys"
+  path = "src/winsys/mod.rs"
+  |\bfseries{\textcolor{ForestGreen}{[[bin]]}}|
+  name = "core"
+  path = "src/core/main.rs"
+  |\bfseries{\textcolor{ForestGreen}{[[bin]]}}|
+  name = "client"
+  path = "src/client/main.rs"
+  [dependencies]
+  x11rb = "0.8.0"
+\end{minted}
+\end{minipage}
+\usemintedstyle{igor}
 
     \end{itemize}
 

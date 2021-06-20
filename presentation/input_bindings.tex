@@ -177,7 +177,7 @@
 \begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
   struct MouseInput final {
       Button button,
-      HashSet<Modifier> modifiers,
+      std::unordered_set<Modifier> modifiers,
   };
 \end{minted}
 \begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
@@ -208,7 +208,7 @@
 \end{minted}
 \begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
   pub type MouseAction = Box<
-      dyn FnMut(&mut Model<'_>, Option<Window>)
+      dyn FnMut(&mut Model<'_>, Option<Window>) -> bool
   >;
 \end{minted}
 \begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
@@ -237,7 +237,7 @@
         \item Example: \textsc{wmRS}'s mouse input \textit{mappings}:\\[3pt]
 \begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
   pub type MouseAction = Box<
-      dyn FnMut(&mut Model<'_>, Option<Window>)
+      dyn FnMut(&mut Model<'_>, Option<Window>) -> bool
   >;
 \end{minted}
 \begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
@@ -246,7 +246,7 @@
 
     \vspace*{5pt}\begin{itemize}
 
-        \item \rsin{Box<T>}: store value of type T on heap
+        \item \rsin{Box<T>}: store value of type T on the \textit{heap}
             \begin{itemize}
                 \item Constant size: pointer to heap address
             \end{itemize}
@@ -256,6 +256,72 @@
                 \item \rsin{dyn FnMut(...)}: \textit{trait object} (dynamic dispatch)
                 \item Hooks into main window manager logic
                 \item Operates on clicked-on window (if any)
+            \end{itemize}
+
+    \end{itemize}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{Rust}: Storing Window Management Actions \hfill {\footnotesize \currentname}}
+
+    \tbf{2. Map input to window management actions in a \underline{\rsin{HashMap}}}
+
+    \begin{itemize}
+
+        \item Example: \textsc{wmRS}'s mouse input \textit{mappings}:\\[3pt]
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+  #[derive(PartialEq, Eq)]
+  pub struct MouseInput {
+      pub button: Button,
+      pub modifiers: HashSet<Modifier>,
+  }
+\end{minted}
+
+    \vspace*{5pt}\begin{itemize}
+
+        \item \rsin{HashSet} not automatically derivable
+            \begin{itemize}
+                \item Manual implementation
+            \end{itemize}
+
+    \end{itemize}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{Rust}: Storing Window Management Actions \hfill {\footnotesize \currentname}}
+
+    \tbf{2. Map input to window management actions in a \underline{\rsin{HashMap}}}
+
+    \begin{itemize}
+
+        \item Example: \textsc{wmRS}'s mouse input \textit{mappings}:\\[3pt]
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+  #[derive(PartialEq, Eq)]
+  pub struct MouseInput {
+      pub button: Button,
+      pub modifiers: HashSet<Modifier>,
+  }
+\end{minted}
+\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+  pub type MouseBindings = HashMap<
+      MouseInput, MouseAction
+  >;
+\end{minted}
+
+    \vspace*{5pt}\begin{itemize}
+
+        \item \rsin{MouseInput} used as key to \rsin{HashMap}
+            \begin{itemize}
+                \item \sout<2>{\rsin{PartialEq} and \rsin{Eq}} \only<2>{(\rsin{\#[derive(PartialEq, Eq)]})}
+                \item \rsin{Hash} \only<2>{(not automatically derivable)}
             \end{itemize}
 
     \end{itemize}

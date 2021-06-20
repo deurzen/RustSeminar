@@ -1,5 +1,0 @@
-\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
-  \PYG{k}{struct} \PYG{n+nc}{EventVisitor}
-  \PYG{p}{\PYGZob{}}
-      \PYG{n}{EventVisitor}\PYG{p}{(}\PYG{n}{Model}\PYG{o}{\PYGZam{}} \PYG{n}{model}\PYG{p}{)}\PYG{o}{:} \PYG{n}{model}\PYG{p}{(}\PYG{n}{model}\PYG{p}{)} \PYG{p}{\PYGZob{}}\PYG{p}{\PYGZcb{}}
-\end{Verbatim}

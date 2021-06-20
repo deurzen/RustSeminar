@@ -1,7 +1,0 @@
-\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
-\PYG{+w}{  }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct} \PYG{n+nc}{Model}\PYG{o}{\PYGZlt{}}\PYG{o}{\PYGZsq{}}\PYG{n+na}{model}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
-\PYG{+w}{      }\PYG{c+c1}{// ...}
-\PYG{+w}{      }\PYG{n}{workspaces}: \PYG{esc}{\bfseries{Cycle<Workspace>}}\PYG{p}{,}
-\PYG{+w}{      }\PYG{c+c1}{// ...}
-\PYG{+w}{  }\PYG{p}{\PYGZcb{}}
-\end{Verbatim}
