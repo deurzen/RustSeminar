@@ -82,7 +82,7 @@
         \item Size as large as its largest variant
 
         \item Example: \textsc{wmRS}'s \rsin{Event} enumeration:\\
-\begin{minted}[fontsize=\scriptsize]{rust}
+\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{rust}
    pub enum Event {
        Mouse { event: MouseEvent },
        Key { event: KeyEvent },
@@ -120,7 +120,7 @@
 
         \item Example: \textsc{wmRS}'s \rsin{Event} enumeration:\\
 \begin{minipage}[t]{.45\linewidth}
-\begin{minted}[fontsize=\scriptsize]{cpp}
+\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{cpp}
   typedef std::variant<
       std::monostate,
       Mouse,
@@ -132,19 +132,19 @@
 \end{minted}
 \end{minipage}%
 \begin{minipage}[t]{.45\linewidth}
-\begin{minted}[fontsize=\scriptsize]{cpp}
+\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{cpp}
   struct Mouse { MouseEvent event; };
 \end{minted}
-\begin{minted}[fontsize=\scriptsize]{cpp}
+\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{cpp}
   struct Key { KeyEvent event; };
 \end{minted}
-\begin{minted}[fontsize=\scriptsize]{cpp}
+\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{cpp}
   struct CloseRequest { Window window; };
 \end{minted}
-\begin{minted}[fontsize=\scriptsize]{cpp}
+\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{cpp}
   struct ScreenChange {};
 \end{minted}
-\begin{minted}[fontsize=\scriptsize]{cpp}
+\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{cpp}
   // ...
 \end{minted}
 \end{minipage}
@@ -169,7 +169,7 @@
 \pause
 
 \vspace*{8pt}\begin{minipage}[t]{.64\linewidth}
-\begin{minted}[fontsize=\scriptsize]{cpp}
+\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{cpp}
 pub enum Event {
     Mouse { event: MouseEvent },
     Key { event: KeyEvent },
@@ -180,7 +180,7 @@ pub enum Event {
 \end{minted}
 \end{minipage}%
 \begin{minipage}[t]{.36\linewidth}
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
 typedef std::variant<
     |\underline{std::monostate}|,
     Mouse,
@@ -209,7 +209,7 @@ typedef std::variant<
             \end{itemize}
 
         \item Example: \textsc{wmRS}'s main event loop:\\
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{rust}
   while self.running {
       if let Some(event) = self.conn.step() {
           match event {
@@ -240,7 +240,7 @@ typedef std::variant<
     \begin{itemize}
 
         \item Example: \textsc{wmRS}'s main event loop:\\
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{rust}
   while self.running {
       |\textcolor{blue}{\bfseries{if let}}| Some(event) = self.conn.step() {
           // ...
@@ -249,7 +249,7 @@ typedef std::variant<
 \end{minted}
 
         \item Equivalent to:\\
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{rust}
   while self.running {
       |\textcolor{blue}{\bfseries{match}}| self.conn.step() {
           Some(event) => {
@@ -292,12 +292,12 @@ typedef std::variant<
     \begin{itemize}
 
         \item Example: \textsc{wmCPP}'s visitor object:\\
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
   struct EventVisitor
   {
       EventVisitor(Model& model): model(model) {}
 \end{minted}
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
       void operator()(std::monostate)     {}
       void operator()(Mouse event)        { model.handle_mouse(event); }
       void operator()(Key event)          { model.handle_key(event); }
@@ -323,12 +323,12 @@ typedef std::variant<
     \begin{itemize}
 
         \item Example: \textsc{wmCPP}'s visitor object:\\
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
   struct EventVisitor
   {
       EventVisitor(Model& model): model(model) {}
 \end{minted}
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
       void operator()(|\bfseries{std::monostate}|)     {}
       // ...
   private:
@@ -353,7 +353,7 @@ typedef std::variant<
     \begin{itemize}
 
         \item Example: \textsc{wmCPP}'s main event loop:\\
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
   while (running)
       std::visit(|\bfseries{event\_visitor}|, conn.step());
 \end{minted}
@@ -380,7 +380,7 @@ typedef std::variant<
 
         \item Rust and \cpp achieve desired behavior
 
-        \item Visiting tagged unions in \cpp is more verbose, less clear
+        \item Visiting tagged unions in \cpp is more verbose, less clear in communicating intent
 
         \item Difference worsens as more complex (or pattern-reliant) situations arise
 

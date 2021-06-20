@@ -1,0 +1,6 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{+w}{  }\PYG{esc}{\sout{pub struct XConnection<'xconn, XConn: connection::Connection> \texttt{\{}}}
+\PYG{+w}{      }\PYG{esc}{\sout{xconn: &'xconn XConn,}}
+\PYG{+w}{      }\PYG{esc}{\sout{\texttt{/}\texttt{/}...}}
+\PYG{+w}{  }\PYG{esc}{\sout{\}}}
+\end{Verbatim}

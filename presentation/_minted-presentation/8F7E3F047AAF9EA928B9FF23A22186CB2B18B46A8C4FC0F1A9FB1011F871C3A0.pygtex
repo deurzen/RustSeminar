@@ -1,0 +1,4 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+  \PYG{c+cp}{\PYGZsh{}}\PYG{c+cp}{[derive(Clone, Copy, PartialEq, Eq, \bfseries{Hash})]}
+  \PYG{n}{pub} \PYG{k}{enum} \PYG{n+nc}{Button} \PYG{p}{\PYGZob{}} \PYG{n}{Left}\PYG{p}{,} \PYG{n}{Middle}\PYG{p}{,} \PYG{n}{Right}\PYG{p}{,} \PYG{n}{ScrollUp}\PYG{p}{,} \PYG{c+cm}{/* ... */} \PYG{p}{\PYGZcb{}}
+\end{Verbatim}

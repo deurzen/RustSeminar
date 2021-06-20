@@ -1,0 +1,5 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+  \PYG{k}{typedef}
+      \PYG{n}{std}\PYG{o}{:}\PYG{o}{:}\PYG{n}{function}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{void}\PYG{p}{(}\PYG{n}{Model}\PYG{o}{\PYGZam{}}\PYG{p}{)}\PYG{o}{\PYGZgt{}}
+      \PYG{n}{KeyAction}\PYG{p}{;}
+\end{Verbatim}

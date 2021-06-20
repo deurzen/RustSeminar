@@ -1,0 +1,19 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+  \PYG{n}{mouse\PYGZus{}bindings}\PYG{p}{.}\PYG{n}{insert}\PYG{p}{(}
+      \PYG{n}{MouseInput} \PYG{p}{\PYGZob{}}
+          \PYG{n+nl}{button}\PYG{p}{:} \PYG{n}{Button}\PYG{o}{::}\PYG{n}{Middle}\PYG{p}{,}
+          \PYG{n+nl}{modifiers}\PYG{p}{:} \PYG{p}{\PYGZob{}}
+              \PYG{n}{let} \PYG{n}{mut} \PYG{n}{modifiers} \PYG{o}{=} \PYG{n}{HashSet}\PYG{o}{::}\PYG{n}{with\PYGZus{}capacity}\PYG{p}{(}\PYG{l+m+mi}{2}\PYG{p}{);}
+              \PYG{n}{modifiers}\PYG{p}{.}\PYG{n}{insert}\PYG{p}{(}\PYG{n}{Modifier}\PYG{o}{::}\PYG{n}{Ctrl}\PYG{p}{);}
+              \PYG{n}{modifiers}\PYG{p}{.}\PYG{n}{insert}\PYG{p}{(}\PYG{n}{Modifier}\PYG{o}{::}\PYG{n}{Super}\PYG{p}{);}
+              \PYG{n}{modifiers}
+          \PYG{p}{\PYGZcb{},}
+      \PYG{p}{\PYGZcb{},}
+      \PYG{n}{Box}\PYG{o}{::}\PYG{k}{new}\PYG{p}{(}\PYG{o}{|}\PYG{n+nl}{model}\PYG{p}{:} \PYG{o}{\PYGZam{}}\PYG{n}{mut} \PYG{n}{Model}\PYG{p}{,} \PYG{n+nl}{win}\PYG{p}{:} \PYG{n}{Option}\PYG{o}{\PYGZlt{}}\PYG{n}{Window}\PYG{o}{\PYGZgt{}|} \PYG{o}{\PYGZhy{}\PYGZgt{}} \PYG{k+kt}{bool} \PYG{p}{\PYGZob{}}
+          \PYG{k}{if} \PYG{n}{let} \PYG{n}{Some}\PYG{p}{(}\PYG{n}{window}\PYG{p}{)} \PYG{o}{=} \PYG{n}{win} \PYG{p}{\PYGZob{}}
+              \PYG{n}{model}\PYG{p}{.}\PYG{n}{set\PYGZus{}floating\PYGZus{}window}\PYG{p}{(}\PYG{n}{window}\PYG{p}{);}
+              \PYG{n+nb}{true}
+          \PYG{p}{\PYGZcb{}}
+      \PYG{p}{\PYGZcb{})}
+  \PYG{p}{);}
+\end{Verbatim}

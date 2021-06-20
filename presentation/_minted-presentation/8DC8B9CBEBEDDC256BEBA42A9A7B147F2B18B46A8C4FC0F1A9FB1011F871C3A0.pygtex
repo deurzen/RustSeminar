@@ -1,0 +1,4 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+  \PYG{k}{while} \PYG{p}{(}\PYG{n}{running}\PYG{p}{)}
+      \PYG{n}{std}\PYG{o}{:}\PYG{o}{:}\PYG{n}{visit}\PYG{p}{(}\PYG{esc}{\bfseries{event\_visitor}}\PYG{p}{,} \PYG{n}{conn}\PYG{p}{.}\PYG{n}{step}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\end{Verbatim}

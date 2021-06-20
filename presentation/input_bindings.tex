@@ -71,15 +71,15 @@
     \begin{itemize}
 
         \item Example: \textsc{wmRS}'s \textit{mouse input} abstractions:\\[3pt]
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{rust}
   #[derive(Clone, Copy, PartialEq, Eq, Hash)]
   pub enum MouseEventKind { Press, Release, Motion, }
 \end{minted}
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{rust}
   #[derive(Clone, Copy, PartialEq, Eq, Hash)]
   pub enum Button { Left, Middle, Right, ScrollUp, /* ... */ }
 \end{minted}
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{rust}
   #[repr(u8)]
   #[derive(Clone, Copy, PartialEq, Eq, Hash)]
   pub enum Modifier {
@@ -90,7 +90,7 @@
       // ...
   }
 \end{minted}
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{rust}
   // ...
 \end{minted}
 
@@ -107,17 +107,17 @@
     \begin{itemize}
 
         \item Example: \textsc{wmRS}'s \textit{mouse input} abstractions (cont.):\\[3pt]
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{rust}
   // ...
 \end{minted}
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{rust}
   #[derive(PartialEq, Eq)]
   pub struct MouseInput {
       pub button: Button,
       pub modifiers: HashSet<Modifier>,
   }
 \end{minted}
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{rust}
   #[derive(PartialEq, Eq, Hash)]
   pub struct MouseEvent {
       pub kind: MouseEventKind,
@@ -139,13 +139,13 @@
     \begin{itemize}
 
         \item Example: \textsc{wmCPP}'s \textit{mouse input} abstractions:\\[3pt]
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
   enum class MouseEventKind { Press, Release, Motion };
 \end{minted}
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
   enum class Button { Left, Middle, Right, ScrollUp, /* ... */ };
 \end{minted}
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
   enum Modifier {
       Ctrl  = 1 << 0,
       Shift = 1 << 1,
@@ -154,7 +154,7 @@
       // ...
   };
 \end{minted}
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
   // ...
 \end{minted}
 
@@ -171,16 +171,16 @@
     \begin{itemize}
 
         \item Example: \textsc{wmCPP}'s \textit{mouse input} abstractions (cont.):\\[3pt]
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
   // ...
 \end{minted}
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
   struct MouseInput final {
       Button button,
       std::unordered_set<Modifier> modifiers,
   };
 \end{minted}
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
   struct MouseEvent final {
       MouseEventKind kind,
       MouseInput input,
@@ -201,22 +201,22 @@
     \begin{itemize}
 
         \item Example: \textsc{wmRS}'s mouse input \textit{mappings}:\\[3pt]
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{rust}
   pub type KeyAction = Box<
       dyn FnMut(&mut Model<'_>)
   >;
 \end{minted}
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{rust}
   pub type MouseAction = Box<
       dyn FnMut(&mut Model<'_>, Option<Window>) -> bool
   >;
 \end{minted}
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{rust}
   pub type KeyBindings = HashMap<
       KeyInput, KeyAction
   >;
 \end{minted}
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{rust}
   pub type MouseBindings = HashMap<
       MouseInput, MouseAction
   >;
@@ -235,12 +235,12 @@
     \begin{itemize}
 
         \item Example: \textsc{wmRS}'s mouse input \textit{mappings}:\\[3pt]
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{rust}
   pub type MouseAction = Box<
       dyn FnMut(&mut Model<'_>, Option<Window>) -> bool
   >;
 \end{minted}
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{rust}
   // ...
 \end{minted}
 
@@ -273,19 +273,25 @@
     \begin{itemize}
 
         \item Example: \textsc{wmRS}'s mouse input \textit{mappings}:\\[3pt]
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{rust}
   #[derive(PartialEq, Eq)]
   pub struct MouseInput {
       pub button: Button,
       pub modifiers: HashSet<Modifier>,
   }
 \end{minted}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{rust}
+  pub type MouseBindings = HashMap<
+      MouseInput, MouseAction
+  >;
+\end{minted}
 
     \vspace*{5pt}\begin{itemize}
 
-        \item \rsin{HashSet} not automatically derivable
+        \item \rsin{MouseInput} used as key to \rsin{HashMap}
             \begin{itemize}
-                \item Manual implementation
+                \item \sout<2>{\rsin{PartialEq} and \rsin{Eq}} \only<2>{(\rsin{\#[derive(PartialEq, Eq)]})}
+                \item \rsin{Hash} \only<2>{(not automatically derivable)}
             \end{itemize}
 
     \end{itemize}
@@ -303,28 +309,377 @@
     \begin{itemize}
 
         \item Example: \textsc{wmRS}'s mouse input \textit{mappings}:\\[3pt]
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{rust}
+  #[derive(Clone, Copy, PartialEq, Eq, |\bfseries{Hash}|)]
+  pub enum Button { Left, Middle, Right, ScrollUp, /* ... */ }
+\end{minted}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{rust}
   #[derive(PartialEq, Eq)]
   pub struct MouseInput {
       pub button: Button,
       pub modifiers: HashSet<Modifier>,
   }
 \end{minted}
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
-  pub type MouseBindings = HashMap<
+
+    \vspace*{5pt}\begin{itemize}
+
+        \item \rsin{Hash} (not automatically derivable)
+            \begin{itemize}
+                \item \rsin{HashSet} not automatically derivable
+                \item \textit{Manual} implementation
+            \end{itemize}
+
+    \end{itemize}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{Rust}: Storing Window Management Actions \hfill {\footnotesize \currentname}}
+
+    \tbf{2. Map input to window management actions in a \underline{\rsin{HashMap}}}
+
+    \begin{itemize}
+
+        \item Example: \textsc{wmRS}'s \rsin{MouseInput}'s \rsin{Hash} implementation:\\[3pt] 
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{rust}
+  #[derive(PartialEq, Eq)]
+  pub struct MouseInput {
+      pub button: Button,
+      pub modifiers: HashSet<Modifier>,
+  }
+\end{minted}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{rust}
+  impl Hash for MouseInput {
+      fn hash<H: Hasher>(&self, state: &mut H) {
+          self.button.hash(state);
+          self.modifiers.iter()
+              .fold(0u8, |acc, &m| acc | m as u8)
+              .hash(state);
+      }
+  }
+\end{minted}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{Rust}: Storing Window Management Actions \hfill {\footnotesize \currentname}}
+
+    \tbf{2. Map input to window management actions in a \underline{\rsin{HashMap}}}
+
+    \begin{itemize}
+
+        \item Example: \textsc{wmRS}'s \rsin{MouseInput}'s \rsin{Hash} implementation:\\[3pt] 
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{rust}
+  impl Hash for MouseInput {
+      fn hash<H: Hasher>(&self, state: &mut H) {
+          self.button.hash(state);
+          self.modifiers.iter()
+              .fold(0u8, |acc, &m| acc | m as u8)
+              .hash(state);
+      }
+  }
+\end{minted}
+
+    \vspace*{5pt}\begin{itemize}
+
+        \item \rsin{<H: Hasher>}: hashing function's logic
+            \begin{itemize}
+                \item \textit{Streaming} hasher
+                \item \textit{State} changes as data is being hashed
+                \item Final state is hashed value
+            \end{itemize}
+
+    \end{itemize}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{Rust}: Storing Window Management Actions \hfill {\footnotesize \currentname}}
+
+    \tbf{2. Map input to window management actions in a \underline{\rsin{HashMap}}}
+
+    \begin{itemize}
+
+        \item Example: Adding a mouse binding:\\[3pt] 
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{rust}
+  let mut mouse_bindings = HashMap::new();
+\end{minted}
+\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{rust}
+  mouse_bindings.insert(
+      MouseInput {
+          button: Button::Middle,
+          modifiers: {
+              let mut modifiers = HashSet::with_capacity(2);
+              modifiers.insert(Modifier::Ctrl);
+              modifiers.insert(Modifier::Super);
+              modifiers
+          },
+      },
+      Box::new(|model: &mut Model, win: Option<Window>| -> bool {
+          if let Some(window) = win {
+              model.set_floating_window(window);
+              true
+          }
+      })
+  );
+\end{minted}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+
+
+\begin{frame}[fragile]{\underline{\cpp}: Storing Window Management Actions \hfill {\footnotesize \currentname}}
+
+    \tbf{2. Map input to window management actions in a \underline{\cppin{std::unordered_map}}}
+
+    \begin{itemize}
+
+        \item Example: \textsc{wmCPP}'s mouse input \textit{mappings}:\\[3pt]
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
+  typedef
+      std::function<void(Model&)>
+      KeyAction;
+\end{minted}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
+  typedef
+      std::function<bool(Model&, std::optional<Window>)>
+      MouseAction;
+\end{minted}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
+  typedef
+      std::unordered_map<KeyInput, KeyAction>
+      KeyBindings;
+\end{minted}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
+  typedef
+      std::unordered_map<MouseInput, MouseAction>
+      MouseBindings;
+\end{minted}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{\cpp}: Storing Window Management Actions \hfill {\footnotesize \currentname}}
+
+    \tbf{2. Map input to window management actions in a \underline{\cppin{std::unordered_map}}}
+
+    \begin{itemize}
+
+        \item Example: \textsc{wmCPP}'s mouse input \textit{mappings}:\\[3pt]
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
+  typedef
+      std::function<bool(Model&, std::optional<Window>)>
+      MouseAction;
+\end{minted}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
+  // ...
+\end{minted}
+
+    \vspace*{5pt}\begin{itemize}
+
+        \item \cppin{std::function<T>}: class template
+            \begin{itemize}
+                \item Polymorphic function wrapper
+                \item Callable \textit{target}
+            \end{itemize}
+
+        \item \cppin{FnMut}: closure trait that describes calling of function that mutates state
+            \begin{itemize}
+                \item \cppin{dyn FnMut(...)}: \textit{trait object} (dynamic dispatch)
+                \item Hooks into main window manager logic
+                \item Operates on clicked-on window (if any)
+            \end{itemize}
+
+    \end{itemize}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{\cpp}: Storing Window Management Actions \hfill {\footnotesize \currentname}}
+
+    \tbf{2. Map input to window management actions in a \underline{\cppin{std::unordered_map}}}
+
+    \begin{itemize}
+
+        \item Example: \textsc{wmCPP}'s mouse input \textit{mappings}:\\[3pt]
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
+  #[derive(PartialEq, Eq)]
+  pub struct MouseInput {
+      pub button: Button,
+      pub modifiers: HashSet<Modifier>,
+  }
+\end{minted}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
+  pub type MouseBindings = std::unordered_map<
       MouseInput, MouseAction
   >;
 \end{minted}
 
     \vspace*{5pt}\begin{itemize}
 
-        \item \rsin{MouseInput} used as key to \rsin{HashMap}
+        \item \cppin{MouseInput} used as key to \cppin{std::unordered_map}
             \begin{itemize}
-                \item \sout<2>{\rsin{PartialEq} and \rsin{Eq}} \only<2>{(\rsin{\#[derive(PartialEq, Eq)]})}
-                \item \rsin{Hash} \only<2>{(not automatically derivable)}
+                \item \sout<2>{\cppin{PartialEq} and \cppin{Eq}} \only<2>{(\cppin{\#[derive(PartialEq, Eq)]})}
+                \item \cppin{Hash} \only<2>{(not automatically derivable)}
             \end{itemize}
 
     \end{itemize}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{\cpp}: Storing Window Management Actions \hfill {\footnotesize \currentname}}
+
+    \tbf{2. Map input to window management actions in a \underline{\cppin{std::unordered_map}}}
+
+    \begin{itemize}
+
+        \item Example: \textsc{wmCPP}'s mouse input \textit{mappings}:\\[3pt]
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
+  #[derive(Clone, Copy, PartialEq, Eq, |\bfseries{Hash}|)]
+  pub enum Button { Left, Middle, Right, ScrollUp, /* ... */ }
+\end{minted}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
+  #[derive(PartialEq, Eq)]
+  pub struct MouseInput {
+      pub button: Button,
+      pub modifiers: HashSet<Modifier>,
+  }
+\end{minted}
+
+    \vspace*{5pt}\begin{itemize}
+
+        \item \cppin{Hash} (not automatically derivable)
+            \begin{itemize}
+                \item \cppin{HashSet} not automatically derivable
+                \item \textit{Manual} implementation
+            \end{itemize}
+
+    \end{itemize}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{\cpp}: Storing Window Management Actions \hfill {\footnotesize \currentname}}
+
+    \tbf{2. Map input to window management actions in a \underline{\cppin{std::unordered_map}}}
+
+    \begin{itemize}
+
+        \item Example: \textsc{wmCPP}'s \cppin{MouseInput}'s \cppin{Hash} implementation:\\[3pt] 
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
+  #[derive(PartialEq, Eq)]
+  pub struct MouseInput {
+      pub button: Button,
+      pub modifiers: HashSet<Modifier>,
+  }
+\end{minted}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
+  impl Hash for MouseInput {
+      fn hash<H: Hasher>(&self, state: &mut H) {
+          self.button.hash(state);
+          self.modifiers.iter()
+              .fold(0u8, |acc, &m| acc | m as u8)
+              .hash(state);
+      }
+  }
+\end{minted}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{\cpp}: Storing Window Management Actions \hfill {\footnotesize \currentname}}
+
+    \tbf{2. Map input to window management actions in a \underline{\cppin{std::unordered_map}}}
+
+    \begin{itemize}
+
+        \item Example: \textsc{wmCPP}'s \cppin{MouseInput}'s \cppin{Hash} implementation:\\[3pt] 
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
+  impl Hash for MouseInput {
+      fn hash<H: Hasher>(&self, state: &mut H) {
+          self.button.hash(state);
+          self.modifiers.iter()
+              .fold(0u8, |acc, &m| acc | m as u8)
+              .hash(state);
+      }
+  }
+\end{minted}
+
+    \vspace*{5pt}\begin{itemize}
+
+        \item \cppin{<H: Hasher>}: hashing function's logic
+            \begin{itemize}
+                \item \textit{Streaming} hasher
+                \item \textit{State} changes as data is being hashed
+                \item Final state is hashed value
+            \end{itemize}
+
+    \end{itemize}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{\cpp}: Storing Window Management Actions \hfill {\footnotesize \currentname}}
+
+    \tbf{2. Map input to window management actions in a \underline{\cppin{std::unordered_map}}}
+
+    \begin{itemize}
+
+        \item Example: Adding a mouse binding:\\[3pt] 
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
+  let mut mouse_bindings = std::unordered_map::new();
+\end{minted}
+\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{cpp}
+  mouse_bindings.insert(
+      MouseInput {
+          button: Button::Middle,
+          modifiers: {
+              let mut modifiers = HashSet::with_capacity(2);
+              modifiers.insert(Modifier::Ctrl);
+              modifiers.insert(Modifier::Super);
+              modifiers
+          },
+      },
+      Box::new(|model: &mut Model, win: Option<Window>| -> bool {
+          if let Some(window) = win {
+              model.set_floating_window(window);
+              true
+          }
+      })
+  );
+\end{minted}
 
     \end{itemize}
 

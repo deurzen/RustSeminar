@@ -1,49 +1,32 @@
-\frametitle{\underline {Rust}: Package Management \hfill {\footnotesize \currentname }}
+\frametitle{\underline {\cpp }: Storing Window Management Actions \hfill {\footnotesize \currentname }}
+
+    \tbf{2. Map input to window management actions in a \underline{\cppin{std::unordered_map}}}
 
     \begin{itemize}
 
-        \item \textit{Cargo}, Rust's official package manager\\
-            \begin{itemize}
-                \item Automatically downloads and compiles dependencies
-                \item A Rust project is a Cargo \textcolor{red}{\textit{package}}
-                \item A \textcolor{red}{package} is a collection of \textit{source files} plus a \textcolor{orange}{\textit{manifest}} file
-                \item The \textcolor{orange}{manifest} file describes the package's \textit{meta-information}, \textit{dependencies}, and a set of \textit{target \textcolor{ForestGreen}{crates}}
-                \item A \textcolor{ForestGreen}{crate} represents a \textit{library} or \textit{binary executable} program
-            \end{itemize}
-
-        \item Example: \texttt{Cargo.toml} manifest file\\
-\usemintedstyle{default}
-\begin{minipage}{.55\linewidth}
-\begin{minted}[fontsize=\scriptsize]{rust}
-   [package]
-   name = "wmRS"
-   version = "0.1.0"
-   edition = "2018"
-   license = "BSD3"
-   default-run = "core"
-   description = """
-   An ICCCM & EWMH compliant X11
-   reparenting, tiling window manager,
-   written in Rust
-   """
+        \item Example: Adding a mouse binding:\\[3pt]
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
+  let mut mouse_bindings = std::unordered_map::new();
 \end{minted}
-\end{minipage}%
-\begin{minipage}{.35\linewidth}
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
-  |\bfseries{\textcolor{ForestGreen}{[lib]}}|
-  name = "winsys"
-  path = "src/winsys/mod.rs"
-  |\bfseries{\textcolor{ForestGreen}{[[bin]]}}|
-  name = "core"
-  path = "src/core/main.rs"
-  |\bfseries{\textcolor{ForestGreen}{[[bin]]}}|
-  name = "client"
-  path = "src/client/main.rs"
-  [dependencies]
-  x11rb = "0.8.0"
+\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{cpp}
+  mouse_bindings.insert(
+      MouseInput {
+          button: Button::Middle,
+          modifiers: {
+              let mut modifiers = HashSet::with_capacity(2);
+              modifiers.insert(Modifier::Ctrl);
+              modifiers.insert(Modifier::Super);
+              modifiers
+          },
+      },
+      Box::new(|model: &mut Model, win: Option<Window>| -> bool {
+          if let Some(window) = win {
+              model.set_floating_window(window);
+              true
+          }
+      })
+  );
 \end{minted}
-\end{minipage}
-\usemintedstyle{igor}
 
     \end{itemize}
 

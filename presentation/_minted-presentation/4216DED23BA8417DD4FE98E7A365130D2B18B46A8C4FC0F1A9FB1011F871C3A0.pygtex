@@ -1,0 +1,5 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+  \PYG{k}{typedef}
+      \PYG{n}{std}\PYG{o}{:}\PYG{o}{:}\PYG{n}{function}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{bool}\PYG{p}{(}\PYG{n}{Model}\PYG{o}{\PYGZam{}}\PYG{p}{,} \PYG{n}{std}\PYG{o}{:}\PYG{o}{:}\PYG{n}{optional}\PYG{o}{\PYGZlt{}}\PYG{n}{Window}\PYG{o}{\PYGZgt{}}\PYG{p}{)}\PYG{o}{\PYGZgt{}}
+      \PYG{n}{MouseAction}\PYG{p}{;}
+\end{Verbatim}

@@ -1,0 +1,3 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+  \PYG{k}{enum} \PYG{k}{class} \PYG{n+nc}{MouseEventKind} \PYG{p}{\PYGZob{}} \PYG{n}{Press}\PYG{p}{,} \PYG{n}{Release}\PYG{p}{,} \PYG{n}{Motion} \PYG{p}{\PYGZcb{}}\PYG{p}{;}
+\end{Verbatim}

@@ -1,0 +1,5 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+  \PYG{n}{pub} \PYG{n}{type} \PYG{n}{MouseBindings} \PYG{o}{=} \PYG{n}{std}\PYG{o}{:}\PYG{o}{:}\PYG{n}{unordered\PYGZus{}map}\PYG{o}{\PYGZlt{}}
+      \PYG{n}{MouseInput}\PYG{p}{,} \PYG{n}{MouseAction}
+  \PYG{o}{\PYGZgt{}}\PYG{p}{;}
+\end{Verbatim}

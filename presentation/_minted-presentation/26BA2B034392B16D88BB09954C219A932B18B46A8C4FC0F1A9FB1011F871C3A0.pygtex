@@ -1,0 +1,7 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+  \PYG{c+cp}{\PYGZsh{}}\PYG{c+cp}{[derive(PartialEq, Eq)]}
+  \PYG{n}{pub} \PYG{k}{struct} \PYG{n+nc}{MouseInput} \PYG{p}{\PYGZob{}}
+      \PYG{n}{pub} \PYG{n+nl}{button}\PYG{p}{:} \PYG{n}{Button}\PYG{p}{,}
+      \PYG{n}{pub} \PYG{n+nl}{modifiers}\PYG{p}{:} \PYG{n}{HashSet}\PYG{o}{\PYGZlt{}}\PYG{n}{Modifier}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+  \PYG{p}{\PYGZcb{}}
+\end{Verbatim}

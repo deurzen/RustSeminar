@@ -74,19 +74,19 @@
 
         \item Example: \texttt{Make} script\\
 \usemintedstyle{default}
-\begin{minted}[fontsize=\scriptsize]{make}
+\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{make}
   CXXFLAGS  := -std=c++20 -march=native -O3
   LDFLAGS   := `pkg-config --libs x11 xrandr` -flto
 \end{minted}
-\begin{minted}[fontsize=\scriptsize]{make}
+\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{make}
   SRC_FILES := $(wildcard src/*.cc)
   OBJ_FILES := $(patsubst src/%.cc,obj/%.o,${SRC_FILES})
 \end{minted}
-\begin{minted}[fontsize=\scriptsize]{make}
+\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{make}
   all: ${OBJ_FILES}
       g++ ${OBJ_FILES} ${LDFLAGS} -o bin/wmCPP
 \end{minted}
-\begin{minted}[fontsize=\scriptsize]{make}
+\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{make}
   obj/%.o: src/%.cc
       g++ ${CXXFLAGS} -MMD -c $< -o $@
 \end{minted}
@@ -112,7 +112,7 @@
         \item Example: \texttt{Cargo.toml} manifest file\\
 \usemintedstyle{default}
 \begin{minipage}{.55\linewidth}
-\begin{minted}[fontsize=\scriptsize]{rust}
+\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{rust}
    [package]
    name = "wmRS"
    version = "0.1.0"
@@ -127,7 +127,7 @@
 \end{minted}
 \end{minipage}%
 \begin{minipage}{.35\linewidth}
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{rust}
   |\bfseries{\textcolor{ForestGreen}{[lib]}}|
   name = "winsys"
   path = "src/winsys/mod.rs"
@@ -253,7 +253,7 @@
             \end{itemize}
 
         \item Example: \textsc{wmRS}'s \rsin{Connection} trait:\\
-\begin{minted}[fontsize=\scriptsize]{rust}
+\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{rust}
    pub trait Connection {
        fn step(&self) -> Option<Event>;
        fn move_window(&self, window: Window, pos: Pos);
@@ -276,16 +276,16 @@
     \begin{itemize}
 
         \item Example: \textsc{wmRS}'s \rsin{XConnection} structure:\\
-\begin{minted}[fontsize=\scriptsize]{rust}
+\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{rust}
   use x11rb::connection;
 \end{minted}
-\begin{minted}[fontsize=\scriptsize]{rust}
+\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{rust}
   pub struct XConnection<'xconn, XConn: connection::Connection> {
       xconn: &'xconn XConn,
       // ...
   }
 \end{minted}
-\begin{minted}[fontsize=\scriptsize]{rust}
+\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{rust}
   impl<'xconn, XConn: connection::Connection> Connection
       for XConnection<'xconn, XConn>
   {
@@ -313,7 +313,7 @@
     \begin{itemize}
 
         \item Example: \textsc{wmRS}'s core window manager logic:\\
-\begin{minted}[fontsize=\scriptsize]{rust}
+\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{rust}
   pub struct Model<'model> {
     conn: &'model mut dyn Connection,
     // ...
@@ -361,13 +361,13 @@
 
         \item Example: \textsc{wmRS}'s \rsin{Cycle} structure:\\[3pt]
 \begin{minipage}{.45\linewidth}
-\begin{minted}[fontsize=\scriptsize]{rust}
+\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{rust}
   pub struct Cycle<T>
   where
       T: Identify + Debug,
   { /* ... */ }
 \end{minted}
-\begin{minted}[fontsize=\scriptsize]{rust}
+\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{rust}
   impl<T> Cycle<T>
   where
       T: Identify + Debug,
@@ -375,14 +375,14 @@
 \end{minted}
 \end{minipage}%
 \begin{minipage}{.40\linewidth}
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{rust}
   pub struct Model<'model> {
       // ...
       workspaces: |\bfseries{Cycle<Workspace>}|,
       // ...
   }
 \end{minted}
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{rust}
   pub struct Workspace {
       clients: |\bfseries{Cycle<Window>}|,
   }
@@ -433,20 +433,20 @@
         \item \sout<2>{Example: \textsc{wmRS}'s \rsin{XConnection}'s \rsin{xconn} reference:}\\[3pt]
 \begin{overprint}
 \onslide<1>
-\begin{minted}[fontsize=\scriptsize]{rust}
+\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{rust}
   use x11rb::connection;
 \end{minted}
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{rust}
   pub struct XConnection<'xconn, |\bfseries{XConn: connection::Connection}|> {
       xconn: &'xconn |\bfseries{XConn}|,
       // ...
   }
 \end{minted}
 \onslide<2>
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{rust}
   |\sout{use x11rb::connection;}|
 \end{minted}
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{rust}
   |\sout{pub struct XConnection<'xconn, XConn: connection::Connection> \texttt{\{}}|
       |\sout{xconn: &'xconn XConn,}|
       |\sout{\texttt{/}\texttt{/}...}|
@@ -455,7 +455,7 @@
 \end{overprint}
 
         \item Example: \textsc{wmRS}'s \rsin{conn} trait object:\\[3pt]
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{rust}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{rust}
   pub struct Model<'model> {
       conn: &'model mut |\bfseries{dyn Connection}|,
       // ...
@@ -501,13 +501,13 @@
     \begin{itemize}
 
         \item Example: \textsc{wmCPP}'s \cppin{Connection} abstract class interface:\\[3pt]
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
   class Connection
   {
   public:
       |\textcolor{blue}{\bfseries{virtual}}| ~Connection() {}
 \end{minted}
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
       |\textcolor{blue}{\bfseries{virtual}}| Event step() |\bfseries{= 0}|;
       |\textcolor{blue}{\bfseries{virtual}}| void move_window(Window, Pos) |\bfseries{= 0}|;
       |\textcolor{blue}{\bfseries{virtual}}| void resize_window(Window, Dim) |\bfseries{= 0}|;
@@ -541,18 +541,18 @@
         \item Pure virtual methods \textit{can} be defined to be called \textit{statically}
 
         \item Example: \textsc{wmCPP}'s \cppin{Connection}'s implementation:\\[3pt]
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
   #include "connection.hh"
   #include "log.hh"
 \end{minted}
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
   void
   Connection::close_window(Window window)
   {
       Logger::log_info("Closing 0x%#08x.", window);
   }
 \end{minted}
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
   // ...
 \end{minted}
 
@@ -569,7 +569,7 @@
     \vspace*{-5pt}\begin{itemize}
 
         \item Example: \textsc{wmCPP}'s \rsin{XConnection} derived class:\\
-\begin{minted}[fontsize=\scriptsize]{cpp}
+\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{cpp}
   #include "connection.hh"
   extern "C" {
   #include <X11/Xlib.h>
@@ -605,7 +605,7 @@
     \begin{itemize}
 
         \item Example: \textsc{wmCPP}'s core window manager logic:\\
-\begin{minted}[escapeinside=||,fontsize=\scriptsize]{cpp}
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
   #include "connection.hh"
   class Model final
   {

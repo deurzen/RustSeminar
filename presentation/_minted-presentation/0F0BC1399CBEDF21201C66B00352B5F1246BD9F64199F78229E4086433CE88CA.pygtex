@@ -1,0 +1,5 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{+w}{  }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{type} \PYG{n+nc}{KeyBindings}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{HashMap}\PYG{o}{\PYGZlt{}}
+\PYG{+w}{      }\PYG{n}{KeyInput}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{KeyAction}
+\PYG{+w}{  }\PYG{o}{\PYGZgt{}}\PYG{p}{;}
+\end{Verbatim}

@@ -1,0 +1,3 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{fn} \PYG{n+nf}{step}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{esc}{\bfseries{\underline{Option}<Event>}}\PYG{p}{;}
+\end{Verbatim}

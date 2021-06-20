@@ -1,0 +1,4 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{+w}{  }\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{derive(Clone, Copy, PartialEq, Eq, Hash)}\PYG{c+cp}{]}
+\PYG{+w}{  }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{enum} \PYG{n+nc}{MouseEventKind}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n}{Press}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Release}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Motion}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

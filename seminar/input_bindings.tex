@@ -137,9 +137,9 @@ fields of a to-be-derived compound type \textit{must} already implement
 \rsin{PartialEq} and \rsin{Eq}, which is the case for \rsin{MouseEvent}'s
 fields given in the example above. The same condition holds for \rsin{Hash},
 although \rsin{HashSet}, the type of \rsin{MouseInput}'s \rsin{modifiers}
-field, is not automatically derivable\cite{therustbook, therustreference}.
-To satisfy the \rsin{Hash} trait bound for \rsin{MouseInput}, it must
-therefore be defined manually. To this end, each variant of \textsc{wmRS}'s
+field, is not automatically derivable\cite{therustbook, therustreference}. To
+satisfy the \rsin{Hash} trait bound for \rsin{MouseInput}, it must therefore
+be implemented manually. To this end, each variant of \textsc{wmRS}'s
 \rsin{Modifier} enumeration is represented by an unsigned 8-bit integer value
 (\rsin{#[repr(u8)]}). The values are assigned in such a manner that the
 \rsin{enum} acts as a collection of \textit{bit flags}, resolving each variant
@@ -338,18 +338,24 @@ Particularly, as in \textsc{wmRS}, \cppin{MouseAction} is simply a type alias:
     MouseAction;
 \end{cppblock}
 
-Just like Rust's \rsin{FnMut}, calling a \cppin{std::function} instance will
-make use of dynamic dispatch to retrieve the logic to execute\cite{cppstd}.
-The reason this virtual lookup is required is because, under the hood, the
-callable object gets wrapped inside a structure that additionally contains
-possibly bound data\cite{cppstd}. As a result, the exact type and, by
-extension, its size, will not be known to callers of the \cppin{std::function}
-instance\cite{underhoodfunction}. A benefit to \cpp{}'s \cppin{std::function}
-over Rust's \rsin{FnMut} is that memory will not be dynamically allocated when
-storing lambda functions without any bound parameters, thanks to \cpp{}'s
-\textit{Small Buffer Optimization}\cite{commonoptimizations, underhoodfunction}.
-That implies that retrieving such instances from a growable collection, such as
-a hash map, saves us one level of indirection.
+Unlike Rust's \rsin{FnMut}, which relies on dynamic dispatch, a
+\cppin{std::function} instance will make use of \textit{type erasure}
+to abstract over the underlying logic\cite{cppstd, typeerasure}. Type
+erasure allows us to use different concrete types through a single
+generic interface\cite{typeerasure}. Generally, as is happening here for
+\cppin{std::function}, type erasure is applied through some \textit{wrapper
+template}, making it convenient to wrap any concrete types that adhere to the
+interface's API\cite{typeerasure}. Specifically, the \cppin{std::function}
+interface requires the function call operator (\cppin{operator()}) to be
+overloaded for the concrete type being type-erased\cite{cppstd, typeerasure}.
+A benefit to \cpp{}'s \cppin{std::function} over Rust's \rsin{FnMut} is
+that no virtual method lookup is required at runtime, making it the more
+runtime efficient construct. Another benefit to \cppin{std::function} is
+that memory will not be dynamically allocated when storing lambda functions
+without any bound parameters, thanks to \cpp{}'s \textit{Small Buffer
+Optimization}\cite{commonoptimizations, underhoodfunction}. That implies that
+retrieving such instances from a growable collection, such as a hash map, saves
+us yet another level of indirection.
 
 The \cppin{MouseBindings} type that represents the map between input
 abstractions and actions is also a simple type alias:
