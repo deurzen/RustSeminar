@@ -1,7 +1,7 @@
 \begin{Verbatim}[commandchars=\\\{\}]
 \PYG{+w}{  }\PYG{n}{mouse\PYGZus{}bindings}\PYG{p}{.}\PYG{n}{insert}\PYG{p}{(}
 \PYG{+w}{      }\PYG{n}{MouseInput}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
-\PYG{+w}{          }\PYG{n}{button}: \PYG{n+nc}{Button}::\PYG{n}{Middle}\PYG{p}{,}
+\PYG{+w}{          }\PYG{n}{button}: \PYG{n+nc}{Button}::\PYG{n}{Right}\PYG{p}{,}
 \PYG{+w}{          }\PYG{n}{modifiers}: \PYG{p}{\PYGZob{}}
 \PYG{+w}{              }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{k}{mut}\PYG{+w}{ }\PYG{n}{modifiers}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{HashSet}::\PYG{n}{with\PYGZus{}capacity}\PYG{p}{(}\PYG{l+m+mi}{2}\PYG{p}{);}
 \PYG{+w}{              }\PYG{n}{modifiers}\PYG{p}{.}\PYG{n}{insert}\PYG{p}{(}\PYG{n}{Modifier}::\PYG{n}{Ctrl}\PYG{p}{);}

@@ -253,7 +253,7 @@
 
         \item \rsin{FnMut}: closure trait that describes calling of function that mutates state
             \begin{itemize}
-                \item \rsin{dyn FnMut(...)}: \textit{trait object} (dynamic dispatch)
+                \item \rsin{dyn FnMut(...) -> ...}: \textit{trait object} (dynamic dispatch)
                 \item Hooks into main window manager logic
                 \item Operates on clicked-on window (if any)
             \end{itemize}
@@ -416,7 +416,7 @@
 \begin{minted}[baselinestretch=1,fontsize=\scriptsize]{rust}
   mouse_bindings.insert(
       MouseInput {
-          button: Button::Middle,
+          button: Button::Right,
           modifiers: {
               let mut modifiers = HashSet::with_capacity(2);
               modifiers.insert(Modifier::Ctrl);
@@ -686,7 +686,7 @@
 \begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{cpp}
   Model(/* ... */)
     : mouse_bindings({
-        { { Button::Middle, { Ctrl, Shift, Super } },
+        { { Button::Right, { Ctrl, Super } },
             [](Model& model, std::optional<Window> window) {
                 if (window)
                     model.set_fullscreen_window(*window);
@@ -796,7 +796,7 @@
     \begin{itemize}
         \itemsep.3em
 
-        \item Rust and \cpp achieve desired behavior
+        \item Rust and \cpp both achieve desired behavior
 
         \item Rust: \textit{streaming} hasher
             \begin{itemize}

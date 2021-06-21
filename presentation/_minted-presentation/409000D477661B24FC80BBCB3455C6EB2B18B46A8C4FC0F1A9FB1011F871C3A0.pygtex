@@ -1,7 +1,7 @@
 \begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
   \PYG{n}{Model}\PYG{p}{(}\PYG{c+cm}{/* ... */}\PYG{p}{)}
     \PYG{o}{:} \PYG{n}{mouse\PYGZus{}bindings}\PYG{p}{(}\PYG{p}{\PYGZob{}}
-        \PYG{p}{\PYGZob{}} \PYG{p}{\PYGZob{}} \PYG{n}{Button}\PYG{o}{:}\PYG{o}{:}\PYG{n}{Middle}\PYG{p}{,} \PYG{p}{\PYGZob{}} \PYG{n}{Ctrl}\PYG{p}{,} \PYG{n}{Shift}\PYG{p}{,} \PYG{n}{Super} \PYG{p}{\PYGZcb{}} \PYG{p}{\PYGZcb{}}\PYG{p}{,}
+        \PYG{p}{\PYGZob{}} \PYG{p}{\PYGZob{}} \PYG{n}{Button}\PYG{o}{:}\PYG{o}{:}\PYG{n}{Right}\PYG{p}{,} \PYG{p}{\PYGZob{}} \PYG{n}{Ctrl}\PYG{p}{,} \PYG{n}{Super} \PYG{p}{\PYGZcb{}} \PYG{p}{\PYGZcb{}}\PYG{p}{,}
             \PYG{p}{[}\PYG{p}{]}\PYG{p}{(}\PYG{n}{Model}\PYG{o}{\PYGZam{}} \PYG{n}{model}\PYG{p}{,} \PYG{n}{std}\PYG{o}{:}\PYG{o}{:}\PYG{n}{optional}\PYG{o}{\PYGZlt{}}\PYG{n}{Window}\PYG{o}{\PYGZgt{}} \PYG{n}{window}\PYG{p}{)} \PYG{p}{\PYGZob{}}
                 \PYG{k}{if} \PYG{p}{(}\PYG{n}{window}\PYG{p}{)}
                     \PYG{n}{model}\PYG{p}{.}\PYG{n}{set\PYGZus{}fullscreen\PYGZus{}window}\PYG{p}{(}\PYG{o}{*}\PYG{n}{window}\PYG{p}{)}\PYG{p}{;}

@@ -116,9 +116,9 @@
                 \item Strong type alias required for same-type alternatives
             \end{itemize}
 
-        \item Size as large as its largest variant
+        \item Size as large as its largest alternative
 
-        \item Example: \textsc{wmRS}'s \rsin{Event} enumeration:\\
+        \item Example: \textsc{wmCPP}'s \rsin{Event} type:\\
 \begin{minipage}[t]{.45\linewidth}
 \begin{minted}[baselinestretch=1,fontsize=\scriptsize]{cpp}
   typedef std::variant<
@@ -378,7 +378,7 @@ typedef std::variant<
 
     \begin{itemize}
 
-        \item Rust and \cpp achieve desired behavior
+        \item Rust and \cpp both achieve desired behavior
 
         \item Visiting tagged unions in \cpp is more verbose, less clear in communicating intent
 

@@ -225,7 +225,7 @@ if let Some(client) = self.client_map.get_mut(&win) {
 
     \begin{itemize}
             
-        \item \textit{Shared} mutable references with \underline{\rsin{Cell}} and \underline{\rsin{RefCell}}
+        \item Shared \textit{mutable} references with \underline{\rsin{Cell}} and \underline{\rsin{RefCell}}
 
         \item Example: \textsc{wmRS}'s \rsin{Client} structure:\\[3pt]
 \begin{minted}[baselinestretch=1,fontsize=\scriptsize]{rust}
@@ -441,6 +441,33 @@ if let Some(client) = self.client_map.get_mut(&win) {
       }
   }
 \end{minted}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[t]{Clients: Remarks}
+
+    \begin{itemize}
+        \itemsep.3em
+
+        \item Rust: borrow checker
+            \begin{itemize}
+                \item More restrictive than strictly necessary
+                    \begin{itemize}
+                        \item Language simplicity
+                        \item Compilation speed
+                        \item Need for interior mutability
+                    \end{itemize}
+                \item Adds significant programmer effort
+                \item Renders programming patterns impossible
+                    \begin{itemize}
+                        \item Self-referential structures
+                        \item Adds runtime overhead
+                    \end{itemize}
+            \end{itemize}
 
     \end{itemize}
 
