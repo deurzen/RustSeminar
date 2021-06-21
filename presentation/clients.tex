@@ -1,6 +1,449 @@
 %&latex
 
 \section{Clients}
-\begin{frame}{Second Frame}
-Hello, world!
+
+\begin{frame}[t]{Clients}
+
+    \begin{itemize}
+        \itemsep.3em
+
+        \item \tbf{Window as main \underline{windowing system} entity}
+            \begin{itemize}
+                \item Application GUI
+                \item Integer representation
+                \item Unique identification
+                \item \textit{Stateless}
+            \end{itemize}
+
+        \item \tbf{Client as main \underline{window manager} entity}
+            \begin{itemize}
+                \item Window coupled with \textit{state}
+                    \begin{itemize}
+                        \item Title
+                        \item Floating, tiled region
+                        \item Process identifier (PID)
+                        \item \textit{Fullscreen?}
+                        \item \textit{Floating?}
+                        \item \textit{Iconified?}
+                        \item ...
+                    \end{itemize}
+            \end{itemize}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{Rust}: Distributed, Mutable State \hfill {\footnotesize \currentname}}
+
+    \begin{itemize}
+
+        \item Major memory safety aspect: \tbf{mutability}
+            \begin{itemize}
+                \item \rsin{mut}: two \textit{types} of semantics
+                    \begin{itemize}
+                        \item Patterns: \textit{changeable underlying value}
+                        \item References: \textit{changeable underlying value}, \textit{aliasing} not allowed
+                    \end{itemize}
+            \end{itemize}
+
+        \item \textit{aliasing} \texttt{XOR} \textit{mutability}
+            \begin{itemize}
+                \item Either \textit{distribute} \underline{or} \textit{mutate}
+                \item Safe to mutate only if \textit{no other} references exist
+            \end{itemize}
+
+        \item Example: \textsc{wmRS}'s \rsin{Client} structure:\\[3pt]
+\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{rust}
+  pub struct Client {
+      window: Window,
+      frame: Window,
+      workspace: usize,
+      parent: Option<Window>,
+      children: Vec<Window>,
+      floating: bool,
+      fullscreen: bool,
+      // ...
+  }
+\end{minted}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{Rust}: Distributed, Mutable State \hfill {\footnotesize \currentname}}
+
+    \tbf{Distributing \underline{references} to client structures}
+
+    \begin{itemize}
+
+    \item \tbf{Option 1}: distribute \rsin{&mut Client}
+        \begin{itemize}
+            \item Client-mutating methods
+            \item No more than a single reference outstanding
+        \end{itemize}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{Rust}: Distributed, Mutable State \hfill {\footnotesize \currentname}}
+
+    \tbf{\underline{Option 1}: distribute \rsin{&mut Client}}
+
+    \begin{itemize}
+
+    \item Clients must be centrally stored
+        \begin{itemize}
+            \item Map \rsin{Window} to its \rsin{Client}
+        \end{itemize}
+
+    \item Example: \textsc{wmRS}'s \rsin{Client} instance storage:\\[3pt]
+\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{rust}
+  pub struct Model<'model> {
+      // ...
+      client_map: HashMap<Window, Client>,
+      // ...
+  }
+\end{minted}
+
+    \item Mutability \textit{bubbles up}
+        \begin{itemize}
+            \item Surrounding structures \textit{also} mutable
+                \begin{itemize}
+                    \item \textit{Inherited, exterior mutability}
+                    \item Mutating single client field: \rsin{&mut Client}
+                    \item Mutating \rsin{&mut Client}: \rsin{fn ...(&mut self, ...)}
+                \end{itemize}
+        \end{itemize}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{Rust}: Distributed, Mutable State \hfill {\footnotesize \currentname}}
+
+    \tbf{\underline{Option 1}: distribute \rsin{&mut Client}}
+
+    \begin{itemize}
+
+    \item Example: mutating client state in \textsc{wmRS}:\\[3pt]
+\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{rust}
+  impl<'model> Model<'model> {
+      fn set_fullscreen_window(&mut self, win: Window) {
+          if let Some(client) = self.client_map.get_mut(&win) {
+              client.set_fullscreen(true);
+              self.apply_layout(client.workspace());
+          }
+      }
+\end{minted}
+\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{rust}
+      fn apply_layout(&self, index: usize) { /* ... */ }
+      // ...
+  }
+\end{minted}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{Rust}: Distributed, Mutable State \hfill {\footnotesize \currentname}}
+
+    \tbf{\underline{Option 1}: distribute \rsin{&mut Client}}
+
+    \begin{itemize}
+
+    \item Example: mutating client state in \textsc{wmRS}:\\[3pt]
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{rust}
+  impl<'model> Model<'model> {
+      fn set_fullscreen_window(&mut self, win: Window) {
+          if let Some(client) = |\bfseries{self}|.client_map.get_mut(&win) {
+              client.set_fullscreen(true);
+              |\bfseries{self}|.apply_layout(client.workspace());
+          }
+      }
+\end{minted}
+\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{rust}
+      fn apply_layout(&self, index: usize) { /* ... */ }
+      // ...
+  }
+\end{minted}
+
+\vspace*{6pt}\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{text}
+error[E0502]: cannot borrow `*self` as immutable
+because it is also borrowed as mutable
+
+if let Some(client) = self.client_map.get_mut(&win) {
+                      --------------- mutable borrow occurs here
+    self.apply_layout(client.workspace());
+    ^^^^              ------ mutable borrow later used here
+    |
+    immutable borrow occurs here
+\end{minted}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{Rust}: Distributed, Mutable State \hfill {\footnotesize \currentname}}
+
+    \tbf{Distributing \underline{references} to client structures}
+
+    \begin{itemize}
+
+    \item \sout<1->{\tbf{Option 1}: distribute \rsin{&mut Client}}
+        \begin{itemize}
+            \item \sout<1->{Client-mutating methods}
+            \item \sout<1->{No more than a single reference outstanding}
+        \end{itemize}
+
+    \item \tbf{Option 2}: distribute \rsin{&Client}
+        \begin{itemize}
+            \item \textit{More} than a single reference may be outstanding
+        \end{itemize}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{Rust}: Distributed, Mutable State \hfill {\footnotesize \currentname}}
+
+    \tbf{\underline{Option 2}: distribute \rsin{&Client}}
+
+    \begin{itemize}
+            
+        \item \textit{Shared} mutable references with \underline{\rsin{Cell}} and \underline{\rsin{RefCell}}
+
+        \item Example: \textsc{wmRS}'s \rsin{Client} structure:\\[3pt]
+\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{rust}
+  pub struct Client {
+      window: Window,
+      frame: Window,
+      workspace: Cell<usize>,
+      parent: Option<Window>,
+      children: RefCell<Vec<Window>>,
+      floating: Cell<bool>,
+      fullscreen: Cell<bool>,
+      // ...
+  }
+\end{minted}
+
+    \vspace*{5pt}\begin{itemize}
+
+        \item \rsin{Cell<...>} and \rsin{RefCell<...>}: \textit{mutable} fields
+            \begin{itemize}
+                \item \textit{Interior mutability} constructs
+            \end{itemize}
+
+        \item Other fields: \rsin{Client} constants
+
+    \end{itemize}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{Rust}: Distributed, Mutable State \hfill {\footnotesize \currentname}}
+
+    \tbf{Interior mutability: \rsin{Cell} and \rsin{RefCell}}
+
+    \begin{itemize}
+
+    \item \rsin{Cell}: move or copy \underline{values} \textit{in} and \textit{out}
+        \begin{itemize}
+            \item \textit{No} reference to contained value
+        \end{itemize}
+
+    \item \rsin{RefCell}: \underline{references} instead of values
+        \begin{itemize}
+            \item Acquire a \textit{lock} before mutating
+            \item \textit{Dynamic borrowing}
+        \end{itemize}
+
+    \item \textit{Move} mutability to individual fields
+        \begin{itemize}
+            \item \textit{Interior} borrow checking
+            \item Mutate non-exclusive reference
+            \item \textit{Mutate} \tbf{and} \textit{alias}
+        \end{itemize}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{Rust}: Distributed, Mutable State \hfill {\footnotesize \currentname}}
+
+    \tbf{\underline{Option 2}: distribute \rsin{&Client}}
+
+    \begin{itemize}
+
+    \item Example: mutating client state in \textsc{wmRS}:\\[3pt]
+\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{rust}
+  impl Client {
+      pub fn set_fullscreen(|\bfseries{&self}|, bool: value) {
+          // copy `value` into the Cell
+          self.fullscreen.set(value);
+      }
+      // ...
+  }
+\end{minted}
+
+\vspace*{6pt}\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{rust}
+  impl<'model> Model<'model> {
+      fn set_fullscreen_window(|\bfseries{&self}|, win: Window) {
+          if let Some(client) = self.client_map.get(&win) {
+              client.set_fullscreen(true);
+              self.apply_layout(client.workspace());
+          }
+      }
+\end{minted}
+\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{rust}
+      fn apply_layout(&self, index: usize) { /* ... */ }
+      // ...
+  }
+\end{minted}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+
+\begin{frame}[fragile]{\underline{\cpp}: Distributed, Mutable State \hfill {\footnotesize \currentname}}
+
+    \begin{itemize}
+
+        \item \tbf{All} mutability is interior mutability
+            \begin{itemize}
+                \item \textit{Every} reference can be aliased
+                \item \textit{No} restriction on mutability of references
+            \end{itemize}
+
+        \item Example: \textsc{wmCPP}'s \cppin{Client} structure:\\[3pt]
+\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{rust}
+  typedef struct Client* Client_ptr;
+  typedef struct Client final
+  {
+      Window window;
+      Window frame;
+      unsigned workspace;
+      Client_ptr parent;
+      std::vector<Client_ptr> children;
+      bool floating;
+      bool fullscreen;
+      // ...
+  }* Client_ptr;
+\end{minted}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{\cpp}: Distributed, Mutable State \hfill {\footnotesize \currentname}}
+
+    \begin{itemize}
+
+        \item Example: \textsc{wmCPP}'s \cppin{Client} structure:\\[3pt]
+\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{cpp}
+  typedef struct Client* Client_ptr;
+  typedef struct Client final
+  {
+      Window window;
+      Window frame;
+      unsigned workspace;
+      Client_ptr parent;
+      std::vector<Client_ptr> children;
+      bool floating;
+      bool fullscreen;
+      // ...
+  }* Client_ptr;
+\end{minted}
+
+    \vspace*{5pt}\begin{itemize}
+
+        \item \cppin{Client} \textit{pointers} instead of window representations
+            \begin{itemize}
+                \item Main event loop invariant: window destruction gets reported
+                \item No need for \textit{smart pointers}
+                \item We know \textit{exactly} when to deallocate memory
+            \end{itemize}
+
+        \item Other fields: \rsin{Client} constants
+
+    \end{itemize}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{\cpp}: Distributed, Mutable State \hfill {\footnotesize \currentname}}
+
+    \tbf{Distributing \underline{pointers} to client structures}
+
+    \begin{itemize}
+
+        \item Heap-allocated \cppin{Client} structures are centrally stored
+
+    \item Example: \textsc{wmCPP}'s \cppin{Client} instance storage:\\[3pt]
+\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{cpp}
+  class Model final
+  {
+      // ...
+  private:
+      std::unordered_map<Window, Client_ptr> client_map;
+      // ...
+  };
+\end{minted}
+
+    \end{itemize}
+
+    \vfill
+
+\end{frame}
+
+\begin{frame}[fragile]{\underline{\cpp}: Distributed, Mutable State \hfill {\footnotesize \currentname}}
+
+    \tbf{Distributing \underline{pointers} to client structures}
+
+    \begin{itemize}
+
+    \item Example: mutating client state in \textsc{wmCPP}:\\[3pt]
+\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{cpp}
+  void
+  Model::set_fullscreen_window(Window window)
+  {
+      if (client_map.count(window) > 0) {
+          Client_ptr client = client_map.at(window);
+          client->fullscreen = true;
+          apply_layout(client->workspace);
+      }
+  }
+\end{minted}
+
+    \end{itemize}
+
+    \vfill
+
 \end{frame}

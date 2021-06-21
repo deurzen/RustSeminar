@@ -1,0 +1,11 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+  \PYG{k+kt}{void}
+  \PYG{n}{Model}\PYG{o}{::}\PYG{n}{set\PYGZus{}fullscreen\PYGZus{}window}\PYG{p}{(}\PYG{n}{Window} \PYG{n}{window}\PYG{p}{)}
+  \PYG{p}{\PYGZob{}}
+      \PYG{k}{if} \PYG{p}{(}\PYG{n}{client\PYGZus{}map}\PYG{p}{.}\PYG{n}{count}\PYG{p}{(}\PYG{n}{window}\PYG{p}{)} \PYG{o}{\PYGZgt{}} \PYG{l+m+mi}{0}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+          \PYG{n}{Client\PYGZus{}ptr} \PYG{n}{client} \PYG{o}{=} \PYG{n}{client\PYGZus{}map}\PYG{p}{.}\PYG{n}{at}\PYG{p}{(}\PYG{n}{window}\PYG{p}{);}
+          \PYG{n}{client}\PYG{o}{\PYGZhy{}\PYGZgt{}}\PYG{n}{fullscreen} \PYG{o}{=} \PYG{n+nb}{true}\PYG{p}{;}
+          \PYG{n}{apply\PYGZus{}layout}\PYG{p}{(}\PYG{n}{client}\PYG{o}{\PYGZhy{}\PYGZgt{}}\PYG{n}{workspace}\PYG{p}{);}
+      \PYG{p}{\PYGZcb{}}
+  \PYG{p}{\PYGZcb{}}
+\end{Verbatim}

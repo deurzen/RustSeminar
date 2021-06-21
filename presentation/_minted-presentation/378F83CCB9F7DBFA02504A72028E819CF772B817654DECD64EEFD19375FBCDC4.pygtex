@@ -1,0 +1,7 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{+w}{  }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct} \PYG{n+nc}{Model}\PYG{o}{\PYGZlt{}\PYGZsq{}}\PYG{n+na}{model}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{      }\PYG{c+c1}{// ...}
+\PYG{+w}{      }\PYG{n}{client\PYGZus{}map}: \PYG{n+nc}{HashMap}\PYG{o}{\PYGZlt{}}\PYG{n}{Window}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Client}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{      }\PYG{c+c1}{// ...}
+\PYG{+w}{  }\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

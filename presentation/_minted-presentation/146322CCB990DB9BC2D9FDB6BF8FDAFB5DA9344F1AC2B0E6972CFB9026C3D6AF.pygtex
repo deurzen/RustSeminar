@@ -1,0 +1,14 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+  \PYG{k}{typedef} \PYG{k}{struct} \PYG{n+nc}{Client}\PYG{o}{*} \PYG{n}{Client\PYGZus{}ptr}\PYG{p}{;}
+  \PYG{k}{typedef} \PYG{k}{struct} \PYG{n+nc}{Client} \PYG{k}{final}
+  \PYG{p}{\PYGZob{}}
+      \PYG{n}{Window} \PYG{n}{window}\PYG{p}{;}
+      \PYG{n}{Window} \PYG{n}{frame}\PYG{p}{;}
+      \PYG{k+kt}{unsigned} \PYG{n}{workspace}\PYG{p}{;}
+      \PYG{n}{Client\PYGZus{}ptr} \PYG{n}{parent}\PYG{p}{;}
+      \PYG{n}{std}\PYG{o}{::}\PYG{n}{vector}\PYG{o}{\PYGZlt{}}\PYG{n}{Client\PYGZus{}ptr}\PYG{o}{\PYGZgt{}} \PYG{n}{children}\PYG{p}{;}
+      \PYG{k+kt}{bool} \PYG{n}{floating}\PYG{p}{;}
+      \PYG{k+kt}{bool} \PYG{n}{fullscreen}\PYG{p}{;}
+      \PYG{c+c1}{// ...}
+  \PYG{p}{\PYGZcb{}}\PYG{o}{*} \PYG{n}{Client\PYGZus{}ptr}\PYG{p}{;}
+\end{Verbatim}

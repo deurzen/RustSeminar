@@ -1,0 +1,12 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{+w}{  }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct} \PYG{n+nc}{Client}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{      }\PYG{n}{window}: \PYG{n+nc}{Window}\PYG{p}{,}
+\PYG{+w}{      }\PYG{n}{frame}: \PYG{n+nc}{Window}\PYG{p}{,}
+\PYG{+w}{      }\PYG{n}{workspace}: \PYG{n+nc}{Cell}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{usize}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{      }\PYG{n}{parent}: \PYG{n+nb}{Option}\PYG{o}{\PYGZlt{}}\PYG{n}{Window}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{      }\PYG{n}{children}: \PYG{n+nc}{RefCell}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{n}{Window}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{      }\PYG{n}{floating}: \PYG{n+nc}{Cell}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{bool}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{      }\PYG{n}{fullscreen}: \PYG{n+nc}{Cell}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{bool}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{      }\PYG{c+c1}{// ...}
+\PYG{+w}{  }\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

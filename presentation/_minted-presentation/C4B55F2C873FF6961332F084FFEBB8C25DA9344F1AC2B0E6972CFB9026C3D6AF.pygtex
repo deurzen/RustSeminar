@@ -1,0 +1,9 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+  \PYG{k}{class} \PYG{n+nc}{Model} \PYG{k}{final}
+  \PYG{p}{\PYGZob{}}
+      \PYG{c+c1}{// ...}
+  \PYG{k}{private}\PYG{o}{:}
+      \PYG{n}{std}\PYG{o}{::}\PYG{n}{unordered\PYGZus{}map}\PYG{o}{\PYGZlt{}}\PYG{n}{Window}\PYG{p}{,} \PYG{n}{Client\PYGZus{}ptr}\PYG{o}{\PYGZgt{}} \PYG{n}{client\PYGZus{}map}\PYG{p}{;}
+      \PYG{c+c1}{// ...}
+  \PYG{p}{\PYGZcb{};}
+\end{Verbatim}

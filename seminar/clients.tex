@@ -68,7 +68,7 @@ instance would have to be \rsin{&mut}. This additionally requires that the
 \rsin{Model}'s method that retrieves from its \rsin{client_map} and operates on
 such an instance would \textit{also} have to take \rsin{&mut self}. For this
 reason, this kind of mutability is what's known in Rust as \textit{inherited}
-mutability, also referred to as \textit{external} mutability\cite{therustbook}.
+mutability, also referred to as \textit{exterior} mutability\cite{therustbook}.
 
 Considering that the windowing system generates events in respect to some
 \textit{window}, whenever we need to alter the state that is associated with
@@ -214,7 +214,7 @@ mutate client objects, an example of which is the following:
   void
   Model::set_fullscreen_window(Window window)
   {
-    if (client_map.find(window) != client_map.end()) {
+    if (client_map.count(window) > 0) {
       Client_ptr client = client_map.at(window);
       client->fullscreen = true;
       apply_layout(client->workspace);

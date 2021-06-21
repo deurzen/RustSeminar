@@ -1,0 +1,11 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+error[E0502]: cannot borrow `*self` as immutable
+because it is also borrowed as mutable
+
+if let Some(client) = self.client\PYGZus{}map.get\PYGZus{}mut(\PYGZam{}win) \PYGZob{}
+                      \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{} mutable borrow occurs here
+    self.apply\PYGZus{}layout(client.workspace());
+    \PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}              \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{} mutable borrow later used here
+    |
+    immutable borrow occurs here
+\end{Verbatim}

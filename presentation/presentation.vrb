@@ -1,26 +1,21 @@
-\frametitle{Input Bindings: Remarks}
+\frametitle{\underline {\cpp }: Distributed, Mutable State \hfill {\footnotesize \currentname }}
+
+    \tbf{Distributing \underline{pointers} to client structures}
 
     \begin{itemize}
-        \itemsep.3em
 
-        \item Rust: \textit{verbose} \rsin{HashMap} construction
-            \begin{itemize}
-                \item \textit{Macro metaprogramming}
-            \end{itemize}
-
-        \item Example: Constructing mouse bindings in \textsc{wmRS}'s using \textit{declarative macros}:\\[3pt]
-\begin{minted}[baselinestretch=1,escapeinside=||,fontsize=\scriptsize]{rust}
-  let mouse_bindings = |\bfseries{init\_mouse\_bindings!}|(
-      "A-C-S-Middle" => |\bfseries{execute\_model\_window!}|(model, win,
-          if let Some(window) = win {
-              model.set_fullscreen_window(window);
-          }
-      ),
-      // more mouse bindings
-  );
+    \item Example: mutating client state in \textsc{wmCPP}:\\[3pt]
+\begin{minted}[baselinestretch=1,fontsize=\scriptsize]{cpp}
+  void
+  Model::set_fullscreen_window(Window window)
+  {
+      if (client_map.count(window) > 0) {
+          Client_ptr client = client_map.at(window);
+          client->fullscreen = true;
+          apply_layout(client->workspace);
+      }
+  }
 \end{minted}
-
-        \item \cpp: no similarly powerful metaprogramming feature
 
     \end{itemize}
 

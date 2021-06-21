@@ -1,0 +1,5 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{+w}{      }\PYG{k}{fn} \PYG{n+nf}{apply\PYGZus{}layout}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{index}: \PYG{k+kt}{usize}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{c+cm}{/* ... */}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{      }\PYG{c+c1}{// ...}
+\PYG{+w}{  }\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

@@ -1,0 +1,9 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{+w}{  }\PYG{k}{impl}\PYG{+w}{ }\PYG{n}{Client}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{      }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{set\PYGZus{}fullscreen}\PYG{p}{(}\PYG{esc}{\bfseries{&self}}\PYG{p}{,}\PYG{+w}{ }\PYG{k+kt}{bool}: \PYG{n+nc}{value}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{          }\PYG{c+c1}{// copy `value` into the Cell}
+\PYG{+w}{          }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{fullscreen}\PYG{p}{.}\PYG{n}{set}\PYG{p}{(}\PYG{n}{value}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{      }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{      }\PYG{c+c1}{// ...}
+\PYG{+w}{  }\PYG{p}{\PYGZcb{}}
+\end{Verbatim}
