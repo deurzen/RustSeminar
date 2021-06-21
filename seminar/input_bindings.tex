@@ -100,14 +100,14 @@ manager's \texttt{Model} then looks as follows:
 These are simple \textit{type alias} declarations, giving existing (in this case
 compound) types a new name. The first two represent closures that hook into
 (i.e. take as parameter) a \textit{mutable}---or, more semantically explicative:
-\textit{exclusive}---reference to the model instance\cite{therustbook}.
+\textit{exclusive}---reference to the \rsin{Model} instance\cite{therustbook}.
 \rsin{FnMut} is a trait that describes the calling of a function that is
 allowed to change (\textit{mutate}) state; it permits its implementors to use
 call syntax, such that they can act and look like regular function pointers.
-\rsin{Box} \textit{boxes} up a value, storing it on the heap and yielding
-a pointer to it (under the hood). Specifically, for \rsin{KeyAction}, that
-means that \textit{some} type that implements the \rsin{FnMut} trait and takes
-a mutable reference to a model instance (\rsin{dyn FnMut(&mut Model<'_>)})
+\rsin{Box} \textit{boxes} up a value, storing it on the heap and yielding a
+pointer to it (under the hood). Specifically, for \rsin{KeyAction}, that means
+that \textit{some} type that implements the \rsin{FnMut} trait and takes a
+mutable reference to a \rsin{Model} instance (\rsin{dyn FnMut(&mut Model<'_>)})
 is boxed up and stored on the heap for future reference. We require the use
 of \rsin{Box}, because we want to be able to store \textit{any implementor}
 of the \rsin{FnMut} trait. Since the size of an arbitrary implementor is
@@ -367,7 +367,7 @@ abstractions and actions is also a simple type alias:
 An instance of this type is stored as a member field inside of the \cppin{Model}
 instance. Registering the initial bindings happens through \cppin{Model}'s
 constructor, and can be done rather compactly using \textit{aggregate
-initialization} as follows\cite{stdcpp}:
+initialization} as follows\cite{cppstd}:
 
 \begin{cppblock}
   Model(/* ... */)

@@ -29,7 +29,7 @@ that which is consumed at the higher level.
 
 To structure event data, \wmrs uses Rust \textit{enumerations}. A Rust
 \rsin{enum} allows for the definition of a type by enumerating its variants,
-and, aside from encoding \textit{meaning}, is also able to encapsulate
+and, aside from encoding \textit{meaning}, is also able to capture
 \textit{data}\cite{therustbook}. Part of \wmrs's \rsin{Event} enumeration looks
 as follows:
 
@@ -109,12 +109,12 @@ the next section.
 
 Once an event has been generated at the windowing system and filtered into a
 structure that is to be consumed by the window manager, work must be delegated
-to various handlers that deal with specific types of events. An \ttt{Event}
-consequently encodes not only the \textit{information} used by these handlers,
-but also which handler is responsible for that event. \wmrs uses Rust's
-principle pattern matching construct, \rsin{match}, for event dispatch. Its main
-event loop, defined within a method belonging to its \ttt{Model} structure,
-partly looks as follows:
+to various \textit{handlers} that deal with specific types of events. An
+\ttt{Event} consequently encodes not only the \textit{information} used by these
+handlers, but also which handler is responsible for that event. \wmrs uses
+Rust's principle pattern matching construct, \rsin{match}, for event dispatch.
+Its main event loop, defined within a method belonging to its \ttt{Model}
+structure, partly looks as follows:
 
 \begin{rustblock}
   while self.running {
@@ -155,11 +155,11 @@ matches the pattern\cite{therustbook}. Here, that means that \textit{if} a
 valid event is returned from the \ttt{step} method, that concrete \ttt{Event}
 instance will be bound to the \ttt{event} identifier within the body of
 that match arm. The \ttt{\_} placeholder is used to denote all possible
-\textit{remaining} values\cite{therustbook}. The Rust compiler will assert
-that all possible cases are handled within a match statement, as matches are
+\textit{remaining} values\cite{therustbook}. The Rust compiler will assert that
+all possible cases are handled within a \rsin{match} statement, as matches are
 exhaustive\cite{therustbook}.
 
-Additionally matching on this \ttt{event}, all \textit{variants} that can
+Subsequently matching on this \ttt{event}, \textit{all} variants that can
 possibly exist for its type are enumerated, binding identifiers to each of
 the fields in the struct-like variants defined in the \ttt{Event} enum, which
 are then passed on to handler methods within the \ttt{Model} (e.g. \rsin{fn
@@ -221,7 +221,7 @@ Whereas \wmrs explicitly assured that a valid event was received, \wmcpp
 \textit{implicitly} does so through its \cppin{event_visitor}. The
 \cppin{std::monostate} variant represents the \textit{no valid event} case, and
 is analogous to a \textit{no-op} event. Within the same class, a method exists
-that contains \mbox{\wmcpp}'s main event loop which does the following:
+that contains \mbox{\wmcpp}'s main event loop which simply does the following:
 
 \begin{cppblock}
   while (running)
@@ -235,7 +235,7 @@ relevant handler within \wmcpp's model.
 \subsection{Event Dispatch: Remarks}
 
 While in this example both \wmrs and \wmcpp are able to express the desired
-behavior with relatively little code, visiting tagged union variants in \cpp is
-clearly more verbose and less able in communicating intent than in Rust, and
-the discrepancies only worsen as more complex (or \textit{pattern-reliant})
+behavior with relatively little code, visiting tagged union variants in \cpp
+is clearly more verbose and less able in communicating intent than in Rust.
+The discrepancies only worsen as more complex (or \textit{pattern-reliant})
 situations arise\cite{stdvisitwrong}.

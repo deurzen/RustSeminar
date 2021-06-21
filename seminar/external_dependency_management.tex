@@ -45,7 +45,7 @@ is fairly ubiquitous and readily available through distributions' own package
 managers, it merely links with the X11 development libraries without the use
 of any form of own dependency management. Specifically, building the project
 is done using a \textup{Make} script that manually encodes which files must be
-compiled.
+compiled and linked.
 
 % \begin{mintedblock}{make}
 %   CXXFLAGS = -std=c++17 -march=native -O3
@@ -62,7 +62,7 @@ compiled.
 \rssubsection{Automated Dependency Management using Cargo}
 
 The Rust programming language has its own package manager, called
-\textup{Cargo}. \textup{Cargo} can automatically download a project's external
+\textit{Cargo}. \textup{Cargo} can automatically download a project's external
 dependencies (and, transatively, \textit{their} dependencies), compile them, and
 install them locally, such that they can be used during the linking stage of the
 build process\cite{thecargobook}. To make proper use of \textup{Cargo} within
@@ -128,7 +128,7 @@ crate (\ttt{winsys}), along with three binary executable crates (\ttt{wmRS},
 around the API into the underlying windowing system. It defines a single Rust
 \textit{trait} that represents the connection between the window manager and
 some windowing system. A trait is a \textit{zero-overhead}\cite{rustblogtraits}
-collection of methods that is declared for some (at declare-time) unknown type
+collection of methods that is declared for some (at declare-time unknown) type
 \rsin{Self} (which at implementation-time becomes the implementing type), most
 often used with the intention to implement shared behavior\cite{therustbook,
 rustbyexample}. A comparable concept from other languages that most closely
@@ -221,33 +221,37 @@ determine at runtime which specific version it should actually run (known as
 \textit{dispatch})\cite{therustbook, rustblogtraits}. It can do so either
 \textit{statically} or \textit{dynamically}. Static dispatch in Rust makes
 use of \textit{monomorphization} at compile time to convert generic code into
-``specific'' code: one version for each concrete type that is used as a generics
+``specific'' code: one version for each concrete type that is used as a generic
 argument\cite{therustbook, rustblogtraits}. That means that at runtime, no time
 overhead is incurred when running generic code, as the specific versions of the
 code to run are baked into the binary\cite{therustbook, rustblogtraits}. An
 example of static dispatch in \wmrs is the following \rsin{Cycle} struct, which
 allows for cycling forward and backward through a collection of generic items.
 
+\begin{minipage}[t]{.45\linewidth}
 \begin{rustblock}
-  pub struct Cycle<T>
-  where
+pub struct Cycle<T>
+where
+  T: Identify + Debug,
+{ /* ... */ }
+\end{rustblock}
+\end{minipage}%
+\begin{minipage}[t]{.45\linewidth}
+\begin{rustblock}
+impl<T> Cycle<T>
+where
     T: Identify + Debug,
-  { /* ... */ }
+{ /* ... */ }
 \end{rustblock}
-\begin{rustblock}
-  impl<T> Cycle<T>
-  where
-      T: Identify + Debug,
-  { /* ... */ }
-\end{rustblock}
+\end{minipage}
 
-This structure is used to cycle through both the workspace structures managed by
-the window manager, as well as the clients (discussed in section \ref{clients})
-within a workspace. Two specific versions of this structure are consequently
-constructed at compile-time: one for \rsin{Cycle<Workspace>}, and one for
-\rsin{Cycle<Client>}, where \rsin{Workspace} and \rsin{Client} in turn both
-implement the \rsin{Identify} and \rsin{Debug} traits (as per the constraint on
-\rsin{T}).
+\vspace*{6pt}This structure is used to cycle through both the workspace
+structures managed by the window manager, as well as the clients (discussed
+in section \ref{clients}) within a workspace. Two specific versions
+of this structure are consequently constructed at build-time: one
+for \rsin{Cycle<Workspace>}, and one for \rsin{Cycle<Client>}, where
+\rsin{Workspace} and \rsin{Client} in turn both implement the \rsin{Identify}
+and \rsin{Debug} traits (as per the constraint on \rsin{T}).
 
 % https://doc.rust-lang.org/book/ch19-04-advanced-types.html#dynamically-sized-types-and-the-sized-trait
 % https://doc.rust-lang.org/book/ch17-02-trait-objects.html
@@ -255,9 +259,9 @@ implement the \rsin{Identify} and \rsin{Debug} traits (as per the constraint on
 Dynamic dispatch defers resolving generic code until it is required at
 runtime, making use of so-called \textit{trait objects}\cite{therustbook,
 rustdynamicdispatch}. A trait object is an opaque value of a type that
-implements some set of traits\cite{therustreference}. It is opaque,
-as one cannot know which concrete type is behind a trait object's
-pointer up front\cite{therustreference}. Whereas the size of each
+implements some set of traits\cite{therustreference}. It is opaque, as
+one does not know which concrete type is behind a trait object's pointer
+without further inspection\cite{therustreference}. Whereas the size of each
 monomorphized type is always known, trait objects are therefore dynamically
 sized\cite{therustreference}. To resolve a call to one of such an opaque
 type's methods at runtime, \textit{virtual method tables} (\textit{vtables})
@@ -316,7 +320,7 @@ implementation, that class is considered to be a proper interface.
 Although an abstract class's pure virtual methods cannot be called
 \textit{dynamically} (i.e., using virtual dispatch), it may still implement
 associated logic that can subsequently be called \textit{statically}. Consider
-part of \cppin{Connection}'s implementation:
+part of \cppin{Connection}'s implementation file:
 
 % https://stackoverflow.com/a/12855410/11069175
 % https://stackoverflow.com/questions/5481941/c-pure-virtual-function-have-body
@@ -446,7 +450,7 @@ Another useful feature of traits is the ability to implement crate-owned
 traits on external (and even built-in) types. Take our \rsin{Identify} trait
 as an example, which declares an \rsin{id} function that serves to uniquely
 identify an implementing object, and which is additionally a bound on the types
-passed into the \rsin{Cycle} struct. If we want our \rsin{Cycle} to work on
+passed into the \rsin{Cycle} structure. If we want our \rsin{Cycle} to work on
 the built-in 32-bit unsigned integer type, it would first need to implement
 \rsin{Identify}, which can be done as follows:
 
